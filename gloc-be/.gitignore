@@ -1,8 +1,0 @@
-faces
-upbeat-orb-400923-9a8d62c9c266.json
-.env
-celeb_folder
-compressed_images
-./utils/cropFaces.js
-./utils/compressImages.js
-./sftp
