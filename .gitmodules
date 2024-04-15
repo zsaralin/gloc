@@ -1,3 +1,6 @@
 [submodule "gloc-fe"]
 	path = gloc-fe
 	url = https://github.com/zsaralin/gloc.git
+[submodule "gloc-be"]
+	path = gloc-be
+	url = https://github.com/zsaralin/gloc.git
