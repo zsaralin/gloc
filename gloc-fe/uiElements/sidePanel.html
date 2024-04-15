@@ -1,0 +1,91 @@
+<!-- side-panel.html -->
+<button id="closePanelButton" class="panel-button close-button">&times;</button>
+<div class="slider-container">
+    <label class="slider-label">Zoom:</label>
+    <div class="slider-input-container">
+        <input type="range" id="zoom-slider" min="100" max="200" value="100" step="1">
+    </div>
+</div>
+<div>
+    <label for="similarity">Show Similarity</label>
+    <input type="checkbox" id="similarity" checked>
+</div>
+<div>
+    <label for="scaledSimilarity">Show Scaled Similarity</label>
+    <input type="checkbox" id="scaledSimilarity" checked>
+</div>
+<div class="radio-container">
+    <div class="radio-label">Animation Type:</div>
+    <div class="radio-options">
+        <input type="radio" id="fullFadeRadio" name="animationType" value="fullFade">
+        <label for="fullFadeRadio">Full Fade</label>
+        <input type="radio" id="crossfadeRadio" name="animationType" value="crossfade" checked>
+        <label for="crossfadeRadio">Crossfade</label>
+        <input type="radio" id="noneRadio" name="animationType" value="none">
+        <label for="noneRadio">None</label>
+    </div>
+</div>
+<!-- New checkbox for update only different src -->
+<div>
+    <label>Update Only Different Images</label>
+    <input type="checkbox" id="updateOnlyDifferentImg" checked>
+</div>
+<div class="slider-container">
+    <div class="slider-input-container">
+        <label class="slider-label">Refresh time:</label>
+        <span id="time-slider-value">10s</span>
+        <input type="range" id="time-slider" min="0" max="20" value="6" step="1">
+    </div>
+</div>
+<div>
+    <label>Bounding Box</label>
+    <input type="checkbox" id="boxCheckbox" checked>
+</div>
+<div>
+    <label>Face Landmarks</label>
+    <input type="checkbox" id="landmarksCheckbox" checked>
+</div>
+
+<div class="slider-container">
+    <div class="slider-input-container">
+        <label class="slider-label">Num Photos:</label>
+        <span id="photo-slider-value">30 (+/-10)</span>
+        <input type="range" id="photo-slider" min="15" max="70" value="30" step="5">
+    </div>
+</div>
+
+<div class="slider-container">
+    <div class="slider-input-container">
+        <label class="slider-label">Fade Duration:</label>
+        <span id="fade-slider-value">3s</span>
+        <input type="range" id="fade-slider" min="1" max="5" value="3" step="1">
+    </div>
+</div>
+
+<div class="slider-container">
+    <div class="slider-input-container">
+        <label class="slider-label">Border Thickness:</label>
+        <input type="range" id="white-slider" min="0" max="10" value="0" step="1">
+    </div>
+</div>
+
+<div class="slider-container">
+    <div class="slider-input-container">
+        <label class="slider-label">Min Eye Dist:</label>
+        <span id="min-dist-slider-value">50s</span>
+        <input type="range" id="min-dist-slider" min="0" max="200" value="50" step="1">
+    </div>
+</div>
+
+<div class="slider-container">
+    <div class="slider-input-container">
+        <label class="slider-label">Shuffle Speed:</label>
+        <span id="shuffle-slider-value">60 ms</span>
+        <input type="range" id="shuffle-slider" min="1" max="200" value="60" step="1">
+    </div>
+</div>
+
+<div>
+    <label>Shuffle Sporadically</label>
+    <input type="checkbox" id="sporadicShuffle" checked>
+</div>
