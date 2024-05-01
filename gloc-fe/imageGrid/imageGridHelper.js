@@ -5,7 +5,7 @@ import {
     resetGrid
 } from "../faceRecognition.js";
 
-let numPhotos = 30;
+let numPhotos = 15;
 let prevNumPhotos = numPhotos;
 let firstRun = true;
 export let numArrangedImages;
