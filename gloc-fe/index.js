@@ -2,7 +2,6 @@
  * FaceAPI Demo for Browsers
  * Loaded via `webcam.html`
  */
-import * as faceapi from '/dist/face-api.esm.js'; // use when in dev mode
 import {drawFaces, setupCanvas} from './faceDetection/drawFaces.js'
 import {activateEnterButton, setupLandingPage} from "./uiElements/overlay.js";
 import {setupPlayPause} from './uiElements/playPause.js';
