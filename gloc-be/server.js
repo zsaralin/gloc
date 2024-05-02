@@ -21,8 +21,7 @@ app.use(cors())
 app.use(express.json());
 
 const {Storage} = require('@google-cloud/storage');
-const {grabRandomImages} = require("./utils/randomImages.js");
-const {readImagesFromFolder} = require("./utils/randomImages");
+const {readImagesFromFolder} = require("./utils/randomImages.js");
 const {createFolders} = require("./utils/folderStructure.js");
 const {cropFaces} = require("./utils/cropFaces");
 const {renameFolder} = require("./zz/organizeImages"); // Adjust the path based on your project structure
@@ -42,36 +41,39 @@ app.listen(PORT, async () => {
 app.post('/match', async (req, res) => {
     try {
         const {photo, numPhotos} = req.body;
-        if(!photo) {
+        if (!photo) {
             res.json(null);
-            return
+            return;
         }
-        const descriptor = await getDescriptor(photo)
-        if(!descriptor) {
+        const descriptor = await getDescriptor(photo);
+        if (!descriptor) {
             res.json(null);
-            return
+            return;
         }
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos);
+        const bucket = storage.bucket(bucketName); // Ensure the bucket is defined
+
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
-            const remoteDirectoryPathWithCrop = `${dbName}/${label}/${label}_crop.png`;
-            const remoteDirectoryPathWithoutCrop = `${dbName}/${label}/${label}.png`;
+            const jsonFilePath = `${dbName}/${label}/${label}.json`;
+            const name = await getNameFromJsonFile(bucket, jsonFilePath, label);
 
-            const bucket = storage.bucket(bucketName);
-            const file = bucket.file(remoteDirectoryPathWithCrop);
-            const cropExists = await file.exists();
-            const remoteDirectoryPath = cropExists ? remoteDirectoryPathWithCrop : remoteDirectoryPathWithoutCrop;
+            const remoteImagePath = `${dbName}/${label}/${label}_crop.png`;
+            const file = bucket.file(remoteImagePath);
+            const [cropExists] = await file.exists();
 
-            if (remoteDirectoryPath[0]) {
+            if (cropExists) {
                 const readStream = file.createReadStream();
-
-                // Use streamToPromise to convert the stream to a buffer
                 const imageBuffer = await streamToPromise(readStream);
-
-                return {label, distance: normalizedDistance * 100, image: imageBuffer.toString('base64')};
+                return {
+                    label,
+                    name: name,
+                    distance: normalizedDistance * 100,
+                    image: imageBuffer.toString('base64')
+                };
             } else {
-                console.log(`File ${remoteDirectoryPath} does not exist in the bucket.`);
-                res.json(null);
+                console.log(`File ${remoteImagePath} does not exist in the bucket.`);
+                return null; // or handle as appropriate
             }
         });
 
@@ -82,6 +84,23 @@ app.post('/match', async (req, res) => {
         res.status(500).json({error: 'Internal Server Error'});
     }
 });
+
+async function getNameFromJsonFile(bucket, filePath, defaultLabel) {
+    const file = bucket.file(filePath);
+    try {
+        const [exists] = await file.exists();
+        if (exists) {
+            const [fileData] = await file.download(); // Downloads the file as a buffer
+            const jsonData = JSON.parse(fileData.toString('utf8'));
+            return jsonData.name || defaultLabel;
+        } else {
+            return defaultLabel;
+        }
+    } catch (error) {
+        console.error('Error reading or parsing JSON:', error);
+        return defaultLabel;
+    }
+}
 
 app.post('/random', async (req, res) => {
     try {

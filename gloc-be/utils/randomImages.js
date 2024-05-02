@@ -55,7 +55,6 @@ async function grabRandomImages() {
                     const base64Image = imageBuffer.toString('base64');
 
                     randomImages.push({filename: file.name, base64Image});
-                    console.log(`Processed file: ${file.name}`);
                 }
             }
         }
