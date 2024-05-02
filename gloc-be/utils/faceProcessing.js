@@ -14,11 +14,6 @@ const dbName = getDbName();
 // Assuming you have set GOOGLE_APPLICATION_CREDENTIALS environment variable
 
 const util = require("util"); // Import your config file after loading env variables
-const config = require('../config.js');
-
-const {keyFilename, bucketName} = config.googleCloudStorage;
-const storage = new Storage({keyFilename});
-const bucket = storage.bucket(bucketName);
 
 const targetDB = '42'
 const resultsFilePath = process.env.RESULTS_PATH || path.join(__dirname, `../results/results_${targetDB}.json`);
@@ -38,22 +33,19 @@ async function processFaces() {
         await faceapi.nets.faceLandmark68Net.loadFromDisk(MODEL_URI);
         await faceapi.nets.faceRecognitionNet.loadFromDisk(MODEL_URI);
 
-        const [files] = await bucket.getFiles({ prefix: targetDB });
-        console.log(files.length)
+        const targetDirectory = '../../face_backet/' + targetDB; // Adjust the directory path as needed
+        const files = await getAllImageFiles(targetDirectory);
+
         const results = {};
 
-        for (const file of files) {
-            const filePath = file.name;
+        for (const filePath of files) {
             // Skip processing for files ending with "_crop" or "_compressed"
             if (filePath.endsWith('_crop.png') || filePath.endsWith('_compressed.png') || !filePath.endsWith('.png')) {
                 continue; // Skip to the next file
             }
-            console.log(`Processing ${filePath}`)
+            console.log(`Processing ${filePath}`);
             try {
-                const tmpobj = tmp.fileSync();
-                await file.download({ destination: tmpobj.name });
-
-                const img = await canvas.loadImage(tmpobj.name);
+                const img = await canvas.loadImage(filePath);
 
                 // First attempt to detect faces using SSD MobileNet V1
                 let allDetections = await faceapi.detectAllFaces(img, new faceapi.SsdMobilenetv1Options({ minConfidence:.5 }))
@@ -78,8 +70,6 @@ async function processFaces() {
                 } else {
                     console.log(`No face detected in ${filePath}`);
                 }
-
-                await fs.unlink(tmpobj.name);
             } catch (err) {
                 console.error(`Error processing file ${filePath}:`, err);
             }
@@ -93,6 +83,25 @@ async function processFaces() {
         console.error('Error processing face descriptors:', error);
         return null;
     }
+}
+
+async function getAllImageFiles(directory) {
+    const files = await fs.readdir(directory);
+    const imageFiles = [];
+
+    for (const file of files) {
+        const filePath = path.join(directory, file);
+        const stats = await fs.stat(filePath);
+
+        if (stats.isDirectory()) {
+            const subDirectoryImageFiles = await getAllImageFiles(filePath);
+            imageFiles.push(...subDirectoryImageFiles);
+        } else if (stats.isFile() && file.endsWith('.png')) {
+            imageFiles.push(filePath);
+        }
+    }
+
+    return imageFiles;
 }
 module.exports = {
     processFaces,

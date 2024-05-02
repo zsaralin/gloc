@@ -14,7 +14,7 @@ export async function loadImages(imageDataArray) {
             imageElement.src = 'data:image/png;base64,' + imageData.image;
             imageElement.label = imageData.label
             imageElement.distance = imageData.distance
-
+            imageElement.name = imageData.name
             await new Promise((resolve) => {
                 imageElement.onload = resolve;
             });

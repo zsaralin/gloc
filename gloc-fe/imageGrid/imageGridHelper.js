@@ -55,7 +55,6 @@ export function arrangeBottomGrid(container) {
         console.log(imgAspectRatio)
     }
 
-    console.log(numRows + ' and ' + numCols)
     numArrangedImages = numRows * numCols;
     return {numArrangedImages, numRows, numCols};
 }

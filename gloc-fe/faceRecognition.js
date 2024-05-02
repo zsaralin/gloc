@@ -55,12 +55,10 @@ export async function startFaceRecognition() {
         faceRecogCallsStarted = true;
         await continuousFaceRecognition();
     }
-    console.log('curr face descirptor   ' + currFaceDescriptor)
+
     while (!currFace || !currFaceDescriptor) {
-        console.log('curr face descirptor   ' + currFaceDescriptor)
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 100 milliseconds
     }
-    console.log('starting face recog')
 
     // Now start the regular face recognition
     await faceRecognition();

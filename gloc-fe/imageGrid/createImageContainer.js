@@ -51,7 +51,6 @@ export function updateTextOverlay(textOverlay, i, imagesArray){
             let content = '';
             let similarityDisplay = similarityCheckbox.checked ? 'block' : 'none';
             let scaledSimilarityDisplay = scaledSimilarityCheckbox.checked ? 'block' : 'none';
-
             // Adjust the content for the first image if conditions are met
             if (imagesArray.length <= 2 && i === 0) {
                 content += `<div class="similarity" style="display: ${similarityDisplay};">Similarity: ${similarity}%</div>`;

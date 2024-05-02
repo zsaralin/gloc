@@ -32,7 +32,6 @@ async function addTopImages(images, imageData) {
 async function addBottomImages(images, imageData, abortController) {
     const container = document.getElementById('bottom-image-container');
     container.style.height = `calc(100svh - ${document.getElementById('top').offsetHeight}px)`;
-    console.log('container height ' + container.style.height)
     const containerHeight = parseFloat(window.getComputedStyle(container).height);
 
     // Get the computed style after setting the height
@@ -40,7 +39,6 @@ async function addBottomImages(images, imageData, abortController) {
     const imagesToProcess = images.slice(0, numArrangedImages);
     let currRow;
     for (let i = 0; i < imagesToProcess.length; i++) {
-        console.log('adding bottom image')
         if (!currRow || i % numCols === 0) {
             currRow = createNewRow(container);
         }

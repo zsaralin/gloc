@@ -31,9 +31,7 @@ let recognitionInterval; // Variable to store the interval ID
 const FACE_RECOG_INTERVAL = 2; //grab face recognition every 2 seconds
 
 export async function continuousFaceRecognition() {
-    console.log('starting face recog')
     await fetchFaceRecognitionData();
-    console.log('starting interval continuous')
     recognitionInterval = setTimeout(() => {
         continuousFaceRecognition(); // Call the function recursively
     }, FACE_RECOG_INTERVAL * 1000); // Convert seconds to milliseconds

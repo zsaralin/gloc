@@ -22,9 +22,11 @@ import {
     updateShuffleLoop
 } from "./imageGrid/startShuffle.js";
 import {handleOrientationChange} from "./uiElements/detectOrientation.js";
-import {faceLandmarker, setupFaceAPI} from "./faceDetection/faceDetectionSetup.js";
 import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
+
+import {cropImagesParent} from "./cropFacesFE.js";
+import {setupFaceLandmarker} from "./faceDetection/faceDetectionSetup.js";
 // configuration options
 let stream = null;
 export const SERVER_URL = "http://localhost:4000"; //"https://face-recognition-be.onrender.com"; //
@@ -98,7 +100,7 @@ export async function setupCamera() {
 
 async function main() {
     setupLandingPage();
-    await setupFaceAPI()
+    await setupFaceLandmarker()
     const randomImageArr = await getRandomImages()
     await createImageGrid(randomImageArr, abortController)
     activateEnterButton()
@@ -152,5 +154,5 @@ export async function resetNewDB() {
     startFaceRecognition();
 }
 
-window.onload = main();
+window.onload = main() //cropImagesParent(100)
 window.addEventListener('orientationchange', handleOrientationChange);

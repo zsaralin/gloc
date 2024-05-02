@@ -6,37 +6,36 @@ const PORT = process.env.PORT || 4000;
 const tmp = require('tmp');
 const cors = require('cors')
 require('@tensorflow/tfjs-node');
-const {createSftpConnection, statPromise, readdirPromise, getImageBuffer, createSftp} = require('./utils/sftp');
 const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescriptors');
 const numMatchesHandler = require('./numMatchesHandler');
 require('dotenv').config();
-const config = require('./config.js'); // Import your config file after loading env variables
 const faceapi = require('face-api.js');
 // const resultsFilePath = process.env.RESULTS_PATH || path.join(__dirname, 'results.json');
 const util = require('util')
 const {processFaces} = require("./utils/faceProcessing.js");
 const streamToPromise = require('stream-to-promise');
+const bodyParser = require('body-parser');
+
+const localFolderPath  = '..\\..\\face_backet'
 
 app.use(cors())
 app.use(express.json());
 
-const {Storage} = require('@google-cloud/storage');
-const {grabRandomImages} = require("./utils/randomImages.js");
-const {readImagesFromFolder} = require("./utils/randomImages");
-const {createFolders} = require("./utils/folderStructure.js");
-const {cropFaces} = require("./utils/cropFaces");
-const {renameFolder} = require("./zz/organizeImages"); // Adjust the path based on your project structure
+const {readRandomImagesFromFolder} = require("./utils/randomImages");
+const { saveCroppedImages, getOriginalImages} = require("./utils/cropFacesBE");
 
-const {keyFilename, bucketName} = config.googleCloudStorage;
-const storage = new Storage({keyFilename});
 const { getDbName } = require('./db.js');
 const {setDbName} = require("./db.js");
 const {getDescriptor} = require("./utils/getDescriptor");
+const {createTxtFiles} = require("./utils/folderStructure");
+
 let dbName = getDbName();
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
 })
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // returns an array of top n matches, for each match - label, distance, image [compressed, first image]
 app.post('/match', async (req, res) => {
@@ -54,24 +53,22 @@ app.post('/match', async (req, res) => {
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos);
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
-            const remoteDirectoryPathWithCrop = `${dbName}/${label}/${label}_crop.png`;
-            const remoteDirectoryPathWithoutCrop = `${dbName}/${label}/${label}.png`;
+            const photoCrop = `${localFolderPath}/${dbName}/${label}/${label}_crop.png`;
+            const photo = `${localFolderPath}/${dbName}/${label}/${label}.png`;
+            const txtFile = `${localFolderPath}/${dbName}/${label}/${label}.json`;
+            const name = await getNameFromJsonFile(txtFile, label)
 
-            const bucket = storage.bucket(bucketName);
-            const file = bucket.file(remoteDirectoryPathWithCrop);
-            const cropExists = await file.exists();
-            const remoteDirectoryPath = cropExists ? remoteDirectoryPathWithCrop : remoteDirectoryPathWithoutCrop;
+            const localFilePath = await fileExists(photoCrop) ? photoCrop : photo;
 
-            if (remoteDirectoryPath[0]) {
-                const readStream = file.createReadStream();
-
-                // Use streamToPromise to convert the stream to a buffer
-                const imageBuffer = await streamToPromise(readStream);
-
-                return {label, distance: normalizedDistance * 100, image: imageBuffer.toString('base64')};
+            if (localFilePath) {
+                try {
+                    const imageBuffer = await fs.readFile(localFilePath);
+                    return { label, name : name, distance: normalizedDistance * 100, image: imageBuffer.toString('base64') };
+                } catch (error) {
+                    console.error('Error reading file:', error);
+                }
             } else {
-                console.log(`File ${remoteDirectoryPath} does not exist in the bucket.`);
-                res.json(null);
+                console.log(`File ${localFilePath} does not exist.`);
             }
         });
 
@@ -83,9 +80,43 @@ app.post('/match', async (req, res) => {
     }
 });
 
+async function fileExists(filePath) {
+    try {
+        await fs.access(filePath);
+        return true;
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            return false;
+        }
+        throw error;
+    }
+}
+async function getNameFromJsonFile(filePath, defaultLabel) {
+    // Check if the file exists
+    const exists = await fileExists(filePath);
+    if (exists) {
+        try {
+            // Read the JSON file
+            const fileData = await fs.readFile(filePath, 'utf8');
+            // Parse the JSON data
+            const jsonData = JSON.parse(fileData);
+            // Return the 'name' property or default label if not present
+            return jsonData.name || defaultLabel;
+        } catch (error) {
+            console.error('Error reading or parsing JSON:', error);
+            return defaultLabel; // Return default label in case of error
+        }
+    } else {
+        return defaultLabel; // Return default label if file doesn't exist
+    }
+}
+
 app.post('/random', async (req, res) => {
     try {
-        const randomImages = await readImagesFromFolder();
+        const dbName = getDbName();
+        const imagesFolder = `${localFolderPath}/${dbName}/`; // Adjust the folder path as needed
+
+        const randomImages = await readRandomImagesFromFolder(imagesFolder);
         res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);
@@ -110,9 +141,46 @@ app.get('/get-db-name', async (req, res) => {
     res.json({ dbName: currentName });
 });
 
+let cachedImages = null;
+
+app.get('/get-images', async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+    try {
+        const directory = localFolderPath;
+
+        // Fetch images only if they haven't been cached yet
+        if (!cachedImages) {
+            cachedImages = await getOriginalImages(directory);
+            console.log("Images loaded and cached.");
+        }
+
+        const paginatedImages = cachedImages.slice((page - 1) * limit, page * limit);
+
+        res.json({
+            page,
+            limit,
+            total: cachedImages.length,
+            data: paginatedImages
+        });
+    } catch (error) {
+        console.error('Error reading images:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/save-cropped-images', async (req, res) => {
+    try {
+        const croppedImages = req.body;
+        await saveCroppedImages(croppedImages);
+        res.status(200).send('Cropped images saved successfully');
+    } catch (error) {
+        console.error('Error saving cropped images:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // grabRandomImages()
 // cropFaces()
 // processFaces()
 // createFolders()
 // processFacesMP()
-
