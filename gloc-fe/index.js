@@ -27,7 +27,7 @@ import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
 // configuration options
 let stream = null;
-export const SERVER_URL = "http://localhost:4000"; //"https://face-recognition-be.onrender.com"; //
+export const SERVER_URL = "https://face-recognition-be.onrender.com"; //
 
 let video; let canvas;
 
