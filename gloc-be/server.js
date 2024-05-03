@@ -31,6 +31,7 @@ const storage = new Storage({keyFilename});
 const { getDbName } = require('./db.js');
 const {setDbName} = require("./db.js");
 const {getDescriptor} = require("./utils/getDescriptor");
+const {grabRandomImages} = require("./utils/randomImages");
 let dbName = getDbName();
 
 app.listen(PORT, async () => {
@@ -104,7 +105,7 @@ async function getNameFromJsonFile(bucket, filePath, defaultLabel) {
 
 app.post('/random', async (req, res) => {
     try {
-        const randomImages = await readImagesFromFolder();
+        const randomImages = await grabRandomImages();
         res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);

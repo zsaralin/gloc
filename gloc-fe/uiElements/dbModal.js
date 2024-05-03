@@ -1,5 +1,6 @@
 import {resetNewDB, SERVER_URL} from "../index.js";
-import {activateEnterButton, deactivateEnterButton} from "./overlay.js";
+import {activateEnterButton, activateExperienceButton, deactivateEnterButton} from "./overlay.js";
+
 export let db = '42';
 
 // Function to fetch current database name from the server
@@ -42,7 +43,7 @@ async function setSelectedDbName() {
 // Function to handle closing the modal
 async function closeModal(lastSelectedDbName) {
     const currentSelectedDbName = getSelectedDbName();
-    if (lastSelectedDbName !== currentSelectedDbName) {
+    // if (lastSelectedDbName !== currentSelectedDbName) {
         console.log(`Database name changed to: ${currentSelectedDbName}`);
         db = currentSelectedDbName;
         try {
@@ -51,41 +52,54 @@ async function closeModal(lastSelectedDbName) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ newName: currentSelectedDbName }),
+                body: JSON.stringify({newName: currentSelectedDbName}),
             });
             console.log('Database name updated successfully.');
             document.getElementById("chooseDbModal").style.display = "none";
-            deactivateEnterButton()
+            const button  = document.querySelector(".enter-button")
+            button.disabled = true; // Enable the button
+            button.innerHTML = 'Loading Database<span class="ellipsis"></span>';
             await resetNewDB();
-            activateEnterButton()
+            activateExperienceButton()
         } catch (error) {
             console.error('Error updating database name:', error);
         }
-    } else{
-        document.getElementById("chooseDbModal").style.display = "none";
-
-    }
 }
 
 export function initializeDBModal() {
-    document.addEventListener('DOMContentLoaded', function () {
-        const modal = document.getElementById("chooseDbModal");
-        const btn = document.querySelector(".choose-db-button");
-        const span = document.getElementsByClassName("close")[0];
-        let lastSelectedDbName; // Track the last selected database name
+    const modal = document.getElementById("chooseDbModal");
+    const btn = document.querySelector(".enter-button");
+    const close = document.getElementsByClassName("close")[0];
+    const ok = document.getElementsByClassName("ok-button")[0];
 
-        btn.onclick = function () {
-            lastSelectedDbName = getSelectedDbName(); // Store the initial selected value
-            modal.style.display = "block";
-        }
+    const dbForm = document.getElementById('dbForm');
 
-        span.onclick = () => closeModal(lastSelectedDbName);
-        window.onclick = (event) => {
-            if (event.target == modal) {
-                closeModal(lastSelectedDbName);
-            }
-        }
-        setSelectedDbName();
-        console.log(db)
+    dbForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the form from submitting in the traditional way
     });
+
+    let lastSelectedDbName; // Track the last selected database name
+
+    function handleClick() {
+        lastSelectedDbName = getSelectedDbName();
+        const modal = document.getElementById('chooseDbModal');
+        modal.style.display = "flex";
+    }
+    btn.addEventListener('click', handleClick);
+
+    close.onclick = () => {
+        document.getElementById("chooseDbModal").style.display = "none";
+    }
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            document.getElementById("chooseDbModal").style.display = "none";
+        }
+    }
+    ok.onclick = () => {
+        btn.innerHTML = 'Enter the Experience'
+        btn.removeEventListener('click', handleClick);
+        closeModal(lastSelectedDbName);
+    }
+
+    setSelectedDbName();
 }

@@ -10,68 +10,50 @@ const { getDbName } = require('../db.js');
 const {keyFilename, bucketName} = config.googleCloudStorage;
 const storage = new Storage({keyFilename});
 const bucket = storage.bucket(bucketName);
-const n = 80;
+const n = 30;
 
 async function grabRandomImages() {
-    try {
-        const dbName = getDbName();
-        // Function to check if a file ends with '_compressed.png'
-        const isCompressedImage = (filename) => filename.endsWith('_crop.png');
+    const subfolders = await getSubfolders();
 
-        // List all objects in the bucket
-        const [files] = await bucket.getFiles({prefix: `${dbName}/`});
+    let randomImages = [];
+    const limit = n; // Define the limit for number of images
 
-        // Count of compressed images found
-        let compressedImageCount = 0;
+    const results = await Promise.allSettled(subfolders.map(async (folderPath) => {
+        if (randomImages.length >= limit) return null;  // Check moved here might not be effective due to async nature
+        const [files] = await bucket.getFiles({ prefix: folderPath });
+        const cropImageFile = files.find(file => file.name.endsWith('_crop.png'));
+        const jsonFile = files.find(file => file.name.endsWith('.json'));
 
-        // Selected image names
-        const selectedImageNames = new Set();
+        if (!cropImageFile) return null;
 
-        // Randomly selected images
-        const randomImages = [];
+        const readStream = cropImageFile.createReadStream();
+        const imageBuffer = await streamToPromise(readStream);
+        const base64Image = imageBuffer.toString('base64');
 
-        // Iterate over the files and select random compressed images
-        while (randomImages.length < n && compressedImageCount < files.length) {
-            const randomIndex = Math.floor(Math.random() * files.length);
-            const file = files[randomIndex];
-            if (isCompressedImage(file.name) && !selectedImageNames.has(file.name)) {
-                // Extract subfolder from the file path
-                const subfolder = file.name.split('/').slice(0, -1).join('/');
+        let name = folderPath.split('/').pop(); // Default to folder name if JSON is not available
 
-                // Check if an image from the same subfolder has already been selected
-                if (!selectedImageNames.has(subfolder)) {
-                    // Randomly select the file if it hasn't been selected before
-                    compressedImageCount++;
-                    selectedImageNames.add(file.name);
-                    selectedImageNames.add(subfolder);
-                    const readStream = file.createReadStream();
-                    const imageBuffer = await streamToPromise(readStream);
-
-                    const actualFileName = path.basename(file.name);
-
-                    // Save the image to a local file
-                    const localFilePath = `introImages/${dbName}/${actualFileName}`;
-                    await fs.promises.writeFile(localFilePath, imageBuffer);
-                    const base64Image = imageBuffer.toString('base64');
-
-                    randomImages.push({filename: file.name, base64Image});
-                }
-            }
+        if (jsonFile) {
+            const jsonStream = jsonFile.createReadStream();
+            const jsonData = await streamToPromise(jsonStream);
+            const json = JSON.parse(jsonData.toString('utf8'));
+            name = json.name || name;
         }
 
-        // Check if there are enough unique images in the bucket
-        if (randomImages.length < n) {
-            throw new Error(`There are only ${compressedImageCount} unique images in the bucket, which is less than ${n}`);
+        return {
+            distance: Math.floor(Math.random() * 21),
+            name: name,
+            image: base64Image
+        };
+    }));
+
+    results.forEach(result => {
+        if (result.status === 'fulfilled' && result.value) {
+            randomImages.push(result.value);
         }
+    });
 
-        return randomImages;
-
-    } catch (error) {
-        console.error(`Error: ${error.message}`);
-        return null;
-    }
+    return randomImages;
 }
-
 async function readImagesFromFolder() {
     const dbName = getDbName();
     const imagesFolder = `introImages/${dbName}/`; // Adjust the folder path as needed
@@ -94,6 +76,44 @@ async function readImagesFromFolder() {
         console.error(`Error reading images: ${error.message}`);
     }
     return imageBuffers;
+}
+
+async function getSubfolders() {
+    const dbName = getDbName(); // Example, replace with actual database name or dynamic variable
+    const prefix = `${dbName}/`;
+
+    try {
+        // Get files under the prefix
+        const [files] = await bucket.getFiles({ prefix: prefix });
+        const shuffledFiles = files.sort(() => 0.5 - Math.random());
+
+        // Get the first 'n' elements after shuffling
+        const randomFiles = shuffledFiles.slice(0, n);
+        // Extract unique directory prefixes from file names
+        const directorySet = new Set();
+        randomFiles.forEach(file => {
+            const fileName = file.name;
+            const parts = fileName.split('/');
+            if (parts.length > 1) {
+                directorySet.add(parts.slice(0, -1).join('/')); // Exclude the file name itself
+            }
+        });
+
+        // Shuffle the directory prefixes
+        return Array.from(directorySet)
+
+    } catch (error) {
+        console.error(`Error listing and shuffling directories: ${error.message}`);
+        return [];
+    }
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // ES6 destructuring to swap elements
+    }
+    return array;
 }
 
 module.exports = {
