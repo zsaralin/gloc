@@ -79,7 +79,7 @@ export function activateExperienceButton() {
     button.disabled = true; // Enable the button
     button.classList.remove('loading');
     button.disabled = false; // Enable the button
-    button.innerText = "Enter the Experience"; // Update button text if needed
+    button.innerText = "Start"; // Update button text if needed
     button.addEventListener('click', enterExperience);
 }
 export function deactivateEnterButton() {

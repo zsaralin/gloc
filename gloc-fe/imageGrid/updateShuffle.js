@@ -104,9 +104,9 @@ async function updateImageContainer(imageContainer, index, newImagesArray, image
 
         currentImage.src = images[index].src; // Set src after defining onload/onerror to ensure the load event isn't missed
         if (db === '42') {
-            await addImageClickListener42(imageContainer, images[index].label);
+            await addImageClickListener42(imageContainer,  images[index]);
         } else {
-            await addImageClickListener(imageContainer);
+            await addImageClickListener42(imageContainer,   images[index]);
         }
 
         // currentImage.src = images[index].src; // Set src after defining onload/onerror to ensure the load event isn't missed

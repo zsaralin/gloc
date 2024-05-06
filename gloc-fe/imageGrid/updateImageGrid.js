@@ -63,9 +63,9 @@ async function updateImages(images, imageData, abortController) {
             }
         }
         if (db === '42') {
-            await addImageClickListener42(imageContainer, images[i].label);
+            await addImageClickListener42(imageContainer, images[i]);
         } else {
-            await addImageClickListener(imageContainer);
+            await addImageClickListener42(imageContainer, images[i]);
         }
     }
     await Promise.all(animationPromises);

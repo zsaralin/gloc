@@ -1,13 +1,12 @@
 import {reset} from "../index.js";
 const imageFolder = `./images/42` ;
 
-export async function addImageClickListener42(imageItemContainer, label) {
+export async function addImageClickListener42(imageItemContainer, imageData) {
     const clickListener = async function () {
         const playPauseButton = document.getElementById('playPauseButton');
         if (playPauseButton) {
             playPauseButton.click();
         }
-
         const modal = document.createElement('div');
         modal.style.cssText = `
             position: fixed;
@@ -66,8 +65,8 @@ export async function addImageClickListener42(imageItemContainer, label) {
         `;
 
         const imageElement = document.createElement('img');
-        imageElement.src = `${imageFolder}/${label}.png`;
-        imageElement.alt = names[parseInt(label.slice(-2), 10)];
+        imageElement.src = imageData.src
+        imageElement.alt = names[parseInt(imageData.label.slice(-2), 10)];
         imageElement.style.cssText = `
             max-width: 100%;
             max-height: 100%;
@@ -86,7 +85,7 @@ export async function addImageClickListener42(imageItemContainer, label) {
             flex: 1;
             min-height: 20%;
         `;
-        textContainer.innerHTML = `<p>${names[parseInt(label.slice(-2), 10)]}</p>
+        textContainer.innerHTML = `<p>${names[parseInt(imageData.label.slice(-2), 10)]}</p>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit justo et neque tincidunt, eu mattis sapien suscipit.
                          Quisque varius, augue ac sodales auctor, tellus dolor ullamcorper neque, at viverra nisl massa vel ligula. Sed lacinia tristique lacus, sit amet feugiat odio volutpat nec. </p>
                         <p>Vivamus nec purus a mi viverra volutpat. Sed gravida, risus a dictum dignissim, leo felis sagittis libero, nec malesuada velit ex a arcu. Nulla facilisi.</p>

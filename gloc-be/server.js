@@ -32,6 +32,7 @@ const { getDbName } = require('./db.js');
 const {setDbName} = require("./db.js");
 const {getDescriptor} = require("./utils/getDescriptor");
 const {grabRandomImages} = require("./utils/randomImages");
+const {deleteCompressedPngFiles} = require("./utils/folderStructure");
 let dbName = getDbName();
 
 app.listen(PORT, async () => {
@@ -51,8 +52,21 @@ app.post('/match', async (req, res) => {
             res.json(null);
             return;
         }
-        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos);
+
         const bucket = storage.bucket(bucketName); // Ensure the bucket is defined
+        const allImagesBuffers = [];
+
+        // Collecting non-crop PNG files before processing descriptors
+        const [files] = await bucket.getFiles({ prefix: dbName });
+        for (const file of files) {
+            if (file.name.endsWith('.png') && file.name.endsWith('_crop.png')) {
+                const readStream = file.createReadStream();
+                const imageBuffer = await streamToPromise(readStream).then(buffer => buffer.toString('base64'));
+                allImagesBuffers.push(imageBuffer); // Adding image buffer to the array
+            }
+        }
+
+        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos);
 
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
@@ -63,29 +77,31 @@ app.post('/match', async (req, res) => {
             const file = bucket.file(remoteImagePath);
             const [cropExists] = await file.exists();
 
+            let imageBuffer = null;
             if (cropExists) {
                 const readStream = file.createReadStream();
-                const imageBuffer = await streamToPromise(readStream);
-                return {
-                    label,
-                    name: name,
-                    distance: normalizedDistance * 100,
-                    image: imageBuffer.toString('base64')
-                };
+                imageBuffer = await streamToPromise(readStream).then(buffer => buffer.toString('base64'));
             } else {
                 console.log(`File ${remoteImagePath} does not exist in the bucket.`);
-                return null; // or handle as appropriate
             }
+
+            // Include the allImages list with each result
+            return {
+                label,
+                name: name,
+                distance: normalizedDistance * 100,
+                image: imageBuffer,
+                allImages: allImagesBuffers // Including non-crop PNGs here
+            };
         });
 
-        const responseArray = (await Promise.all(imageBufferPromises)).filter(Boolean);
+        const responseArray = await Promise.all(imageBufferPromises);
         res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);
         res.status(500).json({error: 'Internal Server Error'});
     }
 });
-
 async function getNameFromJsonFile(bucket, filePath, defaultLabel) {
     const file = bucket.file(filePath);
     try {

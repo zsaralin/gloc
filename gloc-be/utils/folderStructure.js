@@ -51,7 +51,36 @@ async function createFolders() {
     }
 }
 
+async function deleteCompressedPngFiles(targetFolder) {
+    // Prefix to list objects within the folder
+    const prefix = targetFolder;
+
+    try {
+        // Get list of files with the specified prefix
+        const [files] = await bucket.getFiles({
+            prefix: prefix,
+        });
+
+        // Iterate through each file in the list
+        for (const file of files) {
+            // Extracting file name
+            const fileName = path.basename(file.name);
+
+            // Check if the file is a PNG and contains 'compressed' in the filename
+            if (fileName.includes('compressed') && fileName.endsWith('.png')) {
+                // Delete the file
+                await file.delete();
+                console.log(`Deleted compressed PNG file: ${fileName}`);
+            }
+        }
+        console.log('Deletion of compressed PNG files completed.');
+    } catch (err) {
+        console.error('Error deleting compressed PNG files:', err);
+    }
+}
 
 module.exports = {
-    createFolders
+    createFolders,
+    deleteCompressedPngFiles
+
 };

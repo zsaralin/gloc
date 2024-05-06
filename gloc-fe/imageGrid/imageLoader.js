@@ -12,6 +12,7 @@ export async function loadImages(imageDataArray) {
         const batchPromises = batchImages.map(async (imageData) => {
             const imageElement = document.createElement('img');
             imageElement.src = 'data:image/png;base64,' + imageData.image;
+            imageElement.allImages = imageData.allImages;
             imageElement.label = imageData.label
             imageElement.distance = imageData.distance
             imageElement.name = imageData.name
@@ -24,6 +25,7 @@ export async function loadImages(imageDataArray) {
         const batchResults = await Promise.all(batchPromises);
         loadedImages.push(...batchResults);
     }
+    console.log(loadedImages)
     return loadedImages;
 }
 
