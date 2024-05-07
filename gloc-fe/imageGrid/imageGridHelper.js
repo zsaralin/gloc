@@ -28,6 +28,7 @@ export function arrangeBottomGrid(container) {
 
         const height = parseFloat(window.getComputedStyle(container).height);
         const width = parseFloat(window.getComputedStyle(container).width);
+        console.log(height, width)
         const aspectRatio = width / height
 
         numCols = Math.ceil(Math.sqrt(numPhotos * aspectRatio));

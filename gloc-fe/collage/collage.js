@@ -142,6 +142,7 @@ export async function addImageClickListener(imageItemContainer) {
         contentModal.style.margin = 'auto';
         contentModal.style.height = 'calc(100% - 50px)'; // Adjust 40px to increase/decrease the total vertical margin
         contentModal.style.width = 'auto'//'calc(100% - 50px)';
+
         contentModal.style.overflow = 'hidden'; // Add scroll for content that exceeds the modal's height
         contentModal.style.padding = '20px 20px 10px 20px'; // Add scroll for content that exceeds the modal's height
         contentModal.style.maxWidth = '80%'; // Maintain the aspect ratio of the image

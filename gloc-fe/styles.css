@@ -1,8 +1,10 @@
 body {
     display: flex;
     flex-direction: column;
+    /*justify-content: center;*/
+    /*align-items: center;*/
     height: 100vh;
-    width: 100%;
+    width:100%;
     font-family: monospace;
     color: white;
     font-size: 13px;
@@ -11,6 +13,13 @@ body {
     overflow: hidden;
     background-color : black;
     top: 0;
+
+}
+
+#main {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 button {
@@ -71,7 +80,6 @@ button {
     position: relative;
     width: 66.66%;
     height: 100%;
-    /*background-color: red;*/
     align-items: center; /* Align items vertically centered */
     display: flex;
     margin: 0; /* Reset margin to ensure no default margin */
@@ -177,6 +185,7 @@ button {
     height: 100vh;
     background-color: black;
     z-index: 1000; /* Ensure it's on top of other elements */
+    transition: opacity 1s ease-in;
 }
 
 
@@ -219,7 +228,7 @@ button {
     line-height: 10px;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    font-size: 1.5vw;
+    font-size: clamp(.5rem, .7vw, 1.5rem);
     white-space: normal; /* Allow text to wrap */
     overflow: visible; /* Let it overflow visually */
     display: inline-block;
@@ -250,7 +259,6 @@ button {
 .placeholder {
     height: 100%;
     width: 50%;
-    background-color: red; /* Set the background color to red for the placeholders */
 }
 
 .play-pause-button {
@@ -525,7 +533,8 @@ button {
     border: 1px solid #888;
     display: inline-block; /* Adjust the display to match content width */
     border-radius: 5px;
-    max-width: 100%; /* Ensure it doesn't overflow the viewport */}
+    transition : opacity .5s ease-in;
+    max-width: 80%; /* Ensure it doesn't overflow the viewport */}
 
 .close {
     color: #aaa;

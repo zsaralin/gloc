@@ -34,13 +34,12 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
         const contentModal = document.createElement('div');
         contentModal.style.cssText = `
                 border-radius: 5px;
-
             background: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin: auto;
             padding: 20px 20px 10px 20px;
             width: auto;
-            max-width: 80%;
+            max-width: min(80vw, 600px); 
             height: calc(100% - 50px);
             position: relative;
             display: flex;

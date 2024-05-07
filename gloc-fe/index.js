@@ -27,7 +27,7 @@ import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
 // configuration options
 let stream = null;
-export const SERVER_URL = "https://face-recognition-be.onrender.com"; // "http://localhost:4000";
+export const SERVER_URL =  'https://face-recognition-be.onrender.com';  // "http://localhost:4000";
 
 let video; let canvas;
 
@@ -132,7 +132,10 @@ export function enterExperience(){
     startShuffle()
     startFaceDetection(video,canvas)
     startFaceRecognition();
-    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('overlay').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('overlay').style.display = 'none'; // Hide after transition
+    }, 1000); // This duration should match the CSS transition duration
 
 }
 
