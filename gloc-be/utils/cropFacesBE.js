@@ -12,7 +12,7 @@ async function getOriginalImages(directory) {
         if (file.isDirectory()) {
             const subDirectoryImageFiles = await getOriginalImages(filePath);
             imageFiles.push(...subDirectoryImageFiles);
-        } else if (file.isFile() && file.name.endsWith('.png') && !file.name.endsWith('crop.png') && !file.name.endsWith('compressed.png')) {
+        } else if (file.isFile() && file.name.endsWith('.png')) {
             console.log(filePath);
             const buffer = await fs.readFile(filePath);
             imageFiles.push({ name: file.name, buffer: buffer.toString('base64'), path: filePath });
@@ -48,20 +48,30 @@ async function saveCroppedImages(croppedImages) {
             const originalFileName = path.basename(originalImagePath);
             const originalDir = path.dirname(originalImagePath);
 
+            // Skip processing if the filename ends with '_cmp'
+            if (originalFileName.endsWith('_cmp.png')) {
+                continue;
+            }
+            let croppedFileName;
+
+            // Check if the file already ends with '_cmp.png' to avoid '_cmp_cmp.png'
+            if (originalFileName.endsWith('crop.png')) {
+                croppedFileName = originalFileName; // Use the original name as it's already marked as compressed
+            } else {
+                croppedFileName = originalFileName.replace('.png', '_crop.png');
+            }
             for (let i = 0; i < boundingBoxes.length; i++) {
                 const boundingBox = boundingBoxes[i];
-                const croppedFileName = originalFileName.replace('.png', `_crop.png`);
+
                 const croppedImagePath = path.join(originalDir, croppedFileName);
 
-                // Crop the image based on the bounding box
+                // Crop the image based on the bounding box and overwrite if exists
                 await cropImage(originalImagePath, croppedImagePath, boundingBox);
-
                 console.log(`Cropped image saved: ${croppedImagePath}`);
             }
         }
     } catch (error) {
         console.error('Error saving cropped images:', error);
-        // Handle error
     }
 }
 
@@ -70,23 +80,37 @@ async function cropImage(originalImagePath, croppedImagePath, boundingBox, paddi
         // Read the original image using Jimp
         const jimpImage = await read(originalImagePath);
 
-        // Calculate the coordinates for cropping
-        const x = Math.max(0, boundingBox.originX - padding);
-        const y = Math.max(0, boundingBox.originY - padding);
-        const maxWidth = Math.min(jimpImage.bitmap.width - x, boundingBox.width + 2 * padding);
-        const maxHeight = Math.min(jimpImage.bitmap.height - y, boundingBox.height + 2 * padding);
-        const size = Math.min(maxWidth, maxHeight);
+        // Calculate padded bounding box
+        let x = boundingBox.originX - padding;
+        let y = boundingBox.originY - padding;
+        let width = boundingBox.width + 2 * padding;
+        let height = boundingBox.height + 2 * padding;
 
-        // Ensure square cropping dimensions
-        const cropWidth = size;
-        const cropHeight = size;
+        // Clamp the coordinates and dimensions to ensure they stay within the image boundaries
+        x = Math.max(0, x);
+        y = Math.max(0, y);
+        width = Math.min(width, jimpImage.bitmap.width - x);
+        height = Math.min(height, jimpImage.bitmap.height - y);
+
+        // Center the crop around the bounding box by adjusting the start point (x, y)
+        if (width !== height) {
+            if (width > height) {
+                let excess = width - height;
+                x += Math.floor(excess / 2);
+                width = height; // Make the dimensions equal to form a square
+            } else {
+                let excess = height - width;
+                y += Math.floor(excess / 2);
+                height = width; // Make the dimensions equal to form a square
+            }
+        }
 
         // Crop the image
-        jimpImage.crop(x, y, cropWidth, cropHeight);
+        jimpImage.crop(x, y, width, height);
 
-        // Resize the image to half of its size
-        const newWidth = Math.floor(cropWidth / 4);
-        const newHeight = Math.floor(cropHeight / 4);
+        // Optionally resize the image to half of its cropped size
+        const newWidth = Math.floor(width / 2);
+        const newHeight = Math.floor(height / 2);
         await jimpImage.resize(newWidth, newHeight);
 
         // Save the cropped image
@@ -95,9 +119,7 @@ async function cropImage(originalImagePath, croppedImagePath, boundingBox, paddi
         console.log(`Image cropped and saved to: ${croppedImagePath}`);
     } catch (error) {
         console.error('Error cropping image:', error);
-        // Handle error
     }
 }
-
 
 module.exports = { getOriginalImages, saveCroppedImages };

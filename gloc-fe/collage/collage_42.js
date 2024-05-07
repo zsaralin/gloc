@@ -1,9 +1,10 @@
 import {reset} from "../index.js";
 const imageFolder = `./images/42` ;
 
-export async function addImageClickListener42(imageItemContainer, label) {
+export async function addImageClickListener42(imageItemContainer, imageData) {
     // Define the named async function for the event listener outside of the addEventListener call
     const clickListener = async function () {
+        const label = imageData.name
         // Create the modal container
         const playPauseButton = document.getElementById('playPauseButton');
         if (playPauseButton) {
@@ -56,12 +57,12 @@ export async function addImageClickListener42(imageItemContainer, label) {
 
         const photo = label + '.png';
         const lastTwoDigits = label.slice(-2); // Gets the last two characters/digits of the label
-        const name = names[parseInt(lastTwoDigits, 10)]; // Parse the digits to get the name index
-        const singleImageUrl = `${imageFolder}/${photo}`; // Construct the image URL
+        const name = label//names[parseInt(lastTwoDigits, 10)]; // Parse the digits to get the name index
+        // const singleImageUrl = `${imageFolder}/${photo}`; // Construct the image URL
 
         // Create the image element
         const imageElement = document.createElement('img');
-        imageElement.src = singleImageUrl; // Set the source of the image
+        imageElement.src = imageData.srcOrig; // Set the source of the image
         imageElement.alt = name; // Use the name as alt text for accessibility
         imageElement.style.width = 'auto'; // Make the image take up the full width of its container
         imageElement.style.height = '100%'; // Maintain the aspect ratio of the image

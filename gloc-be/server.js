@@ -21,13 +21,16 @@ const localFolderPath  = '..\\..\\face_backet'
 app.use(cors())
 app.use(express.json());
 
+
+
 const {readRandomImagesFromFolder} = require("./utils/randomImages");
 const { saveCroppedImages, getOriginalImages} = require("./utils/cropFacesBE");
 
 const { getDbName } = require('./db.js');
 const {setDbName} = require("./db.js");
 const {getDescriptor} = require("./utils/getDescriptor");
-const {createTxtFiles} = require("./utils/folderStructure");
+const {createTxtFiles, deleteCropCompressedFiles} = require("./utils/folderStructure");
+const {saveCmpImages} = require("./utils/cmpImagesBE");
 
 let dbName = getDbName();
 
@@ -53,22 +56,30 @@ app.post('/match', async (req, res) => {
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos);
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
-            const photoCrop = `${localFolderPath}/${dbName}/${label}/${label}_crop.png`;
-            const photo = `${localFolderPath}/${dbName}/${label}/${label}.png`;
-            const txtFile = `${localFolderPath}/${dbName}/${label}/${label}.json`;
-            const name = await getNameFromJsonFile(txtFile, label)
+            const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_crop.png`);
+            const photoPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
+            const txtFile = path.join(localFolderPath, dbName, label, `${label}.json`);
+            const name = await getNameFromJsonFile(txtFile, label);
 
-            const localFilePath = await fileExists(photoCrop) ? photoCrop : photo;
+            const doesPhotoCropExist = await fileExists(photoCropPath);
+            const doesPhotoExist = await fileExists(photoPath);
 
-            if (localFilePath) {
+            if (doesPhotoCropExist && doesPhotoExist) {
                 try {
-                    const imageBuffer = await fs.readFile(localFilePath);
-                    return { label, name : name, distance: normalizedDistance * 100, image: imageBuffer.toString('base64') };
+                    const imageCropBuffer = await encodeImageToBase64(photoCropPath);
+                    const imageBuffer = await encodeImageToBase64(photoPath);
+                    return {
+                        label,
+                        name,
+                        distance: normalizedDistance * 100,
+                        image: imageCropBuffer,
+                        imageCmp: imageBuffer
+                    };
                 } catch (error) {
-                    console.error('Error reading file:', error);
+                    console.error('Error processing images:', error);
                 }
             } else {
-                console.log(`File ${localFilePath} does not exist.`);
+                console.log(`One or both files do not exist: ${photoPath}, ${photoCropPath}`);
             }
         });
 
@@ -79,6 +90,17 @@ app.post('/match', async (req, res) => {
         res.status(500).json({error: 'Internal Server Error'});
     }
 });
+
+async function encodeImageToBase64(filePath) {
+    try {
+        const imageBuffer = await fs.readFile(filePath);
+        return imageBuffer.toString('base64');
+    } catch (error) {
+        console.error(`Error reading file ${filePath}:`, error);
+        return null;  // Return null if there's an error reading the file
+    }
+}
+
 
 async function fileExists(filePath) {
     try {
@@ -179,6 +201,19 @@ app.post('/save-cropped-images', async (req, res) => {
     }
 });
 
+app.post('/save-cmp-images', async (req, res) => {
+    try {
+        const cmpImages = req.body;
+        await saveCmpImages(cmpImages);
+        res.status(200).send('Cropped images saved successfully');
+    } catch (error) {
+        console.error('Error saving cropped images:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
+// deleteCropCompressedFiles(localFolderPath)
 // grabRandomImages()
 // cropFaces()
 // processFaces()

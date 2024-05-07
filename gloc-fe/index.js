@@ -22,15 +22,15 @@ import {
     updateShuffleLoop
 } from "./imageGrid/startShuffle.js";
 import {handleOrientationChange} from "./uiElements/detectOrientation.js";
+import {faceLandmarker, setupFaceAPI} from "./faceDetection/faceDetectionSetup.js";
 import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
-
-import {cropImagesParent} from "./cropFacesFE.js";
-import {setupFaceLandmarker} from "./faceDetection/faceDetectionSetup.js";
+import {cropFacesFE, cropImagesParent} from "./cropFacesFE.js";
 // configuration options
 let stream = null;
-export const SERVER_URL = "http://localhost:4000"; //"https://face-recognition-be.onrender.com"; //
+export const SERVER_URL =  "http://localhost:4000";//"https://face-recognition-be.onrender.com"; //
 
+let video; let canvas;
 
 // Send a message to start face recognition
 export async function setupCamera() {
@@ -51,14 +51,13 @@ export async function setupCamera() {
             });
         }
     }
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
+    video = document.getElementById('video');
+    canvas = document.getElementById('canvas');
     const playPauseButton = document.getElementById('playPauseButton');
     if (!video || !canvas || !playPauseButton) {
         return null;
     }
     // window.stream = stream;
-    console.log('STREAM IS ' + stream)
     video.srcObject = stream
 
     return new Promise((resolve, reject) => {
@@ -70,9 +69,9 @@ export async function setupCamera() {
                 video.play().then(() => {
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);
-                    startShuffle();
-                    document.getElementById('overlay').style.display = 'none';
-                    startFaceDetection(video, canvas); // Consider awaiting this if it's async and critical for resolution
+                    // startShuffle();
+                    // document.getElementById('overlay').style.display = 'none';
+                    // startFaceDetection(video, canvas); // Consider awaiting this if it's async and critical for resolution
                     resolve();
                 }).catch(error => reject(error)); // Catch errors from video.play()
             } catch (error) {
@@ -86,9 +85,9 @@ export async function setupCamera() {
                     await video.play();
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);
-                    startShuffle();
-                    document.getElementById('overlay').style.display = 'none';
-                    startFaceDetection(video, canvas); // Consider handling potential errors if it's async
+                    // startShuffle();
+                    // document.getElementById('overlay').style.display = 'none';
+                    // startFaceDetection(video, canvas); // Consider handling potential errors if it's async
                     resolve();
                 } catch (error) {
                     reject(error);
@@ -100,59 +99,43 @@ export async function setupCamera() {
 
 async function main() {
     setupLandingPage();
-    await setupFaceLandmarker()
-    const randomImageArr = await getRandomImages()
-    await createImageGrid(randomImageArr, abortController)
+    await setupFaceAPI()
+    // const randomImageArr = await getRandomImages()
+    // await createImageGrid(randomImageArr, abortController)
     activateEnterButton()
 }
 
 export async function reset() {
-    console.log("Setting up the camera...");
     await setupCamera();
-    console.log("Camera setup complete.");
-
-    console.log("Setting up the canvas...");
     setupCanvas(); // This is a synchronous operation
-    console.log("Canvas setup complete.");
-
-    console.log("Loading random images for shuffle...");
     const randomImageArr = await getRandomImages(); // Load images for shuffle before making button ready
-    console.log("Random images loaded.");
-
-    console.log("Initializing first update flag...");
     setIsFirstUpdate(true);
-    console.log("First update flag set.");
-
-    console.log("Restarting face recognition calls...");
     restartFaceRecogCalls();
-    console.log("Face recognition calls restarted.");
-
-    console.log("Creating image grid...");
     await createImageGrid(randomImageArr, abortController);
-    console.log("Image grid created.");
-
-    console.log("Starting shuffle...");
     startShuffle();
-    console.log("Shuffle started.");
-
-    console.log("Restarting side panel...");
     await restartSidePanel();
-    console.log("Side panel restarted.");
-
-    console.log("Starting face recognition...");
     startFaceRecognition();
-    console.log("Face recognition started.");
 }
 
 export async function resetNewDB() {
-    resetAbortController()
-    stopShuffle()
-    clearRandomImages()
-    clearLoadedRandomImages()
-    await getRandomImages() // load images for shuffle before making button ready
-    startShuffle()
-    startFaceRecognition();
+    // resetAbortController()
+    // stopShuffle()
+    // clearRandomImages()
+    // clearLoadedRandomImages()
+    const randomImageArr = await getRandomImages()
+    await createImageGrid(randomImageArr, abortController)
+    // startShuffle()
+    // startFaceDetection(video,canvas)
+    // startFaceRecognition();
 }
 
-window.onload = main() //cropImagesParent(100)
+export function enterExperience(){
+    startShuffle()
+    startFaceDetection(video,canvas)
+    startFaceRecognition();
+    document.getElementById('overlay').style.display = 'none';
+
+}
+
+window.onload = main()//cropImagesParent(200);
 window.addEventListener('orientationchange', handleOrientationChange);

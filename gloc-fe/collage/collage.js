@@ -105,7 +105,6 @@ async function distributeImagesEqually(imageFileNames, numColumns) {
 
     return {columns, heightDifference};
 }
-
 export async function addImageClickListener(imageItemContainer) {
     // Define the named async function for the event listener outside of the addEventListener call
     const clickListener = async function () {
@@ -137,13 +136,13 @@ export async function addImageClickListener(imageItemContainer) {
         // Inner modal (white content container)
         const contentModal = document.createElement('div');
         contentModal.style.background = 'white';
-        contentModal.style.borderRadius = '8px'; // Gives the sleek look
+        contentModal.style.borderRadius = '5px'; // Gives the sleek look
         contentModal.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
         contentModal.style.margin = 'auto';
         contentModal.style.height = 'calc(100% - 50px)'; // Adjust 40px to increase/decrease the total vertical margin
         contentModal.style.width = 'auto'//'calc(100% - 50px)';
         contentModal.style.overflow = 'hidden'; // Add scroll for content that exceeds the modal's height
-        contentModal.style.padding = '15px'; // Add scroll for content that exceeds the modal's height
+        contentModal.style.padding = '20px 20px 10px 20px'; // Add scroll for content that exceeds the modal's height
         contentModal.style.maxWidth = '80%'; // Maintain the aspect ratio of the image
         contentModal.style.display = 'flex'; // Using flexbox for layout
         contentModal.style.flexDirection = 'column'; // Stack children vertically
@@ -157,14 +156,14 @@ export async function addImageClickListener(imageItemContainer) {
         if (imageFileNames.length === 1) {
             // If there's only one image
             const singleImageUrl = `${imageFolder}/${imageFileNames[0]}`;
-                imagesHtml = `<div class="full-width-image-container">
+            imagesHtml = `<div class="full-width-image-container">
     <img src="${singleImageUrl}" alt="Image" style="width: 100%; height: auto;">
     </div>`;
-            } else {
-                // Calculate the best column configuration
-                const {bestColumns} = await findBestColumnConfiguration(imageFileNames);
-                // Create a new HTML document with the photo collage layout and CSS styling
-                const columnsHtml = bestColumns.map((columnImagesHtml) => `
+        } else {
+            // Calculate the best column configuration
+            const {bestColumns} = await findBestColumnConfiguration(imageFileNames);
+            // Create a new HTML document with the photo collage layout and CSS styling
+            const columnsHtml = bestColumns.map((columnImagesHtml) => `
                 <div class="column">
                     ${columnImagesHtml.join('')}
                 </div>
@@ -175,10 +174,13 @@ export async function addImageClickListener(imageItemContainer) {
 
         // Create a container element to directly insert the HTML
         imageContainer.innerHTML = imagesHtml;
+
+        attachClickListenersToImages(imageContainer);
+
         contentModal.appendChild(imageContainer);
 
         // Ensure clicks inside the contentModal don't close the modal
-        contentModal.addEventListener('click', function(event) {
+        contentModal.addEventListener('click', function (event) {
             event.stopPropagation();
         });
 
@@ -203,17 +205,42 @@ export async function addImageClickListener(imageItemContainer) {
         // Append the text container below the image container within the contentModal
         contentModal.appendChild(textContainer);
 
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.style.display = 'flex';
+        buttonWrapper.style.justifyContent = 'flex-end';
+        buttonWrapper.style.marginTop = '5px';
+        buttonWrapper.style.width = '100%'; // Ensures the wrapper stretches across its parent
+
+
+        const appointmentButton = document.createElement('button');
+        appointmentButton.textContent = 'Set Up Appointment at Genetic Bank';
+        appointmentButton.style.cssText = `
+        padding: 5px 10px;
+        font-size: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: grey;
+        color: #ffffff;
+        cursor: pointer;
+        right: 0 ; 
+    `;
+        appointmentButton.addEventListener('click', function(event) {
+            event.stopPropagation(); // This prevents the event from bubbling up to parent elements
+        });
+        buttonWrapper.appendChild(appointmentButton);
+        contentModal.appendChild(buttonWrapper);
+
         // Create the close button
         const closeButton = document.createElement('button');
-        closeButton.innerHTML = '&times;'; // Use HTML entity for "X"
+        closeButton.innerHTML = '✖';
         closeButton.style.position = 'absolute'; // Use 'fixed' to ensure it's relative to the viewport
-        closeButton.style.top = '0px';
-        closeButton.style.right = '0px';
+        closeButton.style.top = '4px';
+        closeButton.style.right = '4px';
         closeButton.style.zIndex = '1001';
         closeButton.style.border = 'none';
         closeButton.style.background = 'none';
         closeButton.style.color = 'grey';
-        closeButton.style.fontSize = '20px';
+        closeButton.style.fontSize = '.5rem';
         closeButton.style.cursor = 'pointer';
 
         // Append the close button to the modal
@@ -243,139 +270,15 @@ export async function addImageClickListener(imageItemContainer) {
 
     // Add the new event listener
     imageItemContainer.addEventListener('click', clickListener);
-//     imageItemContainer.addEventListener('click', async function () {
-//         try {
-//
-//             const playPauseButton = document.getElementById('playPauseButton');
-//             const video = document.getElementById('video');
-//             if(video) {
-//                 video.pause()
-//             }
-//             const loadingHTML = `
-//                 <html lang="en">
-//                     <head>
-//                         <title>Photo Collage</title>
-//                         <link rel="stylesheet" type="text/css" href="./collage.css">
-//                         <style>
-//                             /* Loading spinner styles */
-//                             .overlay {
-//                                 display: none;
-//                                 position: fixed;
-//                                 top: 0;
-//                                 left: 0;
-//                                 width: 100%;
-//                                 height: 100%;
-//                                 background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
-//                                 z-index: 9999; /* Ensure the overlay is on top of other elements */
-//                                 }
-//                             .spinner {
-//                                 border: 4px solid rgba(0, 0, 0, 0.1);
-//                                 border-top: 4px solid grey;
-//                                 border-radius: 50%;
-//                                 width: 40px;
-//                                 height: 40px;
-//                                 animation: spin 1s linear infinite;
-//                             }
-//                             @keyframes spin {
-//                                 0% { transform: rotate(0deg); }
-//                                 100% { transform: rotate(360deg); }
-//                             }
-//                         </style>
-//                     </head>
-//                     <body>
-//                     <div id="loading-overlay" class="overlay">
-//                             <div class="spinner"></div>
-//                         </div>
-//                     </body>
-//                 </html>
-//             `;
-//             document.documentElement.innerHTML = loadingHTML;
-//
-//             // Show the loading overlay
-//             // const loadingOverlay = document.getElementById('loading-overlay');
-//             // loadingOverlay.style.backgroundColor = 'rgba(255,255,255,.8)';
-//             //
-//             // if (loadingOverlay) {
-//             //     loadingOverlay.style.display = 'block';
-//             // }
-//
-//             // Generate HTML to display all the images in a grid with consistent container size
-//             let imagesHtml = '';
-//             if (imageFileNames.length === 1) {
-//                 // If there's only one image, create HTML to display it taking up the full area
-//                 const singleImageUrl = `${imageFolder}/${imageFileNames[0]}`;
-//                 imagesHtml = `<div class="full-width-image-container">
-//     <img src="${singleImageUrl}" alt="Image" style="width: 100%; height: auto;">
-//     </div>`;
-//             } else {
-//                 // Calculate the best column configuration
-//                 const {bestColumns} = await findBestColumnConfiguration(imageFileNames);
-//                 // Create a new HTML document with the photo collage layout and CSS styling
-//                 const columnsHtml = bestColumns.map((columnImagesHtml) => `
-//                 <div class="column">
-//                     ${columnImagesHtml.join('')}
-//                 </div>
-//             `);
-//
-//                 // Add the loading="lazy" attribute to each image tag
-//                 // const lazyColumnsHtml = bestColumns.map((columnImagesHtml) => `
-//                 // <div class="column">
-//                 //     ${columnImagesHtml.map(imageHtml => imageHtml.replace('<img', '<img loading="lazy"')).join('')}
-//                 // </div>
-//                 // `);
-//                 imagesHtml = columnsHtml.join('')
-//             }
-//             const newQueryString = `collage`; // Replace with your desired query string
-//             const newURL = `${window.location.origin}${window.location.pathname}?${newQueryString}`;
-//
-//             history.replaceState({}, '', newURL);
-//             history.pushState({}, null, newURL);
-//             // const overlayContainer = document.createElement('div');
-//             // overlayContainer.id = 'overlay-container';
-//             // overlayContainer.classList.add('overlay');
-//             // overlayContainer.style.display = 'none';
-//
-// // Create the content container
-//             const contentContainer = document.createElement('div');
-//             contentContainer.classList.add('content-container');
-//             // const contentContainer = document.createElement('div');
-//             contentContainer.innerHTML = `
-//                 <html lang="en">
-//                     <head>
-//                         <title>Photo Collage</title>
-//                         <link rel="stylesheet" type="text/css" href="collage.css">
-//                     </head>
-//                     <body>
-//                         <div class="photo-container">
-//                             ${imagesHtml}
-//                         </div>
-//                         <div class="text-container">
-//                            <div class="text-container">
-//                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit justo et neque tincidunt, eu mattis sapien suscipit.
-//                         Quisque varius, augue ac sodales auctor, tellus dolor ullamcorper neque, at viverra nisl massa vel ligula. Sed lacinia tristique lacus, sit amet feugiat odio volutpat nec. </p>
-//                         <p>Vivamus nec purus a mi viverra volutpat. Sed gravida, risus a dictum dignissim, leo felis sagittis libero, nec malesuada velit ex a arcu. Nulla facilisi.</p>
-//                         <p>Cras fringilla urna ut lorem tincidunt, quis varius libero convallis. Nulla facilisi. Etiam consectetur varius erat eget euismod. Phasellus venenatis vel velit id fermentum. </p>
-//                         <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce aliquet, risus vel elementum hendrerit, ipsum augue dictum neque, at volutpat turpis
-//                         velit id odio. Sed facilisis nec arcu vel iaculis. In eleifend quam vitae justo faucibus sed tristique elit rhoncus. Sed suscipit orci eget efficitur vehicula. Vivamus ac velit quis libero aliquam laoreet.</p>
-//                     </div>
-//                         </div>
-//                     </body>
-//                 </html>
-//             `;
-//             document.documentElement.innerHTML = contentContainer.innerHTML;
-//
-//             addImageClickListeners();
-//
-//         } catch (error) {
-//             console.error(error);
-//         }
-//     });
+
 }
-function addImageClickListeners() {
-    const imageElements = document.querySelectorAll('.photo-container img');
-    imageElements.forEach(img => {
-        img.addEventListener('click', function () {
-            openModal(img.src);
+function attachClickListenersToImages(container) {
+    const images = container.querySelectorAll('img'); // Assuming each image is tagged with <img>
+    images.forEach(img => {
+        img.addEventListener('click', function() {
+            // Define what should happen when an image is clicked
+            console.log('Image clicked:', img.src); // Example action
+            openModal(img.src); // Assuming showModal is a function to display the image or related info
         });
     });
 }

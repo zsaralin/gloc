@@ -10,6 +10,34 @@ const storage = new Storage({keyFilename});
 const bucket = storage.bucket(bucketName);
 
 const targetFolder = 'portraits/'
+
+function deleteCropCompressedFiles(targetFolder) {
+    fs.readdir(targetFolder, { withFileTypes: true }, (err, items) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            return;
+        }
+
+        items.forEach(item => {
+            const filePath = path.join(targetFolder, item.name);
+
+            if (item.isDirectory()) {
+                // Recursively call the function if the item is a directory
+                deleteCropCompressedFiles(filePath);
+            } else if (item.isFile() && item.name.includes('_cmp_cmp')) {
+                // Delete the file if its name includes '_crop_cmp'
+                fs.unlink(filePath, unlinkErr => {
+                    if (unlinkErr) {
+                        console.error(`Error deleting file ${filePath}:`, unlinkErr);
+                    } else {
+                        console.log(`Deleted file: ${filePath}`);
+                    }
+                });
+            }
+        });
+    });
+}
+
 async function createFolders() {
     // Prefix to list objects within the folder
     const prefix = targetFolder
@@ -85,7 +113,7 @@ async function createTxtFiles(directory) {
 
 
 module.exports = {
-    createFolders, createTxtFiles
+    createFolders, createTxtFiles, deleteCropCompressedFiles
 };
 
 

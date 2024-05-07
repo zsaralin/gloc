@@ -63,7 +63,10 @@ export async function cropFacesFE(page, limit) {
 
 export async function cropImagesParent(limit) {
     try {
-        let page = 1;
+        const startPage  = Math.ceil(7800 / limit);
+
+        let page = startPage;
+        // let page = 1;
         let hasMore = true;
 
         while (hasMore) {

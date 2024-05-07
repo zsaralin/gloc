@@ -4,7 +4,7 @@ import * as faceapi from '../dist/face-api.esm.js';
 export let faceLandmarker; export let faceDetector; export let optionsTinyFaceDetector;
 const modelPath = './model/'; // path to model folder that will be loaded using http
 
-export async function setupFaceLandmarker() {
+export async function setupFaceAPI() {
     const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
     );
@@ -21,6 +21,7 @@ export async function setupFaceLandmarker() {
     });
 
 }
+
 export async function setupFaceDetector() {
     const vision = await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"

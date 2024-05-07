@@ -5,7 +5,12 @@ import {sporadicUpdate, stopShuffle} from "./startShuffle.js";
 import {addImageClickListener} from "../collage/collage.js";
 import {db} from "../uiElements/dbModal.js";
 import {addImageClickListener42} from "../collage/collage_42.js";
-import {createTextOverlay, updateTextOverlay} from "./createImageContainer.js"; // Import the getCurrentZoomValue function
+import {
+    createBottomTextOverlay
+    , createTopTextOverlay,
+    updateBottomTextOverlay
+    , updateTopTextOverlay
+} from "./createImageContainer.js"; // Import the getCurrentZoomValue function
 
 let loadedImages;
 
@@ -34,10 +39,14 @@ async function updateImagesInShuffle(images, imagesDataArray, isTop) {
         if (randomIndex !== undefined && images[randomIndex]) {
             const image = images[randomIndex];
             const currentImage = imageContainer.querySelector('.current-image');
-            const textOverlay = imageContainer.querySelector('.text-overlay');
+            const bottomTextOverlay = imageContainer.querySelector('.bottom-text-overlay');
+            const topTextOverlay = imageContainer.querySelector('.top-text-overlay');
+
             if ((sporadicUpdate && Math.random() < 0.7) || !sporadicUpdate) {
                 currentImage.src = image.src;
-                textOverlay.innerHTML = createTextOverlay(randomIndex, imagesDataArray).innerHTML;
+                bottomTextOverlay.innerHTML = createBottomTextOverlay(randomIndex, imagesDataArray).innerHTML;
+                topTextOverlay.innerHTML = createTopTextOverlay(randomIndex, imagesDataArray).innerHTML;
+
             }
         }
     });
@@ -88,13 +97,16 @@ async function updateImageContainer(imageContainer, index, newImagesArray, image
         overlay.style.transition = 'opacity 0.5s linear';
         overlay.style.opacity = 0;
         const currentImage = imageContainer.querySelector('.current-image');
-        const textOverlay = imageContainer.querySelector('.text-overlay');
-        updateTextOverlay(textOverlay, index, index < 2 ? images.slice(0,2) : images)
+        const bottomTextOverlay = imageContainer.querySelector('.bottom-text-overlay');
+        const topTextOverlay = imageContainer.querySelector('.top-text-overlay');
+        updateBottomTextOverlay(bottomTextOverlay, index, index < 2 ? images.slice(0,2) : images)
+        updateTopTextOverlay(topTextOverlay, index, index < 2 ? images.slice(0,2) : images)
+
         currentImage.src = images[index].src; // Set src after defining onload/onerror to ensure the load event isn't missed
         if (db === '42') {
-            await addImageClickListener42(imageContainer, images[index].label);
+            await addImageClickListener42(imageContainer,  images[index]);
         } else {
-            await addImageClickListener(imageContainer);
+            await addImageClickListener42(imageContainer,   images[index]);
         }
 
         // currentImage.src = images[index].src; // Set src after defining onload/onerror to ensure the load event isn't missed
