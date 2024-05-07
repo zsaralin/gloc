@@ -3,12 +3,12 @@ import {
     clearRecognitionIntervals,
     resetAbortController,
     startFaceRecognition
-} from "../faceRecognition.js";
+} from "../faceRecognition/faceRecognition.js";
 import {startFaceDetection} from "../faceDetection/faceDetection.js";
 import {shuffleActive} from "../imageGrid/startShuffle.js";
 import {startNewFaces} from "../faceDetection/drawFaces.js";
 import {resetCurrFace} from "../faceDetection/newFaces.js";
-import {clearCurrFaceDescriptor} from "../faceRecognitionFetcher.js";
+import {clearCurrFaceDescriptor} from "../faceRecognition/faceRecognitionFetcher.js";
 
 export function setupPlayPause(video) {
     const playPauseButton = document.getElementById('playPauseButton');

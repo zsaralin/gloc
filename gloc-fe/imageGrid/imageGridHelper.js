@@ -3,7 +3,7 @@ import {
     killController,
     resetAbortController,
     resetGrid
-} from "../faceRecognition.js";
+} from "../faceRecognition/faceRecognition.js";
 
 let numPhotos = 15;
 let prevNumPhotos = numPhotos;
@@ -28,6 +28,7 @@ export function arrangeBottomGrid(container) {
 
         const height = parseFloat(window.getComputedStyle(container).height);
         const width = parseFloat(window.getComputedStyle(container).width);
+        console.log(height, width)
         const aspectRatio = width / height
 
         numCols = Math.ceil(Math.sqrt(numPhotos * aspectRatio));
@@ -55,6 +56,7 @@ export function arrangeBottomGrid(container) {
         console.log(imgAspectRatio)
     }
 
+    console.log(numRows + ' and ' + numCols)
     numArrangedImages = numRows * numCols;
     return {numArrangedImages, numRows, numCols};
 }
@@ -80,4 +82,3 @@ export function initNumPhotoSlider() {
 
     });
 }
-

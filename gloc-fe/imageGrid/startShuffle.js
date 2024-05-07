@@ -1,4 +1,4 @@
-import {abortController, clearRecognitionIntervals} from "../faceRecognition.js";
+import {abortController, clearRecognitionIntervals} from "../faceRecognition/faceRecognition.js";
 import {updateShuffle} from "./updateShuffle.js";
 import {loadImages} from "./imageLoader.js";
 import {SERVER_URL} from "../index.js";

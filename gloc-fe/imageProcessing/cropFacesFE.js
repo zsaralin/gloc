@@ -1,5 +1,5 @@
-import {SERVER_URL} from "./index.js";
-import {faceDetector, setupFaceDetector} from "./faceDetection/faceDetectionSetup.js";
+import {SERVER_URL} from "../index.js";
+import {faceDetector, setupFaceDetector} from "../faceDetection/faceDetectionSetup.js";
 
 async function fetchImages(page, limit) {
     try {

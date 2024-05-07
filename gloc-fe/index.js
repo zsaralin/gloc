@@ -11,7 +11,7 @@ import {
     restartFaceRecogCalls,
     setIsFirstUpdate,
     startFaceRecognition
-} from './faceRecognition.js';
+} from './faceRecognition/faceRecognition.js';
 import {createImageGrid} from "./imageGrid/createImageGrid.js";
 import {restartSidePanel} from "./uiElements/sidePanel.js";
 import {
@@ -25,7 +25,7 @@ import {handleOrientationChange} from "./uiElements/detectOrientation.js";
 import {faceLandmarker, setupFaceAPI} from "./faceDetection/faceDetectionSetup.js";
 import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
-import {cropFacesFE, cropImagesParent} from "./cropFacesFE.js";
+import {cropFacesFE, cropImagesParent} from "./imageProcessing/cropFacesFE.js";
 // configuration options
 let stream = null;
 export const SERVER_URL =  "http://localhost:4000";//"https://face-recognition-be.onrender.com"; //
@@ -138,4 +138,5 @@ export function enterExperience(){
 }
 
 window.onload = main()//cropImagesParent(200);
+
 window.addEventListener('orientationchange', handleOrientationChange);

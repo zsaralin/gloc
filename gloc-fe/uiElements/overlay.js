@@ -1,7 +1,7 @@
 // helper function to print strings to html document as a log
 import {enterExperience, resetNewDB, setupCamera} from "../index.js";
 import {initializeDBModal} from "./dbModal.js";
-import {startFaceRecognition} from "../faceRecognition.js";
+import {startFaceRecognition} from "../faceRecognition/faceRecognition.js";
 import {startShuffle} from "../imageGrid/startShuffle.js";
 
 export function setupLandingPage() {

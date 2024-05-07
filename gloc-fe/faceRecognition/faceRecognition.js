@@ -1,11 +1,11 @@
 // import {onPlay} from "./playButton.js";
-import {createImageGrid} from "./imageGrid/createImageGrid.js";
-import {updateImageGrid} from "./imageGrid/updateImageGrid.js";
-import {getNumPhotos} from "./imageGrid/imageGridHelper.js";
-import {updateFirst} from "./imageGrid/updateShuffle.js";
-import {stopShuffle} from "./imageGrid/startShuffle.js";
-import {currFace} from "./faceDetection/newFaces.js";
-import {SERVER_URL} from "./index.js";
+import {createImageGrid} from "../imageGrid/createImageGrid.js";
+import {updateImageGrid} from "../imageGrid/updateImageGrid.js";
+import {getNumPhotos} from "../imageGrid/imageGridHelper.js";
+import {updateFirst} from "../imageGrid/updateShuffle.js";
+import {stopShuffle} from "../imageGrid/startShuffle.js";
+import {currFace} from "../faceDetection/newFaces.js";
+import {SERVER_URL} from "../index.js";
 import {continuousFaceRecognition, currFaceDescriptor} from "./faceRecognitionFetcher.js";
 let isProcessing = false; // allow only one fetch request at a time
 let isFirstUpdate = true;

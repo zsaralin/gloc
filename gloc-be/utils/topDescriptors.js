@@ -5,6 +5,7 @@ const numMatchesHandler = require('../numMatchesHandler');
 const MinHeap = require("./minHeap");
 let cachedData = null;
 const { getDbName } = require('../db.js');
+const {createOrUpdateScores, getSortedLabelsByUserID} = require("../scores");
 let dbName = getDbName();
 
 loadDataIntoMemory();
@@ -12,7 +13,6 @@ loadDataIntoMemory();
 // cache the JSON file in memory
 async function loadDataIntoMemory() {
     dbName = getDbName();
-    console.log(dbName)
     try {
         // Read and parse the JSON file only if it's not already cached
         if (!cachedData) {
@@ -25,7 +25,7 @@ async function loadDataIntoMemory() {
     }
 }
 
-async function findNearestDescriptors(targetDescriptor, numMatches) {
+async function findNearestDescriptors(targetDescriptor, numMatches, userId) {
     try {
         if (!cachedData || !targetDescriptor) return
         const rawData = await fs.readFile(`./results/results_${dbName}.json`, 'utf8');
@@ -69,7 +69,9 @@ async function findNearestDescriptors(targetDescriptor, numMatches) {
             normalizedDistance: 1 - item.distance / MAX_DISTANCE,
         }));
 
-        return normalizedDescriptors.reverse(); // Reverse to get closest first
+        const reversedDescriptors = normalizedDescriptors.reverse()
+        await createOrUpdateScores(userId, reversedDescriptors)
+        return getSortedLabelsByUserID(userId); // Reverse to get closest first
     } catch (error) {
         console.error('Error reading or parsing results.json:', error);
         throw error;

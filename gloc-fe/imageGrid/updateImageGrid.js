@@ -1,6 +1,6 @@
 import { arrangeBottomGrid, numArrangedImages } from "./imageGridHelper.js";
 import { animationType, updateOnlyDifferentImg } from "../uiElements/sidePanel.js";
-import { clearRecognitionIntervals } from '../faceRecognition.js';
+import { clearRecognitionIntervals } from '../faceRecognition/faceRecognition.js';
 import { getCurrentZoomValue } from "../uiElements/zoom.js";
 import { loadImages } from "./imageLoader.js";
 import { addImageClickListener } from "../collage/collage.js";

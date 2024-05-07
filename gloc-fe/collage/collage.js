@@ -1,6 +1,6 @@
 // Replace this with your folder path
 import {reset} from "../index.js";
-import {resetAbortController} from "../faceRecognition.js";
+import {resetAbortController} from "../faceRecognition/faceRecognition.js";
 
 const imageFolder = `./images/small` ;
 const imageFileNames = [

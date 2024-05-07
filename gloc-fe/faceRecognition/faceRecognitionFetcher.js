@@ -1,6 +1,7 @@
-import {SERVER_URL} from "./index.js";
-import {getNumPhotos} from "./imageGrid/imageGridHelper.js";
-import {currFace, resetCurrFace} from "./faceDetection/newFaces.js";
+import {SERVER_URL} from "../index.js";
+import {getNumPhotos} from "../imageGrid/imageGridHelper.js";
+import {currFace, resetCurrFace} from "../faceDetection/newFaces.js";
+import {userID} from "../uuid.js";
 
 export let currFaceDescriptor;
 async function fetchFaceRecognitionData() {
@@ -8,7 +9,7 @@ async function fetchFaceRecognitionData() {
         const response = await fetch(`${SERVER_URL}/match`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({photo: currFace, numPhotos: getNumPhotos() + 12}),
+            body: JSON.stringify({photo: currFace, numPhotos: getNumPhotos() + 12, uuid : userID}),
         });
         let data = await response.json();
 

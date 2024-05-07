@@ -15,7 +15,6 @@ const util = require('util')
 const {processFaces} = require("./utils/faceProcessing.js");
 const streamToPromise = require('stream-to-promise');
 const bodyParser = require('body-parser');
-
 const localFolderPath  = '..\\..\\face_backet'
 
 app.use(cors())
@@ -31,6 +30,7 @@ const {setDbName} = require("./db.js");
 const {getDescriptor} = require("./utils/getDescriptor");
 const {createTxtFiles, deleteCropCompressedFiles} = require("./utils/folderStructure");
 const {saveCmpImages} = require("./utils/cmpImagesBE");
+const {createNewScores, initializeSessionScores, testDB, createScoresTable, deleteUserEntry} = require("./scores");
 
 let dbName = getDbName();
 
@@ -40,10 +40,12 @@ app.listen(PORT, async () => {
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+createScoresTable()
+
 // returns an array of top n matches, for each match - label, distance, image [compressed, first image]
 app.post('/match', async (req, res) => {
     try {
-        const {photo, numPhotos} = req.body;
+        const {photo, numPhotos, uuid} = req.body;
         if(!photo) {
             res.json(null);
             return
@@ -53,7 +55,7 @@ app.post('/match', async (req, res) => {
             res.json(null);
             return
         }
-        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos);
+        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
             const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_crop.png`);
@@ -201,18 +203,22 @@ app.post('/save-cropped-images', async (req, res) => {
     }
 });
 
-app.post('/save-cmp-images', async (req, res) => {
-    try {
-        const cmpImages = req.body;
-        await saveCmpImages(cmpImages);
-        res.status(200).send('Cropped images saved successfully');
-    } catch (error) {
-        console.error('Error saving cropped images:', error);
-        res.status(500).send('Internal Server Error');
+app.post('/create-scores', async (req, res) => {
+    if (!req.body.userID) {
+        return res.status(400).send('userID is required');
     }
+    await createNewScores(req.body.userID);
+    res.status(201).send(`Score created for userID: ${req.body.userID}`);
 });
 
-
+app.post('/delete-scores', async (req, res) => {
+    if (!req.body.userID) {
+        return res.status(400).send('userID is required');
+    }
+    await deleteUserEntry(req.body.userID);
+    res.status(201).send(`Score created for userID: ${req.body.userID}`);
+});
+// testDB()
 // deleteCropCompressedFiles(localFolderPath)
 // grabRandomImages()
 // cropFaces()

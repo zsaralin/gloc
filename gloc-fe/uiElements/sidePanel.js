@@ -1,5 +1,5 @@
 import {initZoom} from "./zoom.js";
-import {initTimeSlider} from "../faceRecognition.js";
+import {initTimeSlider} from "../faceRecognition/faceRecognition.js";
 import {initNumPhotoSlider} from "../imageGrid/imageGridHelper.js";
 import {initFadeSlider} from "../imageGrid/updateImageGrid.js";
 import {initWhiteSlider} from "./whiteBorder.js";

@@ -7,13 +7,13 @@ export async function createImageGrid(imagesDataArray, abortController) {
     try {
 
         // if(!loadedImages) {
-            loadedImages= await loadImages(imagesDataArray);
+        loadedImages= await loadImages(imagesDataArray);
         // }
         const [topImages, bottomImages] = [loadedImages.slice(0, 2), loadedImages.slice(2)];
         const [topImageData, bottomImageData] = [imagesDataArray.slice(0, 2), imagesDataArray.slice(2)];
 
         // await Promise.all([
-            await addTopImages(topImages, topImageData, abortController),
+        await addTopImages(topImages, topImageData, abortController),
             await addBottomImages(bottomImages, bottomImageData, abortController)
         // ]);
     } catch (error) {
@@ -32,13 +32,16 @@ async function addTopImages(images, imageData) {
 async function addBottomImages(images, imageData, abortController) {
     const container = document.getElementById('bottom-image-container');
     container.style.height = `calc(100svh - ${document.getElementById('top').offsetHeight}px)`;
+    console.log('container height ' + container.style.height)
     const containerHeight = parseFloat(window.getComputedStyle(container).height);
 
     // Get the computed style after setting the height
     const { numArrangedImages, numRows, numCols } = arrangeBottomGrid(container);
     const imagesToProcess = images.slice(0, numArrangedImages);
+
     let currRow;
     for (let i = 0; i < imagesToProcess.length; i++) {
+        console.log('adding bottom image')
         if (!currRow || i % numCols === 0) {
             currRow = createNewRow(container);
         }
