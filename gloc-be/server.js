@@ -42,65 +42,75 @@ app.listen(PORT, async () => {
 // returns an array of top n matches, for each match - label, distance, image [compressed, first image]
 app.post('/match', async (req, res) => {
     try {
-        const {photo, numPhotos} = req.body;
+        const { photo, numPhotos } = req.body;
         if (!photo) {
             res.json(null);
-            return;
+            return; // Exit if no photo is provided
         }
-        const descriptor = await getDescriptor(photo);
+        const descriptor = await getDescriptor(photo); // Assume getDescriptor is a defined function
         if (!descriptor) {
             res.json(null);
-            return;
+            return; // Exit if no descriptor is found
         }
 
         const bucket = storage.bucket(bucketName); // Ensure the bucket is defined
-        const allImagesBuffers = [];
 
-        // Collecting non-crop PNG files before processing descriptors
-        const [files] = await bucket.getFiles({ prefix: dbName });
-        for (const file of files) {
-            if (file.name.endsWith('.png') && file.name.endsWith('_crop.png')) {
-                const readStream = file.createReadStream();
-                const imageBuffer = await streamToPromise(readStream).then(buffer => buffer.toString('base64'));
-                allImagesBuffers.push(imageBuffer); // Adding image buffer to the array
-            }
-        }
-
-        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos);
-
+        // Process descriptors to find nearest matches
+        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos); // Assume findNearestDescriptors is defined
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
-            const {label, normalizedDistance} = nearestDescriptor;
-            const jsonFilePath = `${dbName}/${label}/${label}.json`;
-            const name = await getNameFromJsonFile(bucket, jsonFilePath, label);
+            const { label, normalizedDistance } = nearestDescriptor;
+            const photoCropPath = `${dbName}/${label}/${label}_crop.png`;
+            const photoPath = `${dbName}/${label}/${label}_cmp.png`;
+            const txtFilePath = `${dbName}/${label}/${label}.json`;
 
-            const remoteImagePath = `${dbName}/${label}/${label}_crop.png`;
-            const file = bucket.file(remoteImagePath);
-            const [cropExists] = await file.exists();
+            // Check existence of both images and JSON file
+            const [photoCropFile, photoFile, txtFile] = await Promise.all([
+                bucket.file(photoCropPath).exists(),
+                bucket.file(photoPath).exists(),
+                bucket.file(txtFilePath).download().catch(() => [null]) // Gracefully handle missing JSON
+            ]);
 
-            let imageBuffer = null;
-            if (cropExists) {
-                const readStream = file.createReadStream();
-                imageBuffer = await streamToPromise(readStream).then(buffer => buffer.toString('base64'));
+            // Determine the name from the JSON file or use label as a fallback
+            let name = txtFile[0] ? JSON.parse(txtFile[0].toString()).name : label;
+            // If both image files exist, download and process
+            if (photoCropFile[0] && photoFile[0]) {
+                try {
+                    const [imageCropBuffer, imageBuffer] = await Promise.all([
+                        bucket.file(photoCropPath).download(),
+                        bucket.file(photoPath).download(),
+                    ]);
+
+                    // Parse the JSON to get the name
+
+                    return {
+                        label,
+                        name: name, // Name retrieved from the JSON file
+                        distance: normalizedDistance * 100,
+                        image: imageCropBuffer[0].toString('base64'),
+                        imageCmp: imageBuffer[0].toString('base64')
+                    };
+                } catch (error) {
+                    console.error('Error downloading images or JSON:', error);
+                    return null; // Return null in case of error
+                }
             } else {
-                console.log(`File ${remoteImagePath} does not exist in the bucket.`);
+                console.log(`One or both files or JSON do not exist: ${photoPath}, ${photoCropPath}, ${txtFilePath}`);
+                return null; // Return null if files do not exist
             }
-
-            // Include the allImages list with each result
-            return {
-                label,
-                name: name,
-                distance: normalizedDistance * 100,
-                image: imageBuffer,
-                allImages: allImagesBuffers // Including non-crop PNGs here
-            };
         });
 
-        const responseArray = await Promise.all(imageBufferPromises);
-        res.json(responseArray);
+        // Compile all results into an array and filter out null values
+        const responseArray = (await Promise.all(imageBufferPromises)).filter(Boolean);
+        res.json(responseArray); // Send the response back to the client
     } catch (error) {
         console.error('Error processing detection:', error);
         res.status(500).json({error: 'Internal Server Error'});
     }
+});
+
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
 async function getNameFromJsonFile(bucket, filePath, defaultLabel) {
     const file = bucket.file(filePath);
