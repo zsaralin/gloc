@@ -37,18 +37,22 @@ async function addBottomImages(images, imageData, abortController) {
 
     // Get the computed style after setting the height
     const { numArrangedImages, numRows, numCols } = arrangeBottomGrid(container);
+
     const imagesToProcess = images.slice(0, numArrangedImages);
 
     let currRow;
+    console.log('LOOOK  ' + images.length)
     for (let i = 0; i < imagesToProcess.length; i++) {
-        console.log('adding bottom image')
+        console.log('adding bottom image');
         if (!currRow || i % numCols === 0) {
             currRow = createNewRow(container);
         }
 
         const image = imagesToProcess[i];
         if (!image) return;
-        currRow.appendChild(createImageItemContainer(image, i, imageData));
+        // Calculate the width starting from 100% and decreasing by 5% for each image
+        const width = `${Math.max(100 - 5 * i, 5)}%`; // Ensure width doesn't go below 5%
+        currRow.appendChild(createImageItemContainer(image, i, imageData, width));
     }
     adjustRowHeights(container)
 }

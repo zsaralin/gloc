@@ -1,22 +1,25 @@
 
 let scaleFactor = 0.4; // lower the val, lower the %
 
-export function createImageItemContainer(image, index, imageData) {
+export function createImageItemContainer(image, index, imageData, width) {
     const imageItemContainer = document.createElement('div');
     imageItemContainer.className = 'image-item-container';
     const currentImage = document.createElement('img');
     currentImage.className = 'current-image';
     currentImage.src = image.src;
+    currentImage.style.width = width;
     const nextImage = document.createElement('img');
     nextImage.className = 'next-image';
     nextImage.src = image.src;
+    nextImage.style.width = width;
 
     const bottomTextOverlay = createBottomTextOverlay(index, imageData);
     const topTextOverlay = createTopTextOverlay(index, imageData);
 
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
-
+    overlay.style.width = width;
+    overlay.style.height = width;
     imageItemContainer.appendChild(nextImage);
     imageItemContainer.appendChild(bottomTextOverlay);
     imageItemContainer.appendChild(topTextOverlay);
