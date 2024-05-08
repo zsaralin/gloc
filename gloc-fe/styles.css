@@ -33,6 +33,7 @@ button {
 #top {
     display: flex;
     align-items: flex-start;
+    flex-direction: row;
     width: 100%;
     top: 0;
 }
@@ -43,7 +44,8 @@ button {
     height: 100%;
     overflow: hidden;
     place-items: center;
-    display: block;
+    display: flex;
+
 
 }
 
@@ -52,7 +54,7 @@ button {
     position: relative;
     width: 33.33%;
     height: 100%;
-    display: block;
+    display: flex;
     place-items: center;
     padding-top: 100%; /* This sets the aspect ratio to 1:1 (square) */
 }
@@ -82,10 +84,8 @@ button {
     position: relative;
     width: 66.66%;
     height: 100%;
+    display: flex;
     align-items: center; /* Align items vertically centered */
-    /*display: flex;*/
-    margin: 0; /* Reset margin to ensure no default margin */
-    padding: 0; /* Reset padding to ensure no default padding */
     overflow: hidden;
 }
 
