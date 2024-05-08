@@ -83,11 +83,10 @@ button {
     width: 66.66%;
     height: 100%;
     align-items: center; /* Align items vertically centered */
-    display: flex;
+    /*display: flex;*/
     margin: 0; /* Reset margin to ensure no default margin */
     padding: 0; /* Reset padding to ensure no default padding */
     overflow: hidden;
-
 }
 
 
@@ -221,7 +220,7 @@ button {
     position: absolute;
     /*left: 0;*/
     /*width: 100%;*/
-    z-index: 1; /* Ensure it's above the image */
+    z-index: 2; /* Ensure it's above the image */
     box-sizing: border-box;
     /* Adjust the padding as needed */
     padding: 2px 3px;
