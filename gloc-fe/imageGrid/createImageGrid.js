@@ -6,9 +6,9 @@ let loadedImages;
 export async function createImageGrid(imagesDataArray, abortController) {
     try {
         const loadedImages = await loadImages(imagesDataArray);
-        const [topImages, bottomImages] = [loadedImages.slice(0, 2), loadedImages.slice(2)];
+        const [topImages, bottomImages] = [loadedImages.slice(0, 3), loadedImages.slice(2)];
         const totalImages = loadedImages.length; // Total number of images
-        await addTopImages(topImages, imagesDataArray.slice(0, 2), totalImages, abortController);
+        await addTopImages(topImages, imagesDataArray.slice(0, 3), totalImages, abortController);
         await addBottomImages(bottomImages, imagesDataArray.slice(2), totalImages, topImages.length, abortController);
     } catch (error) {
         throw error;

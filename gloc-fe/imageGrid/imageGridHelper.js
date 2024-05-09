@@ -28,35 +28,32 @@ export function arrangeBottomGrid(container) {
         let numPhotos0 = numPhotos-2
         const height = parseFloat(window.getComputedStyle(container).height);
         const width = parseFloat(window.getComputedStyle(container).width);
-        console.log(height, width)
         const aspectRatio = width / height
         numCols = Math.floor(Math.sqrt(numPhotos0 * aspectRatio));
         numRows = Math.ceil(numPhotos0 / numCols);
 
         // Adjust numCols to ensure each row has the same number of images
-        while (numPhotos0 % numRows !== 0) {
-            numCols++;
-            numRows = Math.ceil(numPhotos0 / numCols);
-        }
+        // while (numPhotos0 % numRows !== 0) {
+        //     numCols++;
+        //     numRows = Math.ceil(numPhotos0 / numCols);
+        // }
         let imageWidth = width / numCols;
         let imageHeight = height / numRows;
         let imgAspectRatio = imageWidth / imageHeight;
-        while (imgAspectRatio < 0.7 || imgAspectRatio > 1.3) {
-            if (imgAspectRatio < 0.7) {
-                numCols--;
-            } else {
-                numCols++;
-            }
-            numRows = Math.ceil(numPhotos0 / numCols);
-            imageWidth = width / numCols;
-            imageHeight = height / numRows;
-            imgAspectRatio = imageWidth / imageHeight;
-        }
-        console.log('NUNM  ' + numCols + ' amd ' + numRows )
-
-        console.log(imgAspectRatio)
+        // while (imgAspectRatio < 0.7 || imgAspectRatio > 1.3) {
+        //     if (imgAspectRatio < 0.7) {
+        //         numCols--;
+        //     } else {
+        //         numCols++;
+        //     }
+        //     numRows = Math.ceil(numPhotos0 / numCols);
+        //     imageWidth = width / numCols;
+        //     imageHeight = height / numRows;
+        //     imgAspectRatio = imageWidth / imageHeight;
+        // }
     }
-
+    numRows = 1;
+    numCols = 5;
     numArrangedImages = numRows * numCols;
     return {numArrangedImages, numRows, numCols};
 }
