@@ -27,9 +27,20 @@ export async function createNewScoresDB() {
 }
 
 export async function deletePrevScoresDB() {
-    const response = await fetch(`${SERVER_URL}/delete-scores`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({userID })
-    });
+    if(!userID) return
+    try {
+        const response = await fetch(`${SERVER_URL}/delete-scores`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userID })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        } else {
+            console.log('Scores successfully deleted for userID:', userID);
+        }
+    } catch (error) {
+        console.error('Failed to delete scores:', error);
+    }
 }

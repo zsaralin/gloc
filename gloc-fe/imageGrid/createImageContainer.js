@@ -1,33 +1,34 @@
+import {getCurrentZoomValue} from "../uiElements/zoom.js";
 
 let scaleFactor = 0.4; // lower the val, lower the %
 
-export function createImageItemContainer(image, index, imageData, width) {
+export function createImageItemContainer(image, index, imageData, opacity) {
     const imageItemContainer = document.createElement('div');
     imageItemContainer.className = 'image-item-container';
+
 
     const currentImage = document.createElement('img');
     currentImage.className = 'current-image';
     currentImage.src = image.src;
-    if (width) { // Only set width if it's defined
-        currentImage.style.width = width;
+    if (opacity) { // Only set width if it's defined
+        currentImage.style.opacity = opacity;
     }
+    currentImage.onload = () => {
+        applyTransforms(currentImage);
+    };
 
     const nextImage = document.createElement('img');
     nextImage.className = 'next-image';
     nextImage.src = image.src;
-    if (width) { // Only set width if it's defined
-        nextImage.style.width = width;
-    }
+    nextImage.onload = () => {
+        applyTransforms(nextImage);
+    };
 
     const bottomTextOverlay = createBottomTextOverlay(index, imageData);
     const topTextOverlay = createTopTextOverlay(index, imageData);
 
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
-    if (width) { // Only set width and height if width is defined
-        overlay.style.width = width;
-        overlay.style.height = width; // Assuming you want to keep height same as width
-    }
 
     // Append children to the container
     imageItemContainer.appendChild(nextImage);
@@ -38,6 +39,24 @@ export function createImageItemContainer(image, index, imageData, width) {
 
     return imageItemContainer;
 }
+
+function applyTransforms(image) {
+    const xOffsetPercent = parseFloat(document.getElementById('xoffset-slider').value); // Assuming input IDs
+    const yOffsetPercent = parseFloat(document.getElementById('yoffset-slider').value);
+    const zoomValue = getCurrentZoomValue(); // Retrieve zoom value
+
+    // Convert percentages to pixels based on image width
+    const xOffset = (xOffsetPercent / 100) * image.width;
+    const yOffset = (yOffsetPercent / 100) * image.width;
+
+    // Construct the transformation string
+    const transformSettings = `translate(${xOffset}px, ${yOffset}px) scale(${zoomValue / 100})`;
+
+    // Apply transformations
+    image.style.transformOrigin = "50% 50%";
+    image.style.transform = transformSettings;
+}
+
 // Helper function to create a text overlay based on the index
 export function createBottomTextOverlay(i, imagesArray) {
     const textOverlay = document.createElement('div');

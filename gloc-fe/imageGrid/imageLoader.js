@@ -24,8 +24,7 @@ export async function loadImages(imageDataArray) {
         const batchResults = await Promise.all(batchPromises);
         loadedImages.push(...batchResults);
     }
-    return loadedImages.slice(0, 17); // Ensure no more than 17 images are returned
-    return loadedImages;
+    return loadedImages.slice(0, numPhotos); // Ensure no more than 17 images are returned
 }
 
 export async function getBoundingBoxes(imagesArray){

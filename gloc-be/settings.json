@@ -1,0 +1,16 @@
+{
+  "shuffleSpeed": "60",
+  "shuffleSporadically": true,
+  "shuffleDur": "3",
+  "zoomLevel": "201",
+  "xoffset": "0",
+  "yoffset": "0",
+  "showSimilarity": false,
+  "showScaledSimilarity": true,
+  "refreshTime": "10",
+  "boundingBox": true,
+  "faceLandmarks": true,
+  "fadeDuration": "3",
+  "minEyeDistance": "100",
+  "minOpacity": "0.5"
+}

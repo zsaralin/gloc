@@ -1,7 +1,7 @@
 import {arrangeBottomGrid, numArrangedImages} from "./imageGridHelper.js";
 import {updateOnlyDifferentImg} from "../uiElements/sidePanel.js"; // Replace with the actual path to your constant
 import {loadImages} from "./imageLoader.js";
-import {sporadicUpdate, stopShuffle} from "./startShuffle.js";
+import { stopShuffle} from "./startShuffle.js";
 import {addImageClickListener} from "../collage/collage.js";
 import {db} from "../uiElements/dbModal.js";
 import {addImageClickListener42} from "../collage/collage_42.js";
@@ -24,7 +24,12 @@ export async function updateShuffle(imagesDataArray, abortController) {
     updateImagesInShuffle(loadedImages, imagesDataArray)
 }
 
+let sporadicCheckbox;
 async function updateImagesInShuffle(images, imagesDataArray, isTop) {
+    if(!sporadicCheckbox){
+        sporadicCheckbox = document.getElementById('sporadicShuffle')
+    }
+    console.log(sporadicCheckbox.checked  + ' look l ok ')
     const allImageContainers = [
         ...document.getElementById('top-image-container').querySelectorAll('.image-item-container'),
         ...document.getElementById('bottom-image-container').querySelectorAll('.image-item-container')
@@ -42,7 +47,7 @@ async function updateImagesInShuffle(images, imagesDataArray, isTop) {
             const bottomTextOverlay = imageContainer.querySelector('.bottom-text-overlay');
             const topTextOverlay = imageContainer.querySelector('.top-text-overlay');
 
-            if ((sporadicUpdate && Math.random() < 0.7) || !sporadicUpdate) {
+            if ((sporadicCheckbox.checked && Math.random() < 0.7) || !sporadicCheckbox.checked) {
                 currentImage.src = image.src;
                 bottomTextOverlay.innerHTML = createBottomTextOverlay(randomIndex, imagesDataArray).innerHTML;
                 topTextOverlay.innerHTML = createTopTextOverlay(randomIndex, imagesDataArray).innerHTML;
@@ -64,6 +69,7 @@ export async function updateFirst(imagesDataArray, abortController) {
     ]);
 }
 async function updateImagesFirst(images, newImagesArray, abortController) {
+    console.log(newImagesArray)
     const allImageContainers = [
         ...document.getElementById('top-image-container').querySelectorAll('.image-item-container'),
         ...document.getElementById('bottom-image-container').querySelectorAll('.image-item-container')
@@ -78,6 +84,7 @@ async function updateImagesFirst(images, newImagesArray, abortController) {
         if (abortController.signal.aborted) {
             return;
         }
+
         const batchIndices = indices.slice(batchIndex, batchIndex + updateBatchSize);
         const batchPromises = batchIndices.map(i => {
             return updateImageContainer(allImageContainers[i], i, newImagesArray, images)

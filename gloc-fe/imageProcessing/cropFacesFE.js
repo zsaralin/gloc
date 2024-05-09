@@ -15,12 +15,13 @@ export async function cropFacesFE(page, limit) {
     try {
         await setupFaceDetector();
         let images = await fetchImages(page, limit);
+        console.log('HERE?')
         images = images.data
         const croppedImages = [];
 
         // Array to store promises returned by img.onload callbacks
         const onLoadPromises = [];
-
+        console.log(images.length)
         images.forEach(image => {
             const img = new Image();
             img.src = `data:image/png;base64,${image.buffer}`;
@@ -63,7 +64,7 @@ export async function cropFacesFE(page, limit) {
 
 export async function cropImagesParent(limit) {
     try {
-        const startPage  = Math.ceil(7800 / limit);
+        const startPage  = Math.ceil(0 / limit);
 
         let page = startPage;
         // let page = 1;

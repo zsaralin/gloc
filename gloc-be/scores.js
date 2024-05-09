@@ -99,7 +99,7 @@ async function deleteUserEntry(userID) {
         const result = await pool.query(query, [userID]);
         if (result.rowCount > 0) {
             console.log(`Successfully deleted user entry for userID: ${userID}`);
-        } else {
+        }  else {
         }
     } catch (error) {
         console.error(`Error deleting user entry for userID: ${userID}`, error);

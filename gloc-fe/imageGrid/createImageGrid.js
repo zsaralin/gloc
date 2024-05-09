@@ -5,57 +5,63 @@ import {createImageItemContainer} from "./createImageContainer.js";
 let loadedImages;
 export async function createImageGrid(imagesDataArray, abortController) {
     try {
-
-        // if(!loadedImages) {
-        loadedImages= await loadImages(imagesDataArray);
-        // }
+        const loadedImages = await loadImages(imagesDataArray);
         const [topImages, bottomImages] = [loadedImages.slice(0, 2), loadedImages.slice(2)];
-        const [topImageData, bottomImageData] = [imagesDataArray.slice(0, 2), imagesDataArray.slice(2)];
-
-        // await Promise.all([
-        await addTopImages(topImages, topImageData, abortController),
-            await addBottomImages(bottomImages, bottomImageData, abortController)
-        // ]);
+        const totalImages = loadedImages.length; // Total number of images
+        await addTopImages(topImages, imagesDataArray.slice(0, 2), totalImages, abortController);
+        await addBottomImages(bottomImages, imagesDataArray.slice(2), totalImages, topImages.length, abortController);
     } catch (error) {
         throw error;
     }
 }
 
-async function addTopImages(images, imageData) {
+async function addTopImages(images, imageData, totalImages, abortController) {
     const container = document.getElementById('top-image-container');
+    const videoContainer = document.getElementById('video-container');
+    container.style.height = window.getComputedStyle(videoContainer).height;
+    const opacityVal = document.getElementById('opacity-slider').value
+
     for (let i = 0; i < images.length; i++) {
         const image = images[i];
         if (!image) return;
-        container.appendChild(createImageItemContainer(image, i, imageData));
+        const opacity = 1 - ((1-opacityVal) / (totalImages - 1)); // Adjust for total images and index
+
+        const imageElement = createImageItemContainer(image, i, imageData, opacity);
+        container.appendChild(imageElement);
     }
 }
-async function addBottomImages(images, imageData, abortController) {
+
+async function addBottomImages(images, imageData, totalImages, startIndex, abortController) {
     const container = document.getElementById('bottom-image-container');
-    container.style.height = `calc(100svh - ${document.getElementById('top').offsetHeight}px)`;
-    console.log('container height ' + container.style.height)
+    container.style.height = `calc(100vh - ${document.getElementById('top').offsetHeight}px)`;
+    console.log('Container height: ' + container.style.height);
+
     const containerHeight = parseFloat(window.getComputedStyle(container).height);
-
-    // Get the computed style after setting the height
     const { numArrangedImages, numRows, numCols } = arrangeBottomGrid(container);
-
     const imagesToProcess = images.slice(0, numArrangedImages);
 
+    const opacityVal = document.getElementById('opacity-slider').value
     let currRow;
-    console.log('LOOOK  ' + images.length)
     for (let i = 0; i < imagesToProcess.length; i++) {
-        console.log('adding bottom image');
+        console.log('Adding bottom image');
         if (!currRow || i % numCols === 0) {
             currRow = createNewRow(container);
         }
 
         const image = imagesToProcess[i];
         if (!image) return;
-        // Calculate the width starting from 100% and decreasing by 5% for each image
-        const width = `${Math.max(100 - 5 * i, 5)}%`; // Ensure width doesn't go below 5%
-        currRow.appendChild(createImageItemContainer(image, i, imageData, width));
+        const overallIndex = startIndex + i; // Adjust index based on offset from top images
+
+        // Calculate opacity: starts at 100% for the first image and linearly decreases to 50% for the last image
+        const opacity = 1 - ((1-opacityVal) * overallIndex / (totalImages - 1)); // Adjust for total images and index
+
+        const imageElement = createImageItemContainer(image, i, imageData, opacity);
+        currRow.appendChild(imageElement);
     }
-    adjustRowHeights(container)
+    adjustRowHeights(container);
 }
+
+
 
 // make sure bottom container does not exceed height of display
 function adjustRowHeights(container) {
