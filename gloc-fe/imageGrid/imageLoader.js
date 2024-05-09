@@ -4,8 +4,7 @@ import {SERVER_URL} from "../index.js";
 export async function loadImages(imageDataArray) {
     const batchSize = 10; // Adjust the batch size as needed
     const loadedImages = [];
-    const numPhotos = getNumPhotos() + 12;
-
+    const numPhotos = getNumPhotos() ;
     for (let i = 0; i < numPhotos; i += batchSize) {
         const batchImages = imageDataArray.slice(i, i + batchSize);
 
@@ -25,7 +24,7 @@ export async function loadImages(imageDataArray) {
         const batchResults = await Promise.all(batchPromises);
         loadedImages.push(...batchResults);
     }
-    return loadedImages;
+    return loadedImages.slice(0, numPhotos); // Ensure no more than 17 images are returned
 }
 
 export async function getBoundingBoxes(imagesArray){

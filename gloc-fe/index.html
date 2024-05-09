@@ -38,14 +38,11 @@
 <div id="overlay">
 
 </div>
-<button id="openPanelButton" class="panel-button">&#9776;</button>
 <div id="sidePanel" class="side-panel"></div>
-<!-- Script to import sidePanel.js and initialize the side panel -->
 <script type="module">
     async function fetchSidePanelContent() {
         const response = await fetch('./uiElements/sidePanel.html');
-        const sidePanelContent = await response.text();
-        document.getElementById('sidePanel').innerHTML = sidePanelContent;
+        document.getElementById('sidePanel').innerHTML = await response.text();
         import('./uiElements/sidePanel.js').then((module) => {
             module.setupSidePanel();
         });
@@ -57,6 +54,7 @@
     <div id="top" style="height: auto;">
         <div id="video-container">
             <video id="video" playsinline class="video"></video>
+            <canvas id="video-canvas" class="canvas"></canvas>
             <canvas id="canvas" class="canvas"></canvas>
             <button id="playPauseButton" class="play-pause-button">
                 <span id="play-icon"></span>

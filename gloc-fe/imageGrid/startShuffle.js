@@ -6,23 +6,22 @@ import {SERVER_URL} from "../index.js";
 let randomImageArr;
 let shuffleIntervalId;
 let shuffleSpeed; // Default speed in milliseconds
-export let sporadicUpdate;
 export let shuffleActive = true;
 
-const minShuffleTime = 2000; // Minimum shuffle time in milliseconds
 let shuffleStartTime;
 
 export async function stopShuffle() {
+    let shuffleDur = document.getElementById('shuffle-dur-slider').value * 1000
     return new Promise((resolve) => {
         if (shuffleIntervalId) {
             const elapsedTime = Date.now() - shuffleStartTime;
-            if (elapsedTime < minShuffleTime) {
+            if (elapsedTime < shuffleDur) {
                 setTimeout(() => {
                     clearInterval(shuffleIntervalId);
                     shuffleIntervalId = null;
                     shuffleActive = false;
                     resolve();
-                }, minShuffleTime - elapsedTime);
+                }, shuffleDur - elapsedTime);
             } else {
                 clearInterval(shuffleIntervalId);
                 shuffleIntervalId = null;
@@ -36,6 +35,7 @@ export async function stopShuffle() {
 }
 
 export function startShuffle() {
+    const shuffleSpeed = document.getElementById('shuffle-slider').value
     if (!shuffleIntervalId) {
         shuffleActive = true;
         shuffleStartTime = Date.now();
@@ -57,17 +57,14 @@ export function clearRandomImages(){
 
 export async function  getRandomImages() {
     if(!randomImageArr) {
-        console.log('getting new random images')
         const response = await fetch(`${SERVER_URL}/random`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json',},
         });
         randomImageArr = await response.json()
-        // Shuffle the array
         shuffleArray(randomImageArr);
 
     }
-    console.log('done getting random image');
     return randomImageArr;
 }
 
@@ -78,21 +75,18 @@ function shuffleArray(array) {
     }
 }
 
-export function initializeShuffleUIElements() {
-    const slider = document.getElementById("shuffle-slider");
-    const sliderValue = document.getElementById("shuffle-slider-value");
-    sliderValue.textContent = slider.value + 's';
-    shuffleSpeed = parseInt(slider.value);
-    slider.addEventListener("input", function () {
-        sliderValue.textContent = slider.value + 's';
-        shuffleSpeed = parseInt(slider.value); // Convert to integer and update updateCount
-        clearRecognitionIntervals()
-    });
-    document.getElementById('sporadicShuffle').addEventListener('change', setSporadicUpdate);
-    setSporadicUpdate();
-}
-
-function setSporadicUpdate() {
-    const checkbox = document.getElementById('sporadicShuffle');
-    sporadicUpdate = checkbox.checked;
-}
+// export function initializeShuffleUIElements() {
+//     const slider = document.getElementById("shuffle-slider");
+//     shuffleSpeed = parseInt(slider.value);
+//     slider.addEventListener("input", function () {
+//         shuffleSpeed = parseInt(slider.value); // Convert to integer and update updateCount
+//         clearRecognitionIntervals()
+//     });
+//     document.getElementById('sporadicShuffle').addEventListener('change', setSporadicUpdate);
+//     setSporadicUpdate();
+// }
+//
+// function setSporadicUpdate() {
+//     const checkbox = document.getElementById('sporadicShuffle');
+//     sporadicUpdate = checkbox.checked;
+// }

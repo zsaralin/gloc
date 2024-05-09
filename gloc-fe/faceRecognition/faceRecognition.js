@@ -7,12 +7,17 @@ import {stopShuffle} from "../imageGrid/startShuffle.js";
 import {currFace} from "../faceDetection/newFaces.js";
 import {SERVER_URL} from "../index.js";
 import {continuousFaceRecognition, currFaceDescriptor} from "./faceRecognitionFetcher.js";
+
 let isProcessing = false; // allow only one fetch request at a time
 let isFirstUpdate = true;
-const RECOGNIZE_FREQ = 100 // face recognition every 1s
 
-let refreshTime;
 let newGridArrangement = false;
+let timeSlider;
+let refreshTime;
+
+let intervalId;
+let recognitionIntervals = []; // Use an array to store interval IDs
+let faceRecogCallsStarted = false;
 
 export function resetGrid() {
     clearRecognitionIntervals()
@@ -20,38 +25,37 @@ export function resetGrid() {
     newGridArrangement = true;
 }
 
-export function initTimeSlider() {
-    const timeSlider = document.getElementById("time-slider");
-    const sliderValue = document.getElementById("time-slider-value");
-
-    sliderValue.textContent = timeSlider.value + 's';
-    refreshTime = parseInt(timeSlider.value);
-
-    timeSlider.addEventListener("input", function () {
-        sliderValue.textContent = timeSlider.value + 's';
-        refreshTime = parseInt(timeSlider.value); // Convert to integer and update updateCount
-        clearRecognitionIntervals()
-        startFaceRecognition(); // Restart face recognition with the new refresh time
-    });
+function initTimeSlider() {
+    timeSlider = document.getElementById("time-slider");
 }
-let intervalId ;
-let recognitionIntervals = []; // Use an array to store interval IDs
-let faceRecogCallsStarted = false;
 
-export function restartFaceRecogCalls(){
+export function handleRefreshTime() {
+    if (!timeSlider) initTimeSlider()
+    refreshTime = timeSlider.value; // Convert to integer and update updateCount
+    clearRecognitionIntervals()
+    startFaceRecognition(); // Restart face recognition with the new refresh time
+}
+
+
+
+export function restartFaceRecogCalls() {
     faceRecogCallsStarted = true;
     isProcessing = false;
 }
-export function restartFaceRecogCalls2(){
+
+export function restartFaceRecogCalls2() {
     faceRecogCallsStarted = false
 }
+
 export async function startFaceRecognition() {
+    if (!refreshTime) handleRefreshTime()
+
     clearInterval(intervalId);
 
     while (!currFace) {
         await new Promise(resolve => setTimeout(resolve, 100)); // Wait for 100 milliseconds
     }
-    if(!faceRecogCallsStarted) {
+    if (!faceRecogCallsStarted) {
         faceRecogCallsStarted = true;
         await continuousFaceRecognition();
     }
@@ -75,7 +79,7 @@ export async function startFaceRecognition() {
 
 export function clearRecognitionIntervals() {
     clearInterval(intervalId);
-    intervalId =null;
+    intervalId = null;
     recognitionIntervals = [];
 }
 
@@ -93,7 +97,7 @@ export function killController() {
     abortController.abort()
 }
 
-export function setIsFirstUpdate(i){
+export function setIsFirstUpdate(i) {
     isFirstUpdate = i
 }
 
@@ -104,13 +108,13 @@ async function faceRecognition() {
             clearRecognitionIntervals()
             return
         }
-        if(!currFaceDescriptor) return
+        if (!currFaceDescriptor || currFaceDescriptor.length === 0) return
         isProcessing = true;
         if (isFirstUpdate) {
             isFirstUpdate = false;
             console.log('stopping shuffle')
             await updateFirst(currFaceDescriptor, abortController)
-        } else if(newGridArrangement){
+        } else if (newGridArrangement) {
             newGridArrangement = false;
             await createImageGrid(currFaceDescriptor, abortController)
         } else {

@@ -15,7 +15,7 @@ const util = require('util')
 const {processFaces} = require("./utils/faceProcessing.js");
 const streamToPromise = require('stream-to-promise');
 const bodyParser = require('body-parser');
-const localFolderPath  = '..\\..\\face_backet'
+const localFolderPath  = '..\\..\\face_backet\\'
 
 app.use(cors())
 app.use(express.json());
@@ -58,7 +58,7 @@ app.post('/match', async (req, res) => {
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
-            const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_crop.png`);
+            const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_crop_padded.png`);
             const photoPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
             const txtFile = path.join(localFolderPath, dbName, label, `${label}.json`);
             const name = await getNameFromJsonFile(txtFile, label);
@@ -215,9 +215,27 @@ app.post('/delete-scores', async (req, res) => {
     if (!req.body.userID) {
         return res.status(400).send('userID is required');
     }
-    await deleteUserEntry(req.body.userID);
-    res.status(201).send(`Score created for userID: ${req.body.userID}`);
+    try {
+        res.status(204).send(); // No content to send back
+    } catch (error) {
+        res.status(500).send('Error deleting user entry'); // Server error response
+    }
 });
+
+app.post('/save-settings', (req, res) => {
+    fs.writeFile('settings.json', JSON.stringify(req.body, null, 2), err => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Failed to save settings');
+        }
+        res.send('Settings updated successfully');
+    });
+});
+
+app.get('/get-settings', (req, res) => {
+    res.sendFile(path.join(__dirname, 'settings.json'));
+});
+
 // testDB()
 // deleteCropCompressedFiles(localFolderPath)
 // grabRandomImages()

@@ -64,8 +64,9 @@ export async function setupCamera() {
         // Check if metadata is already loaded
         if (video.readyState > 1) {
             try {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                const cropSize = Math.min(video.videoWidth, video.videoHeight);
+                canvas.width = cropSize;
+                canvas.height = cropSize;
                 video.play().then(() => {
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);
@@ -80,8 +81,10 @@ export async function setupCamera() {
         } else {
             video.onloadedmetadata = async () => {
                 try {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
+                    const cropSize = Math.min(video.videoWidth, video.videoHeight);
+                    canvas.width = cropSize;
+                    canvas.height = cropSize;
+                    console.log(canvas.width + ' and ' + canvas.height)
                     await video.play();
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);

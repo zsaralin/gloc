@@ -22,7 +22,7 @@ function togglePlayPause(video) {
     if (video && video.readyState >= 2) {
         if (video.paused) {
             resetAbortController();
-            startNewFaces()
+            // startNewFaces()
             video.play();
             clearRecognitionIntervals();
             startFaceRecognition(); // Start recognition again

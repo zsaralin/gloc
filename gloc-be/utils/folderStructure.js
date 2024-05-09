@@ -24,7 +24,7 @@ function deleteCropCompressedFiles(targetFolder) {
             if (item.isDirectory()) {
                 // Recursively call the function if the item is a directory
                 deleteCropCompressedFiles(filePath);
-            } else if (item.isFile() && item.name.includes('_cmp_cmp')) {
+            } else if (item.isFile() && item.name.includes('_crop_padded')) {
                 // Delete the file if its name includes '_crop_cmp'
                 fs.unlink(filePath, unlinkErr => {
                     if (unlinkErr) {

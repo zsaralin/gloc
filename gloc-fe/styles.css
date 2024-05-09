@@ -5,7 +5,7 @@ body {
     /*align-items: center;*/
     height: 100vh;
     width:100%;
-    font-family: monospace;
+    font-family: "Cascadia Mono";
     color: white;
     font-size: 13px;
     line-height: 22px;
@@ -33,6 +33,7 @@ button {
 #top {
     display: flex;
     align-items: flex-start;
+    flex-direction: row;
     width: 100%;
     top: 0;
 }
@@ -43,8 +44,7 @@ button {
     height: 100%;
     overflow: hidden;
     place-items: center;
-    display: block;
-
+    display: flex;
 }
 
 #video-container::before {
@@ -52,13 +52,16 @@ button {
     position: relative;
     width: 33.33%;
     height: 100%;
-    display: block;
+    display: flex;
     place-items: center;
     padding-top: 100%; /* This sets the aspect ratio to 1:1 (square) */
 }
 
+
 #video {
     position: absolute;
+    /*display: none;*/
+    /*visibility: hidden;*/
     top: 0;
     left: 0;
     width: 100%;
@@ -68,13 +71,13 @@ button {
 
 }
 
-#canvas {
+.canvas {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    /*height: 100%;*/
+    /*object-fit: cover;*/
     transform: scaleX(-1); /* Mirror along the x-axis */
 }
 
@@ -82,47 +85,37 @@ button {
     position: relative;
     width: 66.66%;
     height: 100%;
-    align-items: center; /* Align items vertically centered */
     display: flex;
-    margin: 0; /* Reset margin to ensure no default margin */
-    padding: 0; /* Reset padding to ensure no default padding */
+    align-items: center; /* Align items vertically centered */
     overflow: hidden;
-
 }
 
-.top-image,
-.next-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-    object-fit: cover;
-    display: block;
-    width: 100%;
-    height: 100%;
-    /*transition: opacity 1s linear; !* Adjust the duration as needed *!*/
 
-}
 
 .current-image {
-    opacity: 1;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: 0px solid white; /* Add white border */
-    box-sizing: border-box; /* Include border in total width and height */
+    /*position: absolute;*/
 
+    opacity: 1;
+    /*display: block;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*object-fit: cover;*/
+    border: 0px solid white; /* Add white border */
+    /*box-sizing: border-box; !* Include border in total width and height *!*/
+    /*top: 0;*/
+    /*left: 0;*/
 }
 
 .next-image {
     opacity: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    /*display: block;*/
+    /*position: absolute;*/
+
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*object-fit: cover;*/
     border: 0px solid white; /* Add white border */
-    box-sizing: border-box; /* Include border in total width and height */
+    /*box-sizing: border-box; !* Include border in total width and height *!*/
 
 }
 
@@ -130,18 +123,17 @@ button {
     margin: 0; /* Reset margin to ensure no default margin */
     padding: 0; /* Reset padding to ensure no default padding */
     /*position: relative;*/
-    width: 100%;
-    overflow: hidden;
-
     height: 100%;
-    /*height: auto; !* Allow the images to maintain their aspect ratio *!*/
-    object-fit: cover;
-}
-
-.top-image{
+    width: auto;
     overflow: hidden;
 
+    /*height: 100%;*/
+    /*height: auto; !* Allow the images to maintain their aspect ratio *!*/
+    /*object-fit: cover;*/
+
 }
+
+
 
 #bottom {
     display: flex;
@@ -156,19 +148,22 @@ button {
 #bottom-image-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    /*justify-content: flex-start;*/
     /*align-items: stretch;*/
 }
 
 #bottom-image-container img {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    flex: 1; /* Fill the available space */
-    bottom: 0;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
+    /*box-sizing: border-box;*/
+    /*margin: 0;*/
+    /*padding: 0;*/
+    /*flex: 1; !* Fill the available space *!*/
+    /*bottom: 0;*/
+    /*height: 50%;*/
+    /*width: 50%;*/
+    /*position: relative;*/
+    /*object-fit: cover;*/
 }
 
 .grid-row {
@@ -186,7 +181,7 @@ button {
     width: 100vw;
     height: 100vh;
     background-color: black;
-    z-index: 1000; /* Ensure it's on top of other elements */
+    z-index: 988; /* Ensure it's on top of other elements */
     transition: opacity 1s ease-in;
 }
 
@@ -207,15 +202,36 @@ button {
     width: 100%;
     padding:0;
     /*object-fit: cover;*/
-
+    display: flex;        /* Using flexbox */
+    align-items: center;  /* Center vertically */
+    justify-content: center; /* Center horizontally */
     margin: 0; /* Reset margin to ensure consistent spacing */
+    border: solid grey 1px;
 }
 
 .image-item-container img{
-    height: 100%;
-    overflow: hidden;
-    width: 100%;
+    width: auto;
+    height: 100%; /* Image takes up half the width of its container */
+    /*height: auto;     !* Adjust height automatically to maintain aspect ratio *!*/
+    display: block;   /* Ensures no extra space at the bottom of the image */
+    margin: 0 auto;   /* Center the image horizontally */
+    position: absolute;
+}
 
+.overlay {
+    position: absolute;
+    /*top:0;*/
+    /*left: 0;*/
+    /*display: block;   !* Ensures no extra space at the bottom of the image *!*/
+
+    /*top: 0;*/
+    /*left: 0;*/
+    width: 100%;
+    height: 100%;     /* Adjust height automatically to maintain aspect ratio */
+    background-color: rgba(169, 169, 169, 1); /* Light grey with transparency */
+    opacity: 0.7;
+    pointer-events: none; /* Allows interactions with elements behind the overlay */
+    z-index: 5
 }
 
 
@@ -223,14 +239,14 @@ button {
     position: absolute;
     /*left: 0;*/
     /*width: 100%;*/
-    z-index: 1; /* Ensure it's above the image */
+    z-index: 2; /* Ensure it's above the image */
     box-sizing: border-box;
     /* Adjust the padding as needed */
     padding: 2px 3px;
-    line-height: 10px;
+    line-height: 15px;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    font-size: clamp(.5rem, .7vw, 1.5rem);
+    font-size: .7rem;
     white-space: normal; /* Allow text to wrap */
     overflow: visible; /* Let it overflow visually */
     display: inline-block;
@@ -305,20 +321,24 @@ button {
     margin-top: 5px;
     margin-bottom: 5px;
     display: flex;
-    align-items: center;
-    width:10px; /* Adjust the width as needed */
+    align-items: center; /*center vertically, dont remove */
+    width:100%; /* Adjust the width as needed */
 }
 
 #zoom-slider {
-    flex: 1;
+    /*flex: 1;*/
 }
 
 .slider-label {
-    width: 80px; /* Set a specific width for the label */
+    width: 100px; /* Set a specific width for the label */
     white-space: nowrap; /* Prevent text from wrapping to the next line */
     margin-right: 10px;
 }
-
+.slider-number-input {
+    width: 40px; /* Adjust width to suit design */
+    margin-left: 10px;
+    margin-right: 10px;
+}
 .panel-button {
     position: absolute;
     top: 0;
@@ -344,6 +364,7 @@ button {
 
 /* Side panel styles */
 .side-panel {
+    font-size: 10px;
     position: fixed;
     top: 0;
     right: -300px; /* Initially hidden */
@@ -352,7 +373,7 @@ button {
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     transition: right 0.3s ease-in-out;
-    z-index: 2;
+    z-index: 999;
     overflow-y: auto;
     color: black;
 }
@@ -407,17 +428,6 @@ button {
     100% { transform: rotate(360deg); }
 }
 
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(169, 169, 169, 1); /* Light grey with transparency */
-    opacity: 0.7;
-    pointer-events: none; /* Allows interactions with elements behind the overlay */
-    z-index: 1
-}
 
 .enter-button {
     font-family: monospace;

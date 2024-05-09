@@ -5,7 +5,7 @@ import {
     resetGrid
 } from "../faceRecognition/faceRecognition.js";
 
-let numPhotos = 15;
+let numPhotos = 17;
 let prevNumPhotos = numPhotos;
 let firstRun = true;
 export let numArrangedImages;
@@ -25,19 +25,18 @@ export function setNumPhotos(i){
 export function arrangeBottomGrid(container) {
     if (firstRun || prevNumPhotos !== numPhotos) {
         firstRun = false;
-
+        let numPhotos0 = numPhotos-2
         const height = parseFloat(window.getComputedStyle(container).height);
         const width = parseFloat(window.getComputedStyle(container).width);
         console.log(height, width)
         const aspectRatio = width / height
-
-        numCols = Math.ceil(Math.sqrt(numPhotos * aspectRatio));
-        numRows = Math.ceil(numPhotos / numCols);
+        numCols = Math.floor(Math.sqrt(numPhotos0 * aspectRatio));
+        numRows = Math.ceil(numPhotos0 / numCols);
 
         // Adjust numCols to ensure each row has the same number of images
-        while (numPhotos % numRows !== 0) {
+        while (numPhotos0 % numRows !== 0) {
             numCols++;
-            numRows = Math.ceil(numPhotos / numCols);
+            numRows = Math.ceil(numPhotos0 / numCols);
         }
         let imageWidth = width / numCols;
         let imageHeight = height / numRows;
@@ -48,15 +47,16 @@ export function arrangeBottomGrid(container) {
             } else {
                 numCols++;
             }
-            numRows = Math.ceil(numPhotos / numCols);
+            numRows = Math.ceil(numPhotos0 / numCols);
             imageWidth = width / numCols;
             imageHeight = height / numRows;
             imgAspectRatio = imageWidth / imageHeight;
         }
+        console.log('NUNM  ' + numCols + ' amd ' + numRows )
+
         console.log(imgAspectRatio)
     }
 
-    console.log(numRows + ' and ' + numCols)
     numArrangedImages = numRows * numCols;
     return {numArrangedImages, numRows, numCols};
 }

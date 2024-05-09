@@ -69,7 +69,6 @@ async function createNewScores(userID) {
 async function createOrUpdateScores(userID, entries) {
     // Prepare the batch insert/update query for labels and scores
     if (!userID) {
-        console.error("Failed to create or update new score because userID is undefined.");
         return; // Exit the function if userID is undefined
     }
 
@@ -89,8 +88,6 @@ async function createOrUpdateScores(userID, entries) {
             // Insert or update the score for each label
             await pool.query(baseQuery, [userID, label, normalizedDistance]);
         }
-
-        console.log(`Scores updated successfully for userID: ${userID}.`);
     } catch (error) {
         // Log any errors that occur during the execution of the queries
         console.error(`Failed to update scores for userID: ${userID}`, error);
@@ -102,7 +99,7 @@ async function deleteUserEntry(userID) {
         const result = await pool.query(query, [userID]);
         if (result.rowCount > 0) {
             console.log(`Successfully deleted user entry for userID: ${userID}`);
-        } else {
+        }  else {
         }
     } catch (error) {
         console.error(`Error deleting user entry for userID: ${userID}`, error);
