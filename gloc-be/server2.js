@@ -25,7 +25,7 @@ app.use(express.json());
 const {Storage} = require('@google-cloud/storage');
 const {grabRandomImages} = require("./utils/randomImages.js");
 const {readImagesFromFolder} = require("./utils/randomImages");
-const {createFolders} = require("./utils/folderStructure.js");
+const {createFolders} = require("./zz/folderStructure.js");
 const {cropFaces} = require("./utils/cropFaces");
 const {renameFolder} = require("./zz/organizeImages"); // Adjust the path based on your project structure
 

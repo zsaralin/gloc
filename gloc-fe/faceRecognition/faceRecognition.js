@@ -119,7 +119,6 @@ async function faceRecognition() {
             await createImageGrid(currFaceDescriptor, abortController)
         } else {
             console.log('actually *UPDATING')
-
             stopShuffle()
             await updateImageGrid(currFaceDescriptor, abortController)
         }

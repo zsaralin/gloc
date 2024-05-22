@@ -22,7 +22,7 @@ import {
     updateShuffleLoop
 } from "./imageGrid/startShuffle.js";
 import {handleOrientationChange} from "./uiElements/detectOrientation.js";
-import {faceLandmarker, setupFaceAPI} from "./faceDetection/faceDetectionSetup.js";
+import {faceLandmarker, setupFaceLandmarker} from "./faceDetection/faceDetectionSetup.js";
 import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
 import {cropFacesFE, cropImagesParent} from "./imageProcessing/cropFacesFE.js";
@@ -104,7 +104,7 @@ export async function setupCamera() {
 async function main() {
     checkDisplaySize()
     setupLandingPage();
-    await setupFaceAPI()
+    await setupFaceLandmarker()
     // const randomImageArr = await getRandomImages()
     // await createImageGrid(randomImageArr, abortController)
     activateEnterButton()
@@ -139,7 +139,11 @@ export function enterExperience(){
     startShuffle()
     startFaceDetection(video,canvas)
     startFaceRecognition();
-    document.getElementById('overlay').style.opacity = '0';
+    const overlay = document.getElementById('overlay')
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, 1000);
 
 }
 

@@ -20,7 +20,11 @@ export async function stopShuffle() {
                     clearInterval(shuffleIntervalId);
                     shuffleIntervalId = null;
                     shuffleActive = false;
-                    document.getElementById('progress-overlay').style.opacity = '0'
+                    const overlay = document.getElementById('progress-overlay')
+                    overlay.style.opacity = '0'
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                    }, 1000);
                     resolve();
                 }, shuffleDur - elapsedTime);
             } else {

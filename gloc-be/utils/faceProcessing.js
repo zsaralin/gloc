@@ -1,9 +1,7 @@
-const { Storage } = require('@google-cloud/storage');
 const fs = require('fs').promises;
 const faceapi = require('face-api.js');
 const canvas = require('canvas');
 const path = require('path');
-const tmp = require('tmp');
 const MODEL_URI = './models';
 
 const { Canvas, Image, ImageData } = canvas;

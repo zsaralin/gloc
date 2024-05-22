@@ -3,18 +3,9 @@ const fs = require('fs').promises
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 4000;
-const tmp = require('tmp');
 const cors = require('cors')
-require('@tensorflow/tfjs-node');
 const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescriptors');
-const numMatchesHandler = require('./numMatchesHandler');
 require('dotenv').config();
-const faceapi = require('face-api.js');
-// const resultsFilePath = process.env.RESULTS_PATH || path.join(__dirname, 'results.json');
-const util = require('util')
-const {processFaces} = require("./utils/faceProcessing.js");
-const streamToPromise = require('stream-to-promise');
-const bodyParser = require('body-parser');
 const localFolderPath  = '..\\..\\face_backet\\'
 
 app.use(cors())
@@ -28,8 +19,6 @@ const { saveCroppedImages, getOriginalImages} = require("./utils/cropFacesBE");
 const { getDbName } = require('./db.js');
 const {setDbName} = require("./db.js");
 const {getDescriptor} = require("./utils/getDescriptor");
-const {createTxtFiles, deleteCropCompressedFiles} = require("./utils/folderStructure");
-const {saveCmpImages} = require("./utils/cmpImagesBE");
 const {createNewScores, initializeSessionScores, testDB, createScoresTable, deleteUserEntry} = require("./scores");
 
 let dbName = getDbName();
@@ -37,8 +26,8 @@ let dbName = getDbName();
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
 })
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+// app.use(bodyParser.json({ limit: '50mb' }));
+// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 createScoresTable()
 
