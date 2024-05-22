@@ -50,7 +50,13 @@
 
     fetchSidePanelContent()
 </script>
+
 <div id="main">
+    <div id="progress-overlay">
+        <progress id="progress-bar" max="100" value="0"></progress> <!-- 50 is an example value -->
+        <div id="status-message">Starting...</div>
+
+    </div>
     <div id="top">
         <div id="video-container">
             <video id="video" playsinline class="video"></video>

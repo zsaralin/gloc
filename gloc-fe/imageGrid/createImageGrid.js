@@ -1,15 +1,21 @@
 import {arrangeBottomGrid} from "./imageGridHelper.js";
 import {loadImages} from "./imageLoader.js";
 import {createImageItemContainer} from "./createImageContainer.js";
+import {isMobile} from "../uiElements/displaySize.js";
 
 let loadedImages;
 export async function createImageGrid(imagesDataArray, abortController) {
     try {
-        const loadedImages = await loadImages(imagesDataArray);
-        const [topImages, bottomImages] = [loadedImages.slice(0, 3), loadedImages.slice(2)];
-        const totalImages = loadedImages.length; // Total number of images
-        await addTopImages(topImages, imagesDataArray.slice(0, 3), totalImages, abortController);
-        await addBottomImages(bottomImages, imagesDataArray.slice(2), totalImages, topImages.length, abortController);
+        const allImages = await loadImages(imagesDataArray);
+
+        const firstImagesCount = isMobile ? 2 : 3;
+        const topImages = allImages.slice(0, firstImagesCount);
+        const bottomImages = allImages.slice(firstImagesCount);
+
+        const totalImages = allImages.length;
+
+        await addTopImages(topImages, imagesDataArray.slice(0, firstImagesCount), totalImages, abortController);
+        await addBottomImages(bottomImages, imagesDataArray.slice(firstImagesCount), totalImages, topImages.length, abortController);
     } catch (error) {
         throw error;
     }

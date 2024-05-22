@@ -17,7 +17,7 @@ body {
 }
 
 #main {
-    max-width: 800px;
+    /*max-width: 800px;*/
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -36,14 +36,13 @@ button {
     flex-direction: row;
     width: 100%;
     top: 0;
-    max-height: 50%;
-    height : 50%;
+    height : 25%;
 
 }
 
 #video-container {
     position: relative;
-    width: 25%;
+    width: 33.33%;
     height: 100%;
     overflow: hidden;
     place-items: center;
@@ -53,7 +52,7 @@ button {
 #video-container::before {
     content: "";
     position: relative;
-    width: 25%;
+    width: 33.33%;
     height: 100%;
     display: flex;
     place-items: center;
@@ -87,7 +86,7 @@ button {
 
 #top-image-container {
     position: relative;
-    width: 75%;
+    width: 66.66%;
     height: 100%;
     display: flex;
     align-items: center; /* Align items vertically centered */
@@ -247,10 +246,10 @@ button {
     box-sizing: border-box;
     /* Adjust the padding as needed */
     padding: 2px 3px;
-    line-height: 15px;
+    line-height: 12px;
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    font-size: .7rem;
+    font-size: .6rem;
     white-space: normal; /* Allow text to wrap */
     overflow: visible; /* Let it overflow visually */
     display: inline-block;
@@ -259,7 +258,7 @@ button {
 
 .bottom-text-overlay{
     bottom: 4px;
-    left: 4px;
+    /*left: 4px;*/
     width: calc(100% - 16px); /* 100% width plus 8px on both sides */
     text-align: center;
 
@@ -288,8 +287,8 @@ button {
     left: 5px;
     position: absolute;
     background-color: rgba(255, 255, 255, 0.5);
-    width: 8%; /* Set the width of the icons to 100% */
-    height: 8%;
+    width: 15px; /* Set the width of the icons to 100% */
+    height: 15px;
     padding: 5px;
     outline: none;
     border: none;
@@ -595,4 +594,60 @@ form#dbForm label p {
     cursor: pointer; /* Changes the mouse cursor to a pointer when hovering over the button */
     font-size: .7em; /* Sets the font size of the button text */
     margin-top: 10px; /* Adds space above the button */
+}
+
+#progress-overlay {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Use RGBA for transparency */
+    top: 0;
+    left: 0;
+    z-index: 99;
+    backdrop-filter: blur(3px); /* Apply a blur effect */
+    transition: opacity 1s ease-in;
+}
+
+#progress-bar {
+    max-width: 300px; /* Fixed width */
+    width: 60%;
+    height: 30px; /* Increased height for more prominence */
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none;
+    background-color: #333; /* Darker shade of gray for more contrast */
+    border-radius: 15px; /* Increased border radius for a more pronounced rounded effect */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the progress bar */
+    border: none; /* Clean borderless design */
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.4); /* More pronounced inset shadow for depth */
+}
+
+#progress-bar::-webkit-progress-bar {
+    background-color: #333; /* Uniform dark gray background */
+    border-radius: 11px;
+}
+
+#progress-bar::-webkit-progress-value {
+    background-color: #666; /* Slightly lighter gray for the progress */
+    border-radius: 11px;
+}
+
+#progress-bar::-moz-progress-bar {
+    background-color: #666; /* Uniform lighter gray for the progress */
+    border-radius: 11px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.4); /* More pronounced shadow for depth */
+}
+
+#status-message {
+    color: white;
+    position: absolute;
+    top: calc(50% + 25px);  /* Adjust the 10px offset based on your text size */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;  /* Example font size, adjust based on your design */
+    z-index: 100;
+    width: 90%;       /* Sets a max width to handle longer texts */
+    text-align: center; /* Keeps the text centered */
 }

@@ -1,10 +1,10 @@
 {
   "shuffleSpeed": "60",
   "shuffleSporadically": true,
-  "shuffleDur": "3",
+  "shuffleDur": "5",
   "zoomLevel": "201",
   "xoffset": "0",
-  "yoffset": "0",
+  "yoffset": "-6",
   "showSimilarity": false,
   "showScaledSimilarity": true,
   "refreshTime": "10",

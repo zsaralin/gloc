@@ -26,6 +26,7 @@ import {faceLandmarker, setupFaceAPI} from "./faceDetection/faceDetectionSetup.j
 import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
 import {cropFacesFE, cropImagesParent} from "./imageProcessing/cropFacesFE.js";
+import {checkDisplaySize} from "./uiElements/displaySize.js";
 // configuration options
 let stream = null;
 export const SERVER_URL =  "http://localhost:4000";//"https://face-recognition-be.onrender.com"; //
@@ -101,12 +102,14 @@ export async function setupCamera() {
 }
 
 async function main() {
+    checkDisplaySize()
     setupLandingPage();
     await setupFaceAPI()
     // const randomImageArr = await getRandomImages()
     // await createImageGrid(randomImageArr, abortController)
     activateEnterButton()
 }
+
 
 export async function reset() {
     await setupCamera();
@@ -136,7 +139,7 @@ export function enterExperience(){
     startShuffle()
     startFaceDetection(video,canvas)
     startFaceRecognition();
-    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('overlay').style.opacity = '0';
 
 }
 
