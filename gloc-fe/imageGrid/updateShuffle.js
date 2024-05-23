@@ -1,7 +1,7 @@
 import {arrangeBottomGrid, numArrangedImages} from "./imageGridHelper.js";
 import {updateOnlyDifferentImg} from "../uiElements/sidePanel.js"; // Replace with the actual path to your constant
 import {loadImages} from "./imageLoader.js";
-import { stopShuffle} from "./startShuffle.js";
+import {animateProgressBar, stopShuffle} from "./startShuffle.js";
 import {addImageClickListener} from "../collage/collage.js";
 import {db} from "../uiElements/dbModal.js";
 import {addImageClickListener42} from "../collage/collage_42.js";
@@ -29,7 +29,6 @@ async function updateImagesInShuffle(images, imagesDataArray, isTop) {
     if(!sporadicCheckbox){
         sporadicCheckbox = document.getElementById('sporadicShuffle')
     }
-    console.log(sporadicCheckbox.checked  + ' look l ok ')
     const allImageContainers = [
         ...document.getElementById('top-image-container').querySelectorAll('.image-item-container'),
         ...document.getElementById('bottom-image-container').querySelectorAll('.image-item-container')
@@ -46,11 +45,12 @@ async function updateImagesInShuffle(images, imagesDataArray, isTop) {
             const currentImage = imageContainer.querySelector('.current-image');
             const bottomTextOverlay = imageContainer.querySelector('.bottom-text-overlay');
             const topTextOverlay = imageContainer.querySelector('.top-text-overlay');
+            const progressBar = imageContainer.querySelector('.progress-bar');
 
             if ((sporadicCheckbox.checked && Math.random() < 0.7) || !sporadicCheckbox.checked) {
                 currentImage.src = image.src;
                 bottomTextOverlay.innerHTML = createBottomTextOverlay(randomIndex, imagesDataArray).innerHTML;
-                topTextOverlay.innerHTML = createTopTextOverlay(randomIndex, imagesDataArray).innerHTML;
+                topTextOverlay.innerHTML = createTopTextOverlay(randomIndex, imagesDataArray, progressBar).innerHTML;
 
             }
         }
@@ -58,8 +58,11 @@ async function updateImagesInShuffle(images, imagesDataArray, isTop) {
 }
 
 export async function updateFirst(imagesDataArray, abortController) {
-    await stopShuffle()
+    let shuffleDur = document.getElementById('shuffle-dur-slider').value * 1000
 
+    animateProgressBar(shuffleDur)
+
+    await stopShuffle()
     const loadedImages = await loadImages(imagesDataArray);
     // const [topImages, bottomImages] = [loadedImages.slice(0, 2), loadedImages.slice(2)];
     // const [topImageData, bottomImageData] = [imagesDataArray.slice(0, 2), imagesDataArray.slice(2)];
@@ -69,19 +72,19 @@ export async function updateFirst(imagesDataArray, abortController) {
     ]);
 }
 async function updateImagesFirst(images, newImagesArray, abortController) {
-    console.log(newImagesArray)
     const allImageContainers = [
         ...document.getElementById('top-image-container').querySelectorAll('.image-item-container'),
         ...document.getElementById('bottom-image-container').querySelectorAll('.image-item-container')
     ];
     const numberOfImages = allImageContainers.length;
-    const updateBatchSize = 5; // Number of images to update in each batch
+    const updateBatchSize = 2; // Number of images to update in each batch
     let indices = Array.from({length: numberOfImages}, (_, i) => i);
     indices = shuffleArray(indices);
     let updatedCount = 0; // Initialize the counter
 
     for (let batchIndex = 0; batchIndex < numberOfImages; batchIndex += updateBatchSize) {
         if (abortController.signal.aborted) {
+
             return;
         }
 
@@ -106,8 +109,9 @@ async function updateImageContainer(imageContainer, index, newImagesArray, image
         const currentImage = imageContainer.querySelector('.current-image');
         const bottomTextOverlay = imageContainer.querySelector('.bottom-text-overlay');
         const topTextOverlay = imageContainer.querySelector('.top-text-overlay');
+        const progressBar = imageContainer.querySelector('.progress-bar');
         updateBottomTextOverlay(bottomTextOverlay, index, index < 2 ? images.slice(0,2) : images)
-        updateTopTextOverlay(topTextOverlay, index, index < 2 ? images.slice(0,2) : images)
+        updateTopTextOverlay(topTextOverlay, index, index < 2 ? images.slice(0,2) : images, progressBar)
 
         currentImage.src = images[index].src; // Set src after defining onload/onerror to ensure the load event isn't missed
         if (db === '42') {

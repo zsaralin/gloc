@@ -38,7 +38,6 @@ export async function deletePrevScoresDB() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         } else {
-            console.log('Scores successfully deleted for userID:', userID);
         }
     } catch (error) {
         console.error('Failed to delete scores:', error);

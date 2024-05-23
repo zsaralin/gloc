@@ -9,6 +9,7 @@ import {createBottomTextOverlay, createTopTextOverlay} from "./createImageContai
 import {db} from "../uiElements/dbModal.js";
 import {addImageClickListener42} from "../collage/collage_42.js";
 import {getCurrentOffsetValues} from "../uiElements/offset.js";
+import {isMobile} from "../uiElements/displaySize.js";
 
 let fadeTime;
 let fadeSlider;
@@ -25,12 +26,14 @@ export function handleFadeTime(){
 export async function updateImageGrid(imagesDataArray, abortController) {
     try {
         let loadedImages = await loadImages(imagesDataArray);
-        const [topImages, bottomImages] = [loadedImages.slice(0, 2), loadedImages.slice(2)];
+        const firstImagesCount = isMobile ? 2 : 3;
+
+        const [topImages, bottomImages] = [loadedImages.slice(0, firstImagesCount), loadedImages.slice(firstImagesCount)];
         const totalImages = loadedImages.length; // Total number of images across both updates
 
         await Promise.all([
-            updateImages(topImages, imagesDataArray.slice(0, 2), totalImages, 0, abortController), // Start index for top images is 0
-            updateImages(bottomImages, imagesDataArray.slice(2), totalImages, topImages.length, abortController) // Start index for bottom images
+            updateImages(topImages, imagesDataArray.slice(0, firstImagesCount), totalImages, 0, abortController), // Start index for top images is 0
+            updateImages(bottomImages, imagesDataArray.slice(firstImagesCount), totalImages, topImages.length, abortController) // Start index for bottom images
         ]);
     } catch (error) {
         throw error;
@@ -39,7 +42,7 @@ export async function updateImageGrid(imagesDataArray, abortController) {
 
 async function updateImages(images, imageData, totalImages, startIndex, abortController) {
     if(!fadeTime) handleFadeTime()
-    const containerId = images.length <= 2 ? 'top-image-container' : 'bottom-image-container';
+    const containerId = (images.length <= (isMobile ? 2 : 3)) ? 'top-image-container' : 'bottom-image-container';
     const container = document.getElementById(containerId);
     const imageContainers = container.querySelectorAll('.image-item-container');
     const animationPromises = [];
@@ -51,7 +54,7 @@ async function updateImages(images, imageData, totalImages, startIndex, abortCon
         }
         const overallIndex = startIndex + i; // Calculate the overall index across both updates
         const opacityVal = document.getElementById('opacity-slider').value
-        const opacity = 1 - ((1 - opacityVal) * overallIndex / (totalImages - 1)); // Adjust for total images and index
+        const opacity = 1 - ((1 - opacityVal) * overallIndex / (numArrangedImages - 1)); // Adjust for total images and index
 
         const imageContainer = imageContainers[i];
         if (!imageContainer) continue;
@@ -60,7 +63,10 @@ async function updateImages(images, imageData, totalImages, startIndex, abortCon
         const bottomTextOverlay = imageContainer.querySelector('.bottom-text-overlay');
         const topTextOverlay = imageContainer.querySelector('.top-text-overlay');
         const newBottomTextOverlay = createBottomTextOverlay(i, imageData);
-        const newTopTextOverlay = createTopTextOverlay(i, imageData);
+
+        const progressBar = imageContainer.querySelector('.progress-bar');
+
+        const newTopTextOverlay = createTopTextOverlay(i, imageData, progressBar);
         const fadeOverlay = imageContainer.querySelector('.overlay');
 
         if (shouldUpdateImage(images[i], currentImage)) {

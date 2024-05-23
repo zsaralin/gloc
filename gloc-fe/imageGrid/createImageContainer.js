@@ -1,6 +1,8 @@
 import {getCurrentZoomValue} from "../uiElements/zoom.js";
+import {isMobile} from "../uiElements/displaySize.js";
+import {numArrangedImages} from "./imageGridHelper.js";
 
-let scaleFactor = 0.4; // lower the val, lower the %
+let scaleFactor = 0.01; // lower the val, lower the %
 
 export function createImageItemContainer(image, index, imageData, opacity) {
     const imageItemContainer = document.createElement('div');
@@ -23,9 +25,13 @@ export function createImageItemContainer(image, index, imageData, opacity) {
     nextImage.onload = () => {
         applyTransforms(nextImage);
     };
+    const progressBarBg = document.createElement('div');
+    progressBarBg.className = 'progress-bar-background';
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
 
     const bottomTextOverlay = createBottomTextOverlay(index, imageData);
-    const topTextOverlay = createTopTextOverlay(index, imageData);
+    const topTextOverlay = createTopTextOverlay(index, imageData, progressBar);
 
     const overlay = document.createElement('div');
     overlay.className = 'overlay';
@@ -36,6 +42,9 @@ export function createImageItemContainer(image, index, imageData, opacity) {
     imageItemContainer.appendChild(topTextOverlay);
     imageItemContainer.appendChild(currentImage);
     imageItemContainer.appendChild(overlay);
+    imageItemContainer.appendChild(progressBarBg); // Add the progress bar to the container
+    imageItemContainer.appendChild(progressBar); // Add the progress bar to the container
+
 
     return imageItemContainer;
 }
@@ -65,14 +74,14 @@ export function createBottomTextOverlay(i, imagesArray) {
     return textOverlay;
 }
 
-export function createTopTextOverlay(i, imagesArray) {
+export function createTopTextOverlay(i, imagesArray, progressBar) {
     const textOverlay = document.createElement('div');
     textOverlay.className = 'top-text-overlay';
-    updateTopTextOverlay(textOverlay, i ,imagesArray)
+    updateTopTextOverlay(textOverlay, i ,imagesArray, progressBar)
     return textOverlay;
 }
 
-export function updateTopTextOverlay(textOverlay, i, imagesArray) {
+export function updateTopTextOverlay(textOverlay, i, imagesArray, progressBar) {
     const similarityCheckbox = document.getElementById('similarity');
     const scaledSimilarityCheckbox = document.getElementById('scaledSimilarity');
     try {
@@ -85,18 +94,22 @@ export function updateTopTextOverlay(textOverlay, i, imagesArray) {
 
         const image = imagesArray[i % imagesArray.length];
         const similarity = image.distance.toFixed(2);
-        const scaledSimilarity = (image.distance * scaleFactor).toFixed(2);
+        const adjustedI = imagesArray.length <= (isMobile ? 2 : 3 ) ? i : i + (isMobile ? 2 : 3 )
+        let dynamicScaleFactor = scaleFactor * (1 - (adjustedI / (numArrangedImages *2))); // Linear decrease
+        const scaledSimilarity = (image.distance * dynamicScaleFactor).toFixed(2);
         function updateDisplay() {
             // Always create divs for both similarity and scaled similarity.
             let content = '';
             let similarityDisplay = similarityCheckbox.checked ? 'block' : 'none';
             let scaledSimilarityDisplay = scaledSimilarityCheckbox.checked ? 'block' : 'none';
             // Adjust the content for the first image if conditions are met
-            if (imagesArray.length <= 2 && i === 0) {
+            if (imagesArray.length <= (isMobile ? 2 : 3 ) && i === 0) {
                 textOverlay.style.right = 'auto';
                 textOverlay.style.left = '4px '
                 content += `<div class="similarity" style="display: ${similarityDisplay};">Similarity: ${similarity}%</div>`;
                 content += `<div class="scaled-similarity" style="display: ${scaledSimilarityDisplay};">Level of Confidence: ${scaledSimilarity}%</div>`;
+                content += `<div class="scaled-similarity" style = "padding-top: 2px"> (Closest Match) </div>`;
+
 
             } else {
                 // Adjust the content for other images
@@ -106,6 +119,9 @@ export function updateTopTextOverlay(textOverlay, i, imagesArray) {
 
             // Update the innerHTML of the textOverlay
             textOverlay.innerHTML = content;
+            // Now update the progress bar based on scaledSimilarity
+            let progressHeight = parseFloat(scaledSimilarity) * 10;
+            progressBar.style.height = `${progressHeight}%`;
         }
 
         // Call updateDisplay to ensure it uses the latest checkbox states
@@ -132,10 +148,11 @@ export function updateBottomTextOverlay(textOverlay, i, imagesArray){
             // Always create divs for both similarity and scaled similarity.
             let content = '';
 
-            content += `<div class="name"> ${image.name}</div>`;
-            if (imagesArray.length <= 2 && i === 0) {
-
-                content += `<div class="scaled-similarity" style = "padding-top: 2px"> (Closest Match) </div>`;
+            if (imagesArray.length <= (isMobile ? 2 : 3 ) && i === 0) {
+                content += `<div class="name"> ${image.name}</div>`;
+                content += '[No. Records: 1]'
+            } else {
+                content += `<div class="name"> ${image.name} [1]</div>`;
             }
             // Update the innerHTML of the textOverlay
             textOverlay.innerHTML = content;

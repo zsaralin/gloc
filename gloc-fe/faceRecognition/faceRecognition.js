@@ -104,7 +104,6 @@ export function setIsFirstUpdate(i) {
 async function faceRecognition() {
     try {
         if (isProcessing || abortController.signal.aborted) {
-            console.log(isProcessing + ' and ' + abortController.signal.aborted)
             clearRecognitionIntervals()
             return
         }
@@ -112,13 +111,11 @@ async function faceRecognition() {
         isProcessing = true;
         if (isFirstUpdate) {
             isFirstUpdate = false;
-            console.log('stopping shuffle')
             await updateFirst(currFaceDescriptor, abortController)
         } else if (newGridArrangement) {
             newGridArrangement = false;
             await createImageGrid(currFaceDescriptor, abortController)
         } else {
-            console.log('actually *UPDATING')
             stopShuffle()
             await updateImageGrid(currFaceDescriptor, abortController)
         }

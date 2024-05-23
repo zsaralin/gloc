@@ -14,33 +14,37 @@ export function setupLandingPage() {
             <p class="overlay-text">[Placeholder for Project Info]</p>
             <p class="overlay-text">[Placeholder for Legal Lease]</p>
 
-            <ul class="overlay-list">
+            <ul class="overlay-list" style="padding-bottom: 15px">
                 <li>We will require access to your camera.</li>
                 <li>Your facial landmarks will be extracted.</li>
                 <li>No data is retained.</li>
             </ul>
             <button class="enter-button loading" disabled ></button>
-        </div>
+        
         <!-- Modal for choosing database -->
-        <div id="chooseDbModal" class="modal">
+        <div id="chooseDbModal" >
             <div class="modal-content">
-                <span class="close">&times;</span>
                 <h2>Select a Database</h2>
                 <form id="dbForm">
-                <label>
-                    <input type="radio" name="database" value="42" checked/>
+                <label class="radio-input">
+                    <input type="radio" name="database" value="42"/>
+                            <span class="custom-radio"></span>
+
                     Ayotzinapa (43)
                     <p>This is additional text providing more details about the Ayotzinapa database.</p>
                 </label>
-                <label>
+                <label class="radio-input">
                     <input type="radio" name="database" value="small" />
+                            <span class="custom-radio"></span>
+
                     Flickr-Faces-HQ (3143)
                     <p>This paragraph describes the Flickr-Faces-HQ database.</p>
                 </label>
-                    <button class="ok-button">OK</button>
-
             </form>
             </div>
+            </div>
+            <div id="loadingText" style="margin-top: 10px;"></div>
+       
         </div>
     `;
 
@@ -48,13 +52,15 @@ export function setupLandingPage() {
     if (overlay) {
         overlay.innerHTML = overlayContent;
         const button = document.querySelector('.enter-button');
+
         async function handleButtonClick() {
             button.disabled = true; // Enable the button
             button.innerHTML = 'Accessing Camera<span class="ellipsis"></span>';
             await setupCamera();
             button.disabled = false; // Enable the button
-            button.innerHTML = 'Select Database';
-            button.removeEventListener('click', handleButtonClick);  // Remove the listener
+            button.style.display = 'none'
+            // button.innerHTML = 'Select Database';
+            // button.removeEventListener('click', handleButtonClick);  // Remove the listener
             initializeDBModal();
         }
 
@@ -82,6 +88,7 @@ export function activateExperienceButton() {
     button.innerText = "Start"; // Update button text if needed
     button.addEventListener('click', enterExperience);
 }
+
 export function deactivateEnterButton() {
     const button = document.getElementsByClassName('enter-button')[0];
     button.classList.add('loading'); // Add a 'loading' class to indicate it's being processed or shouldn't be interacted with
@@ -90,9 +97,9 @@ export function deactivateEnterButton() {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const languageButton = document.querySelector('.language-button');
-    languageButton.addEventListener('click', function() {
+    languageButton.addEventListener('click', function () {
         languageButton.textContent = languageButton.textContent === 'ENGLISH' ? 'ESPAÑOL' : 'ENGLISH';
     });
 });

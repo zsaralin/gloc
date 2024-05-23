@@ -44,6 +44,9 @@ app.post('/match', async (req, res) => {
             res.json(null);
             return
         }
+
+        const labels = [];
+
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
@@ -59,6 +62,7 @@ app.post('/match', async (req, res) => {
                 try {
                     const imageCropBuffer = await encodeImageToBase64(photoCropPath);
                     const imageBuffer = await encodeImageToBase64(photoPath);
+                    labels.push(name)
                     return {
                         label,
                         name,
@@ -73,8 +77,8 @@ app.post('/match', async (req, res) => {
                 console.log(`One or both files do not exist: ${photoPath}, ${photoCropPath}`);
             }
         });
-
         const responseArray = (await Promise.all(imageBufferPromises)).filter(Boolean);
+
         res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);

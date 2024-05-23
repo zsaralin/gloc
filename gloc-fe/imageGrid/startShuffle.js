@@ -2,6 +2,7 @@ import {abortController, clearRecognitionIntervals} from "../faceRecognition/fac
 import {updateShuffle} from "./updateShuffle.js";
 import {loadImages} from "./imageLoader.js";
 import {SERVER_URL} from "../index.js";
+import {currFaceDescriptor} from "../faceRecognition/faceRecognitionFetcher.js";
 
 let randomImageArr;
 let shuffleIntervalId;
@@ -9,43 +10,39 @@ let shuffleSpeed; // Default speed in milliseconds
 export let shuffleActive = true;
 
 let shuffleStartTime;
+let progressBarComplete = false;
 
 export async function stopShuffle() {
-    let shuffleDur = document.getElementById('shuffle-dur-slider').value * 1000
+    if(!shuffleActive) return
     return new Promise((resolve) => {
-        if (shuffleIntervalId) {
-            const elapsedTime = Date.now() - shuffleStartTime;
-            if (elapsedTime < shuffleDur) {
-                setTimeout(() => {
+        let isResolved = false; // Flag to control the recursion after resolution
+
+        function checkProgressAndStop() {
+            if (!isResolved) {
+                if (progressBarComplete && shuffleIntervalId) {
                     clearInterval(shuffleIntervalId);
                     shuffleIntervalId = null;
-                    shuffleActive = false;
-                    const overlay = document.getElementById('progress-overlay')
-                    overlay.style.opacity = '0'
+                    document.getElementById('progress-overlay').style.opacity = '0';
+
                     setTimeout(() => {
-                        overlay.style.display = 'none';
+                        document.getElementById('progress-overlay').style.display = 'none';
+                        shuffleActive = false;
                     }, 1000);
-                    resolve();
-                }, shuffleDur - elapsedTime);
-            } else {
-                clearInterval(shuffleIntervalId);
-                shuffleIntervalId = null;
-                shuffleActive = false;
-                document.getElementById('progress-overlay').style.opacity = '0'
-                resolve();
+
+                    resolve(); // Resolve the promise
+                    isResolved = true; // Set the flag as resolved to prevent further checks
+                } else {
+                    setTimeout(checkProgressAndStop, 20); // Check every 100 milliseconds
+                }
             }
-        } else {
-            resolve();
         }
+        checkProgressAndStop();
     });
 }
 let shuffleEndTime;
 export function startShuffle() {
-    let shuffleDur = document.getElementById('shuffle-dur-slider').value * 1000
-
     const shuffleSpeed = document.getElementById('shuffle-slider').value
     if (!shuffleIntervalId) {
-        animateProgressBar(shuffleDur)
         shuffleActive = true;
         shuffleStartTime = Date.now();
         shuffleIntervalId = setInterval(updateShuffleLoop, shuffleSpeed);
@@ -86,41 +83,60 @@ function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
-function animateProgressBar(duration) {
+let timeToDetectFirstFace; // Declare a global variable to store the time to detect the first face
+
+export function animateProgressBar(duration) {
     const progressBar = document.getElementById('progress-bar');
     const statusMessage = document.getElementById('status-message');
-    const startTime = performance.now();
+    const startTime = performance.now();  // Start time for the whole process
     const prompts = [
+        "Attempting to locate a face...",
         "Extracting facial landmarks...",
         "Comparing biometric data...",
         "Searching through database for similarities...",
         "Retrieving top matches"
     ];
-    const segmentDuration = duration / prompts.length; // Duration for each prompt
-    let lastPromptIndex = -1;
 
-    function updateProgress(timestamp) {
-        const elapsedTime = timestamp - startTime;
-        const normalizedTime = elapsedTime / (duration ); // Normalize time to range 0-1
-        const easedProgress = easeInOutCubic(normalizedTime); // Apply easing function
-        progressBar.value = Math.min(100, easedProgress * 100); // Ensure the value doesn't exceed 100%
-
-        // Determine the current prompt index based on eased progress
-        const currentPromptIndex = Math.floor(easedProgress * prompts.length);
-
-        // Update the status message if we've moved to the next prompt
-        if (currentPromptIndex !== lastPromptIndex && currentPromptIndex < prompts.length) {
-            statusMessage.innerText = prompts[currentPromptIndex];
-            lastPromptIndex = currentPromptIndex;
-        }
-
-        // Continue the animation until the progress completes
-        if (normalizedTime < 1) {
-            requestAnimationFrame(updateProgress);
+    function checkForFaceDescriptor() {
+        if (currFaceDescriptor && currFaceDescriptor.length > 0) {
+            const faceDetectedTime = performance.now(); // Capture the time when the face is detected
+            timeToDetectFirstFace = faceDetectedTime - startTime; // Calculate the time taken to detect the first face
+            startProgressAnimation();
         } else {
-            console.log("Progress animation completed.");
+            // Check again after a delay
+            setTimeout(checkForFaceDescriptor, 100); // Check every 100 milliseconds
         }
     }
 
-    requestAnimationFrame(updateProgress);
+    function startProgressAnimation() {
+        const startTime = performance.now();
+        let lastPromptIndex = -1;
+
+        function updateProgress(timestamp) {
+            const elapsedTime = timestamp - startTime;
+            const normalizedTime = elapsedTime / duration; // Normalize time to range 0-1
+            const easedProgress = easeInOutCubic(normalizedTime); // Apply easing function
+            progressBar.value = Math.min(100, easedProgress * 100); // Ensure the value doesn't exceed 100%
+
+            // Determine the current prompt index based on eased progress
+            const currentPromptIndex = Math.floor(easedProgress * prompts.length);
+
+            // Update the status message if we've moved to the next prompt
+            if (currentPromptIndex !== lastPromptIndex && currentPromptIndex < prompts.length) {
+                statusMessage.innerText = prompts[currentPromptIndex];
+                lastPromptIndex = currentPromptIndex;
+            }
+
+            // Continue the animation until the progress completes
+            if (normalizedTime < 1) {
+                requestAnimationFrame(updateProgress);
+            } else {
+                progressBarComplete = true; // Set the progress completion flag
+            }
+        }
+
+        requestAnimationFrame(updateProgress);
+    }
+
+    checkForFaceDescriptor();
 }

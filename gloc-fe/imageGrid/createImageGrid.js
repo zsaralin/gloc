@@ -7,7 +7,6 @@ let loadedImages;
 export async function createImageGrid(imagesDataArray, abortController) {
     try {
         const allImages = await loadImages(imagesDataArray);
-
         const firstImagesCount = isMobile ? 2 : 3;
         const topImages = allImages.slice(0, firstImagesCount);
         const bottomImages = allImages.slice(firstImagesCount);
@@ -58,7 +57,6 @@ async function addBottomImages(images, imageData, totalImages, startIndex, conta
 
         // Calculate opacity: starts at 100% for the first image and linearly decreases to 50% for the last image
         const opacity = 1 - ((1-opacityVal) * overallIndex / (numArrangedImages - 1)); // Adjust for total images and index
-        console.log(opacity + ' opacit y    ')
         const imageElement = createImageItemContainer(image, i, imageData, opacity);
         currRow.appendChild(imageElement);
     }

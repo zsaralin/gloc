@@ -7,6 +7,7 @@ import {
 } from "../faceRecognition/faceRecognition.js";
 import {clearCurrFaceDescriptor} from "../faceRecognition/faceRecognitionFetcher.js";
 import {createNewScoresDB, deletePrevScoresDB, generateUUID} from "../uuid.js";
+import {shuffleActive} from "../imageGrid/startShuffle.js";
 
 export let newFace = false;
 export let currFace = null;
@@ -23,7 +24,7 @@ export function setCurrFace(mediapipeResult, imageDataUrl){
         startFaceRecognition()
     } else if(mediapipeResult && mediapipeResult.faceLandmarks.length > 0){
         currFace = imageDataUrl
-    } else {
+    } else if (!shuffleActive){
         currFace = null
         clearCurrFaceDescriptor()
         clearRecognitionIntervals()

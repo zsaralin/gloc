@@ -1,4 +1,4 @@
-import {resetNewDB, SERVER_URL} from "../index.js";
+import {enterExperience, resetNewDB, SERVER_URL} from "../index.js";
 import {activateEnterButton, activateExperienceButton, deactivateEnterButton} from "./overlay.js";
 
 export let db = '42';
@@ -41,7 +41,7 @@ async function setSelectedDbName() {
 }
 
 // Function to handle closing the modal
-async function closeModal(lastSelectedDbName) {
+async function closeModal() {
     const currentSelectedDbName = getSelectedDbName();
     // if (lastSelectedDbName !== currentSelectedDbName) {
     console.log(`Database name changed to: ${currentSelectedDbName}`);
@@ -54,52 +54,69 @@ async function closeModal(lastSelectedDbName) {
             },
             body: JSON.stringify({newName: currentSelectedDbName}),
         });
-        console.log('Database name updated successfully.');
         document.getElementById("chooseDbModal").style.display = "none";
-        const button  = document.querySelector(".enter-button")
-        button.disabled = true; // Enable the button
-        button.innerHTML = 'Loading Database<span class="ellipsis"></span>';
+        // const button  = document.querySelector(".enter-button")
+        // button.disabled = true; // Enable the button
+        // button.innerHTML = 'Loading Database<span class="ellipsis"></span>';
+        const loadingText = document.getElementById("loadingText");
+        let dotCount = 0;
+        loadingText.innerHTML = "Loading database";
+        const intervalId = setInterval(() => {
+            // Update the dot count and text accordingly
+            dotCount = (dotCount + 1) % 4; // Cycles dot count from 0 to 3
+            loadingText.innerHTML = "Loading database" + ".".repeat(dotCount);
+            }, 150);
+
         await resetNewDB();
-        activateExperienceButton()
-    } catch (error) {
+        clearInterval(intervalId);
+
+        enterExperience()
+    } catch (error) {g
         console.error('Error updating database name:', error);
     }
 }
 
 export function initializeDBModal() {
     const modal = document.getElementById("chooseDbModal");
-    const btn = document.querySelector(".enter-button");
+    modal.style.display = "flex";
+
+    modal.addEventListener('change', function(event) {
+        // Ensure the event is fired by a radio button
+        if (event.target.type === 'radio') {
+            console.log("Radio button clicked, value:", event.target.value);
+            closeModal();
+
+            // Additional logic can be added here based on the radio button clicked
+        }
+    });
+    // const btn = document.querySelector(".enter-button");
     const close = document.getElementsByClassName("close")[0];
     const ok = document.getElementsByClassName("ok-button")[0];
 
     const dbForm = document.getElementById('dbForm');
 
-    dbForm.addEventListener('submit', function (event) {
-        event.preventDefault(); // Prevent the form from submitting in the traditional way
-    });
+    // dbForm.addEventListener('submit', function (event) {
+    //     event.preventDefault(); // Prevent the form from submitting in the traditional way
+    // });
 
-    let lastSelectedDbName; // Track the last selected database name
+    // let lastSelectedDbName; // Track the last selected database name
 
-    function handleClick() {
-        lastSelectedDbName = getSelectedDbName();
-        const modal = document.getElementById('chooseDbModal');
-        modal.style.display = "flex";
-    }
-    btn.addEventListener('click', handleClick);
+    // function handleClick() {
+    //     lastSelectedDbName = getSelectedDbName();
+    //     const modal = document.getElementById('chooseDbModal');
+    // }
+    // btn.addEventListener('click', handleClick);
 
-    close.onclick = () => {
-        document.getElementById("chooseDbModal").style.display = "none";
-    }
-    window.onclick = (event) => {
-        if (event.target == modal) {
-            document.getElementById("chooseDbModal").style.display = "none";
-        }
-    }
-    ok.onclick = () => {
-        btn.innerHTML = 'Enter the Experience'
-        btn.removeEventListener('click', handleClick);
-        closeModal(lastSelectedDbName);
-    }
+    // window.onclick = (event) => {
+    //     if (event.target == modal) {
+    //         document.getElementById("chooseDbModal").style.display = "none";
+    //     }
+    // }
+    // ok.onclick = () => {
+    //     btn.innerHTML = 'Enter the Experience'
+    //     btn.removeEventListener('click', handleClick);
+    //     closeModal(lastSelectedDbName);
+    // }
 
-    setSelectedDbName();
+    // setSelectedDbName();
 }
