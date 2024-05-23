@@ -60,7 +60,7 @@ export async function startFaceRecognition() {
         await continuousFaceRecognition();
     }
 
-    while (!currFace || !currFaceDescriptor) {
+    while (!currFaceDescriptor || currFaceDescriptor.length === 0 ) {
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 100 milliseconds
     }
 
@@ -107,7 +107,7 @@ async function faceRecognition() {
             clearRecognitionIntervals()
             return
         }
-        if (!currFaceDescriptor || currFaceDescriptor.length === 0) return
+        // if (!currFaceDescriptor || currFaceDescriptor.length === 0) return
         isProcessing = true;
         if (isFirstUpdate) {
             isFirstUpdate = false;
@@ -116,7 +116,7 @@ async function faceRecognition() {
             newGridArrangement = false;
             await createImageGrid(currFaceDescriptor, abortController)
         } else {
-            stopShuffle()
+            // stopShuffle()
             await updateImageGrid(currFaceDescriptor, abortController)
         }
         isProcessing = false;

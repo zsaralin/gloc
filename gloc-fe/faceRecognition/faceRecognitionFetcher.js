@@ -30,9 +30,9 @@ async function fetchFaceRecognitionData() {
 }
 
 let recognitionInterval; // Variable to store the interval ID
+const FACE_RECOG_INTERVAL = 5; //grab face recognition every 2 seconds
 
 export async function continuousFaceRecognition() {
-    const FACE_RECOG_INTERVAL = document.getElementById('refresh-number').value; //grab face recognition every 2 seconds
     await fetchFaceRecognitionData();
     recognitionInterval = setTimeout(() => {
             continuousFaceRecognition(); // Call the function recursively

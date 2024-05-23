@@ -2,7 +2,7 @@ import {getCurrentZoomValue} from "../uiElements/zoom.js";
 import {isMobile} from "../uiElements/displaySize.js";
 import {numArrangedImages} from "./imageGridHelper.js";
 
-let scaleFactor = 0.06; // lower the val, lower the %
+let scaleFactor = 0.05; // lower the val, lower the %
 
 export function createImageItemContainer(image, index, imageData, opacity) {
     const imageItemContainer = document.createElement('div');

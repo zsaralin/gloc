@@ -7,7 +7,7 @@
   "yoffset": "-6",
   "showSimilarity": false,
   "showScaledSimilarity": true,
-  "refreshTime": "10",
+  "refreshTime": "7",
   "boundingBox": true,
   "faceLandmarks": true,
   "fadeDuration": "3",
