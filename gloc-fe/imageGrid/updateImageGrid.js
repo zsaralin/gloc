@@ -3,13 +3,13 @@ import {animationType, updateOnlyDifferentImg} from "../uiElements/sidePanel.js"
 import {clearRecognitionIntervals} from '../faceRecognition/faceRecognition.js';
 import {getCurrentZoomValue} from "../uiElements/zoom.js";
 import {loadImages} from "./imageLoader.js";
-import {addImageClickListener} from "../collage/collage.js";
+import {addImageClickListener} from "../bioModal/collage.js";
 import {stopShuffle} from "./startShuffle.js";
 import {createBottomTextOverlay, createTopTextOverlay} from "./createImageContainer.js";
 import {db} from "../uiElements/dbModal.js";
-import {addImageClickListener42} from "../collage/collage_42.js";
+import {addImageClickListener42} from "../bioModal/bio_42.js";
 import {getCurrentOffsetValues} from "../uiElements/offset.js";
-import {isMobile} from "../uiElements/displaySize.js";
+import {isMobile} from "../uiElements/screensizeLayout.js";
 
 let fadeTime;
 let fadeSlider;
@@ -69,21 +69,20 @@ async function updateImages(images, imageData, totalImages, startIndex, abortCon
         const newTopTextOverlay = createTopTextOverlay(i, imageData, progressBar);
         const fadeOverlay = imageContainer.querySelector('.overlay');
 
-        if (shouldUpdateImage(images[i], currentImage)) {
-            if (animationType === "none") {
-                currentImage.src = images[i].src;
-                topTextOverlay.innerHTML = newTopTextOverlay.innerHTML;
-                bottomTextOverlay.innerHTML = newBottomTextOverlay.innerHTML;
-            } else {
-                if (animationType === "crossfade") {
-                    const crossfadePromise = updateCrossfade(currentImage, nextImage, topTextOverlay, bottomTextOverlay, newTopTextOverlay, newBottomTextOverlay, fadeOverlay, images[i].src, opacity);
-                    animationPromises.push(crossfadePromise);
-                } else if (animationType === "fullFade") {
-                    const fadePromise = updateFullFade(currentImage, nextImage, topTextOverlay, bottomTextOverlay, newTopTextOverlay, newBottomTextOverlay, fadeOverlay, images[i].src, opacity);
-                    animationPromises.push(fadePromise);
-                }
+        if (animationType === "none") {
+            currentImage.src = images[i].src;
+            topTextOverlay.innerHTML = newTopTextOverlay.innerHTML;
+            bottomTextOverlay.innerHTML = newBottomTextOverlay.innerHTML;
+        } else {
+            if (animationType === "crossfade") {
+                const crossfadePromise = updateCrossfade(currentImage, nextImage, topTextOverlay, bottomTextOverlay, newTopTextOverlay, newBottomTextOverlay, fadeOverlay, images[i].src, opacity);
+                animationPromises.push(crossfadePromise);
+            } else if (animationType === "fullFade") {
+                const fadePromise = updateFullFade(currentImage, nextImage, topTextOverlay, bottomTextOverlay, newTopTextOverlay, newBottomTextOverlay, fadeOverlay, images[i].src, opacity);
+                animationPromises.push(fadePromise);
             }
         }
+
         if (db === '42') {
             await addImageClickListener42(imageContainer, images[i]);
         } else {
@@ -171,18 +170,3 @@ async function updateFullFade(currentImage, nextImage, topTextOverlay, bottomTex
         }, fadeTime / 2 * 1000);
     });
 }
-
-function shouldUpdateImage(newImage, currentImage) {
-    return true;
-    return !updateOnlyDifferentImg || (updateOnlyDifferentImg && currentImage.src !== newImage.src);
-}
-
-// export function initFadeSlider() {
-//     const timeSlider = document.getElementById("fade-slider");
-//     const sliderValue = document.getElementById("fade-slider-value");
-//     fadeTime = parseInt(timeSlider.value);
-//     timeSlider.addEventListener("input", function () {
-//         fadeTime = parseInt(timeSlider.value);
-//         clearRecognitionIntervals();
-//     });
-// }

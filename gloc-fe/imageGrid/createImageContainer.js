@@ -1,5 +1,5 @@
 import {getCurrentZoomValue} from "../uiElements/zoom.js";
-import {isMobile} from "../uiElements/displaySize.js";
+import {isMobile} from "../uiElements/screensizeLayout.js";
 import {numArrangedImages} from "./imageGridHelper.js";
 
 let scaleFactor = 0.05; // lower the val, lower the %

@@ -4,7 +4,7 @@ import {
     resetAbortController,
     resetGrid
 } from "../faceRecognition/faceRecognition.js";
-import {isMobile} from "../uiElements/displaySize.js";
+import {isMobile} from "../uiElements/screensizeLayout.js";
 
 let numPhotos = 35;
 let prevNumPhotos = numPhotos;

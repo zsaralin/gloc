@@ -67,14 +67,9 @@ function clearCanvas() {
 
         setTimeout(() => {
             ctx.clearRect(0, 0, canvasWidth, canvasWidth);
-            // canvas.style.transition = `opacity ${0}s ease`;
-            // canvas.style.opacity = 1;
-            // ctx.clearRect(0, 0, canvasWidth, canvasWidth);
             landmarkColour = fadeInColour
             canvasCleared = false;
-
-            // changeStrokeStyleWithTransition(landmarkColour, '255, 255, 255');
-        }, FADE_DUR * 1000);
+            }, FADE_DUR * 1000);
     }
 }
 

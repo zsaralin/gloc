@@ -2,9 +2,9 @@ import {arrangeBottomGrid, numArrangedImages} from "./imageGridHelper.js";
 import {updateOnlyDifferentImg} from "../uiElements/sidePanel.js"; // Replace with the actual path to your constant
 import {loadImages} from "./imageLoader.js";
 import {animateProgressBar, stopShuffle} from "./startShuffle.js";
-import {addImageClickListener} from "../collage/collage.js";
+import {addImageClickListener} from "../bioModal/collage.js";
 import {db} from "../uiElements/dbModal.js";
-import {addImageClickListener42} from "../collage/collage_42.js";
+import {addImageClickListener42} from "../bioModal/bio_42.js";
 import {
     createBottomTextOverlay
     , createTopTextOverlay,

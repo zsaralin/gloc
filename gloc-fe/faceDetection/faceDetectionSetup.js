@@ -15,7 +15,6 @@ export async function setupFaceLandmarker() {
         },
         outputFaceBlendshapes: false,
         runningMode: 'VIDEO',
-        numFaces: 1
     });
 
 }

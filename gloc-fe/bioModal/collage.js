@@ -1,6 +1,4 @@
 // Replace this with your folder path
-import {reset} from "../index.js";
-import {resetAbortController} from "../faceRecognition/faceRecognition.js";
 
 const imageFolder = `./images/small` ;
 const imageFileNames = [
@@ -302,22 +300,3 @@ function openModal(imageSrc) {
 
     modal.style.display = 'block';
 }
-
-// function handlePopState() {
-window.addEventListener('popstate', async function () {
-    const currentURL = new URL(window.location.href);
-    const searchParams = currentURL.searchParams;
-
-    if (searchParams.has('collage')) {
-        searchParams.delete('collage');
-        const newURL = currentURL.toString().replace(currentURL.search, '');
-        const response = await fetch('./index.html'); // Replace 'index.html' with the correct path
-        const indexHtmlContent = await response.text();
-        history.replaceState(null, '', newURL);
-        history.pushState({}, null, newURL);
-        document.documentElement.innerHTML = indexHtmlContent;
-        reset()
-    }
-});
-
-// }

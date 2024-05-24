@@ -1,7 +1,7 @@
 import {arrangeBottomGrid} from "./imageGridHelper.js";
 import {loadImages} from "./imageLoader.js";
 import {createImageItemContainer} from "./createImageContainer.js";
-import {isMobile} from "../uiElements/displaySize.js";
+import {isMobile} from "../uiElements/screensizeLayout.js";
 
 let loadedImages;
 export async function createImageGrid(imagesDataArray, abortController) {

@@ -1,77 +1,67 @@
-// helper function to print strings to html document as a log
-import {enterExperience, resetNewDB, setupCamera} from "../index.js";
+import {setupCamera} from "../index.js";
 import {initializeDBModal} from "./dbModal.js";
-import {startFaceRecognition} from "../faceRecognition/faceRecognition.js";
-import {startShuffle} from "../imageGrid/startShuffle.js";
 
 export function setupLandingPage() {
-    const overlayContent = `
-        <div class="overlay-content">
-        <button class="language-button">ENGLISH</button> 
+    const overlay = document.getElementById('overlay');
+    if (!overlay) return;
 
-<!--            <button class="choose-db-button">Change Database</button> -->
+    overlay.innerHTML = getOverlayContent();
+
+    const camAccessBtn = document.querySelector('.enter-button');
+    if (camAccessBtn) {
+        camAccessBtn.addEventListener('click', async () => {
+            camAccessBtn.disabled = true;
+            camAccessBtn.innerHTML = 'Accessing Camera<span class="ellipsis"></span>';
+            await setupCamera();
+            camAccessBtn.disabled = false;
+            camAccessBtn.style.display = 'none';
+            initializeDBModal();
+        });
+    }
+}
+
+function getOverlayContent() {
+    return `
+        <div class="overlay-content">
+            <button class="language-button">ENGLISH</button> 
             <h2 class="overlay-header">Global Level of Confidence</h2>
             <p class="overlay-text">[Placeholder for Project Info]</p>
             <p class="overlay-text">[Placeholder for Legal Lease]</p>
-
             <ul class="overlay-list" style="padding-bottom: 15px">
                 <li>We will require access to your camera.</li>
                 <li>Your facial landmarks will be extracted.</li>
                 <li>No data is retained.</li>
             </ul>
             <button class="enter-button loading" disabled ></button>
-        
-        <!-- Modal for choosing database -->
-        <div id="chooseDbModal" >
-            <div class="modal-content">
-                <h2>Select a Database</h2>
-                <form id="dbForm">
-                <label class="radio-input">
-                    <input type="radio" name="database" value="42"/>
-                            <span class="custom-radio"></span>
-
-                    Ayotzinapa (43)
-                    <p>This is additional text providing more details about the Ayotzinapa database.</p>
-                </label>
-                <label class="radio-input">
-                    <input type="radio" name="database" value="small" />
-                            <span class="custom-radio"></span>
-
-                    Flickr-Faces-HQ (3143)
-                    <p>This paragraph describes the Flickr-Faces-HQ database.</p>
-                </label>
-            </form>
-            </div>
+            <div id="chooseDbModal">
+                <div class="modal-content">
+                    <h2>Select a Database</h2>
+                    <form id="dbForm">
+                        ${getDatabaseOptions()}
+                    </form>
+                </div>
             </div>
             <div id="loadingText" style="margin-top: 10px;"></div>
-       
         </div>
     `;
-
-    const overlay = document.getElementById('overlay');
-    if (overlay) {
-        overlay.innerHTML = overlayContent;
-        const button = document.querySelector('.enter-button');
-
-        async function handleButtonClick() {
-            button.disabled = true; // Enable the button
-            button.innerHTML = 'Accessing Camera<span class="ellipsis"></span>';
-            await setupCamera();
-            button.disabled = false; // Enable the button
-            button.style.display = 'none'
-            // button.innerHTML = 'Select Database';
-            // button.removeEventListener('click', handleButtonClick);  // Remove the listener
-            initializeDBModal();
-        }
-
-        button.addEventListener('click', handleButtonClick);
-
-    }
 }
 
-const lorep =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pulvinar libero nec nisi vehicula, nec ultricies libero dapibus. Sed ut eros eget ante volutpat pharetra non sit amet turpis. Nullam nec urna velit. Mauris commodo fringilla ultrices. Vivamus fringilla nec sapien ac scelerisque. "
-
+function getDatabaseOptions() {
+    return `
+        <label class="radio-input">
+            <input type="radio" name="database" value="42"/>
+            <span class="custom-radio"></span>
+            Ayotzinapa (43)
+            <p>This is additional text providing more details about the Ayotzinapa database.</p>
+        </label>
+        <label class="radio-input">
+            <input type="radio" name="database" value="small" />
+            <span class="custom-radio"></span>
+            Flickr-Faces-HQ (3143)
+            <p>This paragraph describes the Flickr-Faces-HQ database.</p>
+        </label>
+    `;
+}
 
 export function activateEnterButton() {
     const button = document.getElementsByClassName('enter-button')[0]
@@ -80,26 +70,21 @@ export function activateEnterButton() {
     button.innerText = "Access My Camera"; // Update button text if needed
 }
 
-export function activateExperienceButton() {
-    const button = document.getElementsByClassName('enter-button')[0]
-    button.disabled = true; // Enable the button
-    button.classList.remove('loading');
-    button.disabled = false; // Enable the button
-    button.innerText = "Start"; // Update button text if needed
-    button.addEventListener('click', enterExperience);
-}
-
-export function deactivateEnterButton() {
-    const button = document.getElementsByClassName('enter-button')[0];
-    button.classList.add('loading'); // Add a 'loading' class to indicate it's being processed or shouldn't be interacted with
-    button.disabled = true; // Disable the button to prevent clicks
-    button.innerText = ""; // Update button text to indicate the loading or disabled state
-}
-
-
 document.addEventListener('DOMContentLoaded', function () {
     const languageButton = document.querySelector('.language-button');
     languageButton.addEventListener('click', function () {
         languageButton.textContent = languageButton.textContent === 'ENGLISH' ? 'ESPAÑOL' : 'ENGLISH';
     });
 });
+
+export function fadeoutOverlay(){
+    const overlay = document.getElementById('overlay')
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, 1000);
+}
+
+const lorep =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pulvinar libero nec nisi vehicula, nec ultricies libero dapibus. Sed ut eros eget ante volutpat pharetra non sit amet turpis. Nullam nec urna velit. Mauris commodo fringilla ultrices. Vivamus fringilla nec sapien ac scelerisque. "
+

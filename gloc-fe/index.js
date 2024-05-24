@@ -3,31 +3,21 @@
  * Loaded via `webcam.html`
  */
 import {drawFaces, setupCanvas} from './faceDetection/drawFaces.js'
-import {activateEnterButton, setupLandingPage} from "./uiElements/overlay.js";
+import {activateEnterButton, fadeoutOverlay, setupLandingPage} from "./uiElements/overlay.js";
 import {setupPlayPause} from './uiElements/playPause.js';
 import {
     abortController,
-    resetAbortController,
-    restartFaceRecogCalls,
-    setIsFirstUpdate,
     startFaceRecognition
 } from './faceRecognition/faceRecognition.js';
 import {createImageGrid} from "./imageGrid/createImageGrid.js";
-import {restartSidePanel} from "./uiElements/sidePanel.js";
 import {
-    clearRandomImages,
     getRandomImages,
-    shuffleActive,
     startShuffle, stopShuffle,
-    updateShuffleLoop
 } from "./imageGrid/startShuffle.js";
 import {handleOrientationChange} from "./uiElements/detectOrientation.js";
-import {faceLandmarker, setupFaceLandmarker} from "./faceDetection/faceDetectionSetup.js";
+import {setupFaceLandmarker} from "./faceDetection/faceDetectionSetup.js";
 import {startFaceDetection} from "./faceDetection/faceDetection.js";
-import {clearLoadedRandomImages} from "./imageGrid/updateShuffle.js";
-import {cropFacesFE, cropImagesParent} from "./imageProcessing/cropFacesFE.js";
-import {checkDisplaySize} from "./uiElements/displaySize.js";
-// configuration options
+import {adjustLayoutForScreenSize} from "./uiElements/screensizeLayout.js";
 let stream = null;
 export const SERVER_URL =  "http://localhost:4000";//"https://face-recognition-be.onrender.com"; //
 
@@ -42,11 +32,6 @@ export async function setupCamera() {
         const theDevice = videoInputDevices[0]
         if (theDevice) {
             stream = await navigator.mediaDevices.getUserMedia({
-                // video: {
-                //     width: {ideal: 500}, // Ideal width of 500px, adjust as needed
-                //     height: {ideal: 500}, // Ideal height of 500px, adjust as needed
-                //     deviceId: {exact: theDevice.deviceId} // Use the specific device's ID
-                // },
                 video: true,
                 audio: false // No audio capture
             });
@@ -58,7 +43,6 @@ export async function setupCamera() {
     if (!video || !canvas || !playPauseButton) {
         return null;
     }
-    // window.stream = stream;
     video.srcObject = stream
 
     return new Promise((resolve, reject) => {
@@ -71,9 +55,6 @@ export async function setupCamera() {
                 video.play().then(() => {
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);
-                    // startShuffle();
-                    // document.getElementById('overlay').style.display = 'none';
-                    // startFaceDetection(video, canvas); // Consider awaiting this if it's async and critical for resolution
                     resolve();
                 }).catch(error => reject(error)); // Catch errors from video.play()
             } catch (error) {
@@ -85,13 +66,9 @@ export async function setupCamera() {
                     const cropSize = Math.min(video.videoWidth, video.videoHeight);
                     canvas.width = cropSize;
                     canvas.height = cropSize;
-                    console.log(canvas.width + ' and ' + canvas.height)
                     await video.play();
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);
-                    // startShuffle();
-                    // document.getElementById('overlay').style.display = 'none';
-                    // startFaceDetection(video, canvas); // Consider handling potential errors if it's async
                     resolve();
                 } catch (error) {
                     reject(error);
@@ -102,51 +79,24 @@ export async function setupCamera() {
 }
 
 async function main() {
-    checkDisplaySize()
+    adjustLayoutForScreenSize()
     setupLandingPage();
     await setupFaceLandmarker()
-    // const randomImageArr = await getRandomImages()
-    // await createImageGrid(randomImageArr, abortController)
     activateEnterButton()
 }
 
-
-export async function reset() {
-    await setupCamera();
-    setupCanvas(); // This is a synchronous operation
-    const randomImageArr = await getRandomImages(); // Load images for shuffle before making button ready
-    setIsFirstUpdate(true);
-    restartFaceRecogCalls();
-    await createImageGrid(randomImageArr, abortController);
-    startShuffle();
-    await restartSidePanel();
-    startFaceRecognition();
-}
-
 export async function resetNewDB() {
-    // resetAbortController()
-    // stopShuffle()
-    // clearRandomImages()
-    // clearLoadedRandomImages()
     const randomImageArr = await getRandomImages()
     await createImageGrid(randomImageArr, abortController)
-    // startShuffle()
-    // startFaceDetection(video,canvas)
-    // startFaceRecognition();
 }
 
-export function enterExperience(){
+export function enterMainPage(){
     startShuffle()
     startFaceDetection(video,canvas)
-    startFaceRecognition();
-    const overlay = document.getElementById('overlay')
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-        overlay.style.display = 'none';
-    }, 1000);
+    // startFaceRecognition();
+    fadeoutOverlay()
 
 }
 
-window.onload = main()//cropImagesParent(200);
-
+window.onload = main() //cropImagesParent(200);
 window.addEventListener('orientationchange', handleOrientationChange);

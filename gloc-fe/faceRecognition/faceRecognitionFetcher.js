@@ -18,7 +18,7 @@ async function fetchFaceRecognitionData() {
             const response = await fetch(`${SERVER_URL}/match`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({photo: currFace, numPhotos: getNumPhotos()}),
+                body: JSON.stringify({photo: currFace, numPhotos: getNumPhotos(), uuid : userID}),
             });
             data = await response.json();
         }

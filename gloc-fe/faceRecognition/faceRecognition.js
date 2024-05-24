@@ -33,7 +33,7 @@ export function handleRefreshTime() {
     if (!timeSlider) initTimeSlider()
     refreshTime = timeSlider.value; // Convert to integer and update updateCount
     clearRecognitionIntervals()
-    startFaceRecognition(); // Restart face recognition with the new refresh time
+    // startFaceRecognition(); // Restart face recognition with the new refresh time
 }
 
 
