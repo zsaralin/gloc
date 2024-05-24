@@ -1,6 +1,4 @@
 import {handleRefreshTime} from "../faceRecognition/faceRecognition.js";
-import {initNumPhotoSlider} from "../imageGrid/imageGridHelper.js";
-import {initWhiteSlider} from "./whiteBorder.js";
 import {SERVER_URL} from "../index.js";
 import {handleZoomAndOffset} from "./offset.js";
 import {handleFadeTime} from "../imageGrid/updateImageGrid.js";
@@ -38,13 +36,6 @@ export async function setupSidePanel() {
         updateSimilarityText(similarityCheckbox.checked, showScaledSimilarity);
     });
 
-
-    const updateOnlyDifferentSrcCheckbox = document.getElementById("updateOnlyDifferentImg");
-    //
-    // updateOnlyDifferentSrcCheckbox.addEventListener("change", function () {
-    //     updateOnlyDifferentImg = updateOnlyDifferentSrcCheckbox.checked;
-    // });
-
     const boxCheckbox = document.getElementById("boxCheckbox");
     boxCheckbox.addEventListener("change", function () {
         drawBox = boxCheckbox.checked;
@@ -54,20 +45,6 @@ export async function setupSidePanel() {
     landmarksCheckbox.addEventListener("change", function () {
         drawLandmarks = landmarksCheckbox.checked;
     });
-
-    // const animationTypeRadios = document.querySelectorAll('input[name="animationType"]');
-    // animationTypeRadios.forEach((radio) => {
-    //     radio.addEventListener("change", function () {
-    //         animationType = radio.value; // Update the selected animation type
-    //     });
-    // });
-
-    // const opacitySlider = document.getElementById('opacity-slider')
-    // const opacitySliderVal = document.getElementById('opacity-slider-value')
-    //
-    // opacitySlider.addEventListener('input', function () {
-    //     opacitySliderVal.textContent = opacitySlider.value;
-    // });
 }
 
 function setupSidePanelButton() {
@@ -137,17 +114,6 @@ function setSliderValue(sliderId, numberInputId, value) {
     const numberInput = document.getElementById(numberInputId);
     slider.value = value;
     numberInput.value = value;
-}
-function updateDisplayValues() {
-    // For each slider-container in the document
-    document.querySelectorAll('.slider-container').forEach(container => {
-        const slider = container.querySelector('input[type="range"]');
-        const numberInput = container.querySelector('input[type="number"]');
-        // Update the number input and optionally the span when the slider value changes
-        slider.addEventListener('input', () => {
-            numberInput.value = slider.value; // Synchronize number input with slider
-        });
-})
 }
 
 function gatherSettings() {

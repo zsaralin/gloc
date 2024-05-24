@@ -1,10 +1,9 @@
-import {FaceDetector, FilesetResolver, FaceLandmarker} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
-
+import {FaceDetector, FilesetResolver, FaceLandmarker}  from '../internal_cdn/package0/vision_bundle.mjs'
 export let faceLandmarker; export let faceDetector; export let optionsTinyFaceDetector;
 
 export async function setupFaceLandmarker() {
     const vision = await FilesetResolver.forVisionTasks(
-        "./internal_cdn/package/wasm"
+        "./internal_cdn/package0/wasm"
     );
 
 
@@ -21,7 +20,7 @@ export async function setupFaceLandmarker() {
 
 export async function setupFaceDetector() {
     const vision = await FilesetResolver.forVisionTasks(
-        "./internal_cdn/package/wasm"
+        "./internal_cdn/package0/wasm"
     );
 
     faceDetector = await FaceDetector.createFromOptions(vision, {

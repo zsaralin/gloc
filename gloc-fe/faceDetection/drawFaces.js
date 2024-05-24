@@ -1,6 +1,4 @@
 import {isEyeDistanceAboveThreshold} from "../minEyeDist.js";
-import {DrawingUtils, FaceLandmarker} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
-import {newFace, setCurrFace, setNewFace} from "./newFaces.js";
 import {drawFacialFeatures} from "./drawFacialFeatures.js";
 
 let canvasWidth;

@@ -1,8 +1,7 @@
 import {
     abortController,
     clearRecognitionIntervals,
-    killController,
-    resetAbortController, restartFaceRecogCalls, restartFaceRecogCalls2,
+    resetAbortController,
     startFaceRecognition
 } from "../faceRecognition/faceRecognition.js";
 import {clearCurrFaceDescriptor} from "../faceRecognition/faceRecognitionFetcher.js";
@@ -13,30 +12,45 @@ export let newFace = false;
 export let currFace = null;
 
 
-export function setCurrFace(mediapipeResult, imageDataUrl){
-    if (!currFace && mediapipeResult && mediapipeResult.faceLandmarks.length > 0 && imageDataUrl) {
-        currFace = imageDataUrl
-        newFace = true;
-        console.log('new face detected')
-        generateUUID()
-        // createNewScoresDB()
-        resetAbortController()
-        startFaceRecognition()
-    } else if(mediapipeResult && mediapipeResult.faceLandmarks.length > 0){
-        currFace = imageDataUrl
-    } else if (!shuffleActive){
-        currFace = null
-        clearCurrFaceDescriptor()
-        clearRecognitionIntervals()
-        restartFaceRecogCalls2()
-        abortController.abort();
-        deletePrevScoresDB()
+export function setCurrFace(mediapipeResult, imageDataUrl) {
+    if (!imageDataUrl) return;  // Exit if no image data is provided
 
+    if (mediapipeResult && mediapipeResult.faceLandmarks.length > 0) {
+        updateFaceDetection(mediapipeResult, imageDataUrl);
+    } else {
+        handleNoFaceDetected();
     }
 }
 
-export function setNewFace(i){
-    newFace =  i
+function updateFaceDetection(mediapipeResult, imageDataUrl) {
+    if (!currFace) {
+        currFace = imageDataUrl;
+        handleNewFaceDetection(mediapipeResult);
+    } else {
+        currFace = imageDataUrl;  // Always update with the latest image
+    }
+}
+
+function handleNewFaceDetection(mediapipeResult) {
+    console.log('New face detected');
+    newFace = true;
+    generateUUID();  // Assume UUID generation is needed for session tracking
+    resetAbortController();
+    startFaceRecognition();
+}
+
+function handleNoFaceDetected() {
+    if (!shuffleActive) {
+        clearRecognitionResources();
+    }
+}
+
+function clearRecognitionResources() {
+    currFace = null;
+    clearCurrFaceDescriptor();
+    clearRecognitionIntervals();
+    abortController.abort();
+    deletePrevScoresDB();
 }
 
 export function resetCurrFace() {
