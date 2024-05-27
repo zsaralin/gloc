@@ -9,27 +9,30 @@ let isFirstUpdate = true;
 let timeSlider;
 let refreshTime;
 
-let intervalId;
-let recognitionIntervals = []; // Use an array to store interval IDs
+// let intervalId;
+// let recognitionIntervals = []; // Use an array to store interval IDs
 
 export async function startFaceRecognition() {
-    if (!refreshTime) handleRefreshTime()
+    if (!refreshTime) {
+        await continuousFaceRecognition();
+        handleRefreshTime()
+    }
 
-    clearInterval(intervalId);
+    // clearInterval(intervalId);
 
     while (!currFace) {
         await new Promise(resolve => setTimeout(resolve, 100));
     }
-    if (recognitionIntervals.length === 0) {
-        await continuousFaceRecognition();
-    }
+    // if (recognitionIntervals.length === 0) {
+    //     await continuousFaceRecognition();
+    // }
 
     while (!currFaceDescriptor || currFaceDescriptor.length === 0 ) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    await performRecognitionTask();
+    // await performRecognitionTask();
     setRecognitionInterval();
 }
 
@@ -55,15 +58,39 @@ async function performRecognitionTask() {
     }
 }
 
-function setRecognitionInterval() {
-    intervalId = setInterval(async () => {
-        if (recognitionIntervals.length === 0) {
-            recognitionIntervals.push(intervalId);
-            await performRecognitionTask();
-            recognitionIntervals.pop();
-        }
-    }, refreshTime * 1000);  // Converts seconds to milliseconds for setInterval
+async function setRecognitionInterval() {
+    recognitionInterval.start(); // pass the refreshTime as seconds
 }
+
+const recognitionInterval = (function() {
+    let timeoutId;
+
+    async function runRecognition() {
+        const startTime = performance.now();
+
+        await performRecognitionTask();
+
+        const endTime = performance.now();
+        const taskDuration = endTime - startTime;
+        const delay = Math.max(0, refreshTime * 1000 - taskDuration);
+
+        timeoutId = setTimeout(() => runRecognition(refreshTime), delay);
+    }
+
+    return {
+        start: function() {
+            if (!timeoutId) {  // Prevent multiple instances running
+                runRecognition();
+            }
+        },
+        stop: function() {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+        }
+    };
+})();
 
 export function handleRefreshTime() {
     if (!timeSlider) timeSlider = document.getElementById("time-slider");
@@ -72,9 +99,11 @@ export function handleRefreshTime() {
 }
 
 export function clearRecognitionIntervals() {
-    clearInterval(intervalId);
-    intervalId = null;
-    recognitionIntervals = [];
+    recognitionInterval.stop();
+
+    // clearInterval(intervalId);
+    // intervalId = null;
+    // recognitionIntervals = [];
 }
 
 export let abortController = new AbortController();

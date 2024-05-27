@@ -23,7 +23,7 @@ export async function startFaceDetection(video) {
 
         // Draw the central portion of the video onto the entire canvas
         context.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
-        const imageDataURL = canvas.toDataURL('image/jpeg'); // Adjust quality
+        const imageDataURL = canvas.toDataURL('image/jpeg', .5); // Adjust quality
 
 
         const startTimeMs = performance.now();
