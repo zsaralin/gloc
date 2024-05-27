@@ -2,6 +2,7 @@ import {getNumPhotos, numArrangedImages} from "./imageGridHelper.js";
 import {isMobile} from "../uiElements/screensizeLayout.js";
 
 export async function loadImages(imageDataArray) {
+    if(!imageDataArray) return
     const batchSize = 10; // Adjust the batch size as needed
     const loadedImages = [];
     const numPhotos = numArrangedImages ? numArrangedImages + (isMobile ? 2 :3 ) : getNumPhotos() ;

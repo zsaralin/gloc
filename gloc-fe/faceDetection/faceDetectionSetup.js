@@ -20,16 +20,16 @@ export async function setupFaceLandmarker() {
 
 export async function setupFaceDetector() {
     const vision = await FilesetResolver.forVisionTasks(
-        "./internal_cdn/package0/wasm"
+
     );
 
     faceDetector = await FaceDetector.createFromOptions(vision, {
         baseOptions: {
-            modelAssetPath:`./internal_cdn/blaze_face_short_range.tflite`,
+            modelAssetPath:``,//`../internal_cdn/blaze_face_short_range.tflite`,
             delegate: "GPU",
         },
         outputFaceBlendshapes: false,
-        runningMode: 'IMAGE',
+        runningMode: 'VIDEO',
         numFaces: 1
     });
 

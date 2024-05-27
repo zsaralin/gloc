@@ -18,21 +18,21 @@ export async function startFaceDetection(video) {
     const sWidth = cropSize;
     const sHeight = cropSize;
     async function detectAndDraw() {
-        if (video && !video.paused) {
-            // Draw only the central portion of the video onto the entire canvas
-            context.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
-            const imageDataURL = canvas.toDataURL('image/jpeg'); // Adjust quality
-            setCurrFace(mediapipeResult, imageDataURL); // Update face processing with detected results
+        // if (video && !video.paused) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
-            const startTimeMs = performance.now();
-            // Assuming mediapipeResult and faceLandmarker are defined correctly elsewhere
-            mediapipeResult = faceLandmarker.detectForVideo(canvas, startTimeMs);
+        // Draw the central portion of the video onto the entire canvas
+        context.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
+        const imageDataURL = canvas.toDataURL('image/jpeg'); // Adjust quality
 
-            if (mediapipeResult) {
-                drawFaces(mediapipeResult); // Optional: Draw detected faces on the canvas
-            }
-            requestAnimationFrame(detectAndDraw);
+
+        const startTimeMs = performance.now();
+        mediapipeResult = faceLandmarker.detectForVideo(canvas, startTimeMs);
+        setCurrFace(mediapipeResult, imageDataURL); // Update face processing with detected results
+        if (mediapipeResult) {
+            drawFaces(mediapipeResult); // Optional: Draw detected faces on the canvas
         }
+        requestAnimationFrame(detectAndDraw);
     }
 
     detectAndDraw();
