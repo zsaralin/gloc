@@ -15,7 +15,7 @@ export async function createImageGrid(imagesDataArray, abortController) {
         const totalImages = allImages.length;
 
         const container = document.getElementById('bottom-image-container');
-        container.style.height = `calc(100vh - ${document.getElementById('top').offsetHeight}px)`;
+        container.style.height = `calc(100svh - ${document.getElementById('top').offsetHeight}px)`;
 
         const { numArrangedImages, numRows, numCols } = arrangeBottomGrid(container);
 

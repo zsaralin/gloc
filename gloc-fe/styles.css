@@ -455,7 +455,7 @@ button {
 
 
 .enter-button {
-    font-family: monospace;
+    font-family: inherit;
     display: block; /* Makes sure the button is a block-level element */
     margin-left: auto;
     margin-right: auto;
