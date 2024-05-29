@@ -91,7 +91,7 @@ export async function resetNewDB() {
 }
 
 export function enterMainPage(){
-    // startShuffle()
+    startShuffle()
     startFaceDetection(video,canvas)
     // startFaceRecognition();
     fadeoutOverlay()

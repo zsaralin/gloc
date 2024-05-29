@@ -28,7 +28,7 @@ export async function startFaceDetection(video) {
 
         const startTimeMs = performance.now();
         mediapipeResult = faceLandmarker.detectForVideo(canvas, startTimeMs);
-        // setCurrFace(mediapipeResult, imageDataURL); // Update face processing with detected results
+        setCurrFace(mediapipeResult, imageDataURL); // Update face processing with detected results
         if (mediapipeResult) {
             drawFaces(mediapipeResult); // Optional: Draw detected faces on the canvas
         }
