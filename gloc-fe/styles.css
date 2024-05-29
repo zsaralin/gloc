@@ -3,9 +3,9 @@ body {
     flex-direction: column;
     /*justify-content: center;*/
     /*align-items: center;*/
-    height: 100vh;
+    height: 100svh;
     width:100%;
-    font-family: "Cascadia Mono", serif;
+    font-family: 'Consolas', 'Courier New', Monaco, 'Lucida Console', monospace;
     color: white;
     font-size: 13px;
     line-height: 22px;
