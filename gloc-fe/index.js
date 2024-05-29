@@ -19,7 +19,7 @@ import {setupFaceLandmarker} from "./faceDetection/faceDetectionSetup.js";
 import {startFaceDetection} from "./faceDetection/faceDetection.js";
 import {adjustLayoutForScreenSize} from "./uiElements/screensizeLayout.js";
 let stream = null;
-export const SERVER_URL =  "http://localhost:4000";//"https://face-recognition-be.onrender.com"; //
+export const SERVER_URL = "https://face-recognition-be.onrender.com"; // "http://localhost:4000";//
 
 let video; let canvas;
 
