@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 4000;
 const cors = require('cors')
 const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescriptors');
 require('dotenv').config();
-const localFolderPath  = './42'// '..\\..\\face_backet\\'
+const localFolderPath  =  '..\\..\\face_backet\\'
 
 app.use(cors())
 app.use(express.json());
@@ -50,8 +50,8 @@ app.post('/match', async (req, res) => {
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
-            const photoCropPath = path.join(localFolderPath, '', label, `${label}_crop_padded.png`);
-            const photoPath = path.join(localFolderPath, '', label, `${label}_cmp.png`);
+            const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_crop_padded.png`);
+            const photoPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
             const txtFile = path.join(localFolderPath, dbName, label, `${label}.json`);
             const name = await getNameFromJsonFile(txtFile, label);
 
@@ -131,7 +131,7 @@ async function getNameFromJsonFile(filePath, defaultLabel) {
 app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
-        const imagesFolder =  `${localFolderPath}/`;//`${localFolderPath}/${dbName}/`; // Adjust the folder path as needed
+        const imagesFolder =  `${localFolderPath}/${dbName}/`; // Adjust the folder path as needed
 
         const randomImages = await readRandomImagesFromFolder(imagesFolder);
         res.json(randomImages);
