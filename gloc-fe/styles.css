@@ -3,9 +3,9 @@ body {
     flex-direction: column;
     /*justify-content: center;*/
     /*align-items: center;*/
-    height: 100vh;
+    height: 100svh;
     width:100%;
-    font-family: "Cascadia Mono", serif;
+    font-family: "Cascadia Mono", 'Courier New', monospace;
     color: white;
     font-size: 13px;
     line-height: 22px;
@@ -455,7 +455,7 @@ button {
 
 
 .enter-button {
-    font-family: monospace;
+    font-family: inherit;
     display: block; /* Makes sure the button is a block-level element */
     margin-left: auto;
     margin-right: auto;
