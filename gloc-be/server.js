@@ -34,52 +34,53 @@ createScoresTable()
 // returns an array of top n matches, for each match - label, distance, image [compressed, first image]
 app.post('/match', async (req, res) => {
     try {
-        const {photo, numPhotos, uuid} = req.body;
-        if(!photo) {
-            res.json(null);
-            return
-        }
-        const descriptor = await getDescriptor(photo)
-        if(!descriptor) {
-            res.json(null);
-            return
-        }
-
-        const labels = [];
-
-        const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
-        const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
-            const {label, normalizedDistance} = nearestDescriptor;
-            const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_crop_padded.png`);
-            const photoPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
-            const txtFile = path.join(localFolderPath, dbName, label, `${label}.json`);
-            const name = await getNameFromJsonFile(txtFile, label);
-
-            const doesPhotoCropExist = await fileExists(photoCropPath);
-            const doesPhotoExist = await fileExists(photoPath);
-
-            if (doesPhotoCropExist && doesPhotoExist) {
-                try {
-                    const imageCropBuffer = await encodeImageToBase64(photoCropPath);
-                    const imageBuffer = await encodeImageToBase64(photoPath);
-                    labels.push(name)
-                    return {
-                        label,
-                        name,
-                        distance: normalizedDistance * 100,
-                        image: imageCropBuffer,
-                        imageCmp: imageBuffer
-                    };
-                } catch (error) {
-                    console.error('Error processing images:', error);
-                }
-            } else {
-                console.log(`One or both files do not exist: ${photoPath}, ${photoCropPath}`);
-            }
-        });
-        const responseArray = (await Promise.all(imageBufferPromises)).filter(Boolean);
-
-        res.json(responseArray);
+        res.json('hihihihihihihi')
+        // const {photo, numPhotos, uuid} = req.body;
+        // if(!photo) {
+        //     res.json(null);
+        //     return
+        // }
+        // const descriptor = await getDescriptor(photo)
+        // if(!descriptor) {
+        //     res.json(null);
+        //     return
+        // }
+        //
+        // const labels = [];
+        //
+        // const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
+        // const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
+        //     const {label, normalizedDistance} = nearestDescriptor;
+        //     const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_crop_padded.png`);
+        //     const photoPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
+        //     const txtFile = path.join(localFolderPath, dbName, label, `${label}.json`);
+        //     const name = await getNameFromJsonFile(txtFile, label);
+        //
+        //     const doesPhotoCropExist = await fileExists(photoCropPath);
+        //     const doesPhotoExist = await fileExists(photoPath);
+        //
+        //     if (doesPhotoCropExist && doesPhotoExist) {
+        //         try {
+        //             const imageCropBuffer = await encodeImageToBase64(photoCropPath);
+        //             const imageBuffer = await encodeImageToBase64(photoPath);
+        //             labels.push(name)
+        //             return {
+        //                 label,
+        //                 name,
+        //                 distance: normalizedDistance * 100,
+        //                 image: imageCropBuffer,
+        //                 imageCmp: imageBuffer
+        //             };
+        //         } catch (error) {
+        //             console.error('Error processing images:', error);
+        //         }
+        //     } else {
+        //         console.log(`One or both files do not exist: ${photoPath}, ${photoCropPath}`);
+        //     }
+        // });
+        // const responseArray = (await Promise.all(imageBufferPromises)).filter(Boolean);
+        //
+        // res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);
         res.status(500).json({error: 'Internal Server Error'});
