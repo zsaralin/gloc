@@ -673,14 +673,17 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
     top: 0;
     left: 0;
     z-index: 99;
-    -webkit-backdrop-filter: blur(3.3rem); /* For Safari 9+ */
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    -moz-backface-visibility: hidden;
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    backdrop-filter: blur(3.3rem); /* Apply a blur effect */
+    -webkit-backface-visibility: hidden; /* Older Safari/iOS */
+    -moz-backface-visibility: hidden;    /* Older Firefox */
+    backface-visibility: hidden;         /* Standard: Chrome, Firefox, Opera, Safari 12+ */
+
+    -webkit-transform: translate3d(0, 0, 0); /* Older Safari/iOS */
+    -moz-transform: translate3d(0, 0, 0);    /* Older Firefox */
+    transform: translate3d(0, 0, 0);         /* Standard: Chrome, Firefox, Opera, Safari 12+ */
+
+    -webkit-backdrop-filter: blur(.8rem); /* Older Safari/iOS */
+    backdrop-filter: blur(.8rem);
+
     transition: opacity 1s ease-in;
 }
 
