@@ -667,12 +667,11 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
 
 #progress-overlay {
     height: 100%;
-    position: absolute;
+    position: fixed;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.5); /* Use RGBA for transparency */
     top: 0;
     left: 0;
-    z-index: 99;
     -webkit-backface-visibility: hidden; /* Older Safari/iOS */
     -moz-backface-visibility: hidden;    /* Older Firefox */
     backface-visibility: hidden;         /* Standard: Chrome, Firefox, Opera, Safari 12+ */
@@ -685,6 +684,8 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
     backdrop-filter: blur(.8rem);
 
     transition: opacity 1s ease-in;
+    z-index: 99;
+
 }
 
 #progress-bar {
