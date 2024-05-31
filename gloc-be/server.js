@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 4000;
 const cors = require('cors')
 const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescriptors');
 require('dotenv').config();
-const localFolderPath  = '../../face_backet'
+const localFolderPath  = '..\\..\\face_backet'
 
 app.use(cors())
 app.use(express.json());
