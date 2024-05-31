@@ -666,30 +666,19 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
 }
 
 #progress-overlay {
-
-    background-color: rgba(0, 0, 0, 0.5); /* Use RGBA for transparency */
-    top: 0;
-    left: 0;
-    /*-webkit-backface-visibility: hidden; !* Older Safari/iOS *!*/
-    /*-moz-backface-visibility: hidden;    !* Older Firefox *!*/
-
-    /*-webkit-transform: translate3d(0, 0, 0); !* Older Safari/iOS *!*/
-    /*-moz-transform: translate3d(0, 0, 0);    !* Older Firefox *!*/
-
-    /*-webkit-backdrop-filter: blur(5px); !* Older Safari/iOS *!*/
-    /*filter: blur(5px);*/
-    transition: opacity 1s ease-in;
-    -webkit-backdrop-filter: blur(5px)!important;
-    backdrop-filter: blur(5px)!important;
     height: 100%;
     position: absolute;
     width: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Use RGBA for transparency */
+    top: 0;
+    left: 0;
     z-index: 99;
-
+    -webkit-backdrop-filter: blur(3px); /* For Safari 9+ */
+    backdrop-filter: blur(3px); /* Apply a blur effect */
+    transition: opacity 1s ease-in;
 }
 
 #progress-bar {
-
     max-width: 300px; /* Fixed width */
     width: 60%;
     height: 30px; /* Increased height for more prominence */
@@ -704,7 +693,7 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
     border: none; /* Clean borderless design */
     box-shadow: inset 0 2px 6px rgba(0,0,0,0.4); /* More pronounced inset shadow for depth */
     overflow: hidden; /* Ensures the inner bar does not overflow the rounded corners */
-    z-index: 100;
+
 }
 
 #progress-bar::-webkit-progress-bar {
