@@ -673,6 +673,8 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
     top: 0;
     left: 0;
     z-index: 99;
+    -webkit-backdrop-filter: blur(3px); /* For Safari 9+ */
+
     backdrop-filter: blur(3px); /* Apply a blur effect */
     transition: opacity 1s ease-in;
 }
