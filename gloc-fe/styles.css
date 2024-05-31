@@ -667,7 +667,7 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
 
 #progress-overlay {
     height: 100%;
-    position: fixed;
+    position: absolute;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.5); /* Use RGBA for transparency */
     top: 0;
