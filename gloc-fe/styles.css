@@ -666,7 +666,6 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
 }
 
 #progress-overlay {
-    /*background: #a0a0a015; !* I found this color of blur to work for me better*!*/
 
     background-color: rgba(0, 0, 0, 0.5); /* Use RGBA for transparency */
     top: 0;
@@ -680,7 +679,8 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
     /*-webkit-backdrop-filter: blur(5px); !* Older Safari/iOS *!*/
     /*filter: blur(5px);*/
     transition: opacity 1s ease-in;
-
+    -webkit-backdrop-filter: blur(5px)!important;
+    backdrop-filter: blur(5px)!important;
     height: 100%;
     position: absolute;
     width: 100%;
@@ -689,7 +689,6 @@ form#dbForm .radio-input input[type="radio"]:checked + span.custom-radio::after 
 }
 
 #progress-bar {
-    filter: blur(5px);
 
     max-width: 300px; /* Fixed width */
     width: 60%;
