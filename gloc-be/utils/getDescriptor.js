@@ -33,18 +33,24 @@ const maxResults = 5;
 let optionsSSDMobileNet;
 // Function to initialize face-api.js
 async function initializeFaceAPI() {
+    console.log("Setting TensorFlow backend...");
     await faceapi.tf.setBackend('tensorflow');
     await faceapi.tf.ready();
+    console.log("TensorFlow backend is ready.");
+
     const modelPath = './models';
+    console.log("Loading models from disk...");
     await Promise.all([
         faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath),
         faceapi.nets.ageGenderNet.loadFromDisk(modelPath),
         faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath),
         faceapi.nets.faceRecognitionNet.loadFromDisk(modelPath),
         faceapi.nets.faceExpressionNet.loadFromDisk(modelPath),
-    ])
-    optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({ minConfidence, maxResults });
+    ]);
+    console.log("Models loaded successfully.");
 
+    optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({ minConfidence, maxResults });
+    console.log("SSD MobileNet options set:", optionsSSDMobileNet);
 }
 module.exports = {
     getDescriptor
