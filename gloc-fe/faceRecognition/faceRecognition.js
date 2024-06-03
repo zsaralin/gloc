@@ -72,7 +72,7 @@ const recognitionInterval = (function() {
 
         const endTime = performance.now();
         const taskDuration = endTime - startTime;
-        const delay = Math.max(0, refreshTime * 1000 - taskDuration);
+        const delay = Math.max(0, 2 * 1000 - taskDuration);
 
         timeoutId = setTimeout(() => runRecognition(refreshTime), delay);
     }
