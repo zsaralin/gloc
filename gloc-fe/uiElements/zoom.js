@@ -1,15 +1,16 @@
 import {getCurrentOffsetValues, handleZoomAndOffset} from "./offset.js";
 
-let zoomSlider;
+let zoomSliderT; let zoomSliderB;
 // let currentZoomValue = 100; // Initial zoom value
 
 function initZoom(){
-    zoomSlider = document.getElementById('zoom-slider');
+    zoomSliderT = document.getElementById('zoom-slider-top');
+    zoomSliderB = document.getElementById('zoom-slider-bottom');
 }
 
 export function getCurrentZoomValue() {
-    if(!zoomSlider){
+    if(!zoomSliderT || !zoomSliderB){
         initZoom()
     }
-    return zoomSlider.value;
+    return [zoomSliderT.value, zoomSliderB.value];
 }

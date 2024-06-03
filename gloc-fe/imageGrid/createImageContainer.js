@@ -4,12 +4,12 @@ import {numArrangedImages} from "./imageGridHelper.js";
 
 let scaleFactor = 0.05; // lower the val, lower the %
 
-export function createImageItemContainer(image, index, imageData, opacity) {
+export function createImageItemContainer(image, index, imageData, opacity, isTop) {
     const imageItemContainer = document.createElement('div');
     imageItemContainer.className = 'image-item-container';
 
-    const currentImage = createImageElement(image, 'current-image', opacity);
-    const nextImage = createImageElement(image, 'next-image');
+    const currentImage = createImageElement(image, 'current-image', opacity, isTop);
+    const nextImage = createImageElement(image, 'next-image', '0', isTop);
 
     const bottomTextOverlay = createBottomTextOverlay(index, imageData);
 
@@ -26,19 +26,20 @@ export function createImageItemContainer(image, index, imageData, opacity) {
     return imageItemContainer;
 }
 
-function createImageElement(image, className, opacity) {
+function createImageElement(image, className, opacity, isTop) {
     const imageElement = document.createElement('img');
     imageElement.className = className;
     imageElement.src = image.src;
     imageElement.style.opacity = opacity || '0';
-    imageElement.onload = () => applyTransforms(imageElement);
+    imageElement.onload = () => applyTransforms(imageElement, isTop);
     return imageElement;
 }
 
-function applyTransforms(image) {
+function applyTransforms(image , isTop) {
     const xOffsetPercent = parseFloat(document.getElementById('xoffset-slider').value);
     const yOffsetPercent = parseFloat(document.getElementById('yoffset-slider').value);
-    const zoomValue = getCurrentZoomValue();
+    const [top,bottom] = getCurrentZoomValue();
+    const zoomValue = isTop ? top :bottom;
 
     const xOffset = (xOffsetPercent / 100) * image.width;
     const yOffset = (yOffsetPercent / 100) * image.width;

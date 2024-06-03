@@ -103,6 +103,10 @@ async function updateImagesFirst(images, newImagesArray, abortController) {
 }
 async function updateImageContainer(imageContainer, index, newImagesArray, images) {
     try {
+        if (!images || images.length === 0) {
+            console.error("No images available for processing.");
+            return; // Exit the function if no images are available
+        }
         const overlay = imageContainer.querySelector('.overlay');
         overlay.style.transition = 'opacity 0.5s linear';
         overlay.style.opacity = 0;

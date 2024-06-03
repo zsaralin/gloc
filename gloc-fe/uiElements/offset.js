@@ -21,7 +21,7 @@ export function handleZoomAndOffset() {
         imageItemContainers.forEach(container => {
             const image = container.querySelector('.current-image');
             if (image) {
-                applyTransform(image);
+                applyTransform(image, true);
             }
         });
     }
@@ -37,16 +37,16 @@ export function handleZoomAndOffset() {
 
             if (imageContainer) {
                 const image = imageContainer.querySelector('.current-image');
-                applyTransform(image)
+                applyTransform(image, false)
             }}
     }
 }
 
-function applyTransform(image) {
+function applyTransform(image, isTop) {
     let xOffsetPercent = parseFloat(xOffsetSlider.value);
     let yOffsetPercent = parseFloat(yOffsetSlider.value);
 
-    const zoomValue = document.getElementById('zoom-slider').value; // Assuming zoom value is needed for scaling
+    const zoomValue = isTop ? document.getElementById('zoom-slider-top').value : document.getElementById('zoom-slider-bottom').value; // Assuming zoom value is needed for scaling
     const xOffset = (xOffsetPercent / 100) * image.clientWidth; // Convert percent to pixels based on image width
     const yOffset = (yOffsetPercent / 100) * image.clientHeight; // Convert percent to pixels based on image height
     const transformSettings = `translate(${xOffset}px, ${yOffset}px) scale(${zoomValue / 100})`;

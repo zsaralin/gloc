@@ -90,7 +90,9 @@ async function loadSettings() {
         setSliderValue('shuffle-slider', 'shuffle-number', settings.shuffleSpeed);
         setSliderValue('shuffle-dur-slider', 'shuffle-dur-number', settings.shuffleDur);
 
-        setSliderValue('zoom-slider', 'zoom-number', settings.zoomLevel);
+        setSliderValue('zoom-slider-top', 'zoom-number-top', settings.zoomLevelTop);
+        setSliderValue('zoom-slider-bottom', 'zoom-number-bottom', settings.zoomLevelBottom);
+
         setSliderValue('time-slider', 'refresh-number', settings.refreshTime);
         setSliderValue('fade-slider', 'fade-number', settings.fadeDuration);
         setSliderValue('min-dist-slider', 'eye-number', settings.minEyeDistance);
@@ -175,7 +177,9 @@ function addSliderNumberSyncs() {
     addSliderNumberSync('shuffle-slider', 'shuffle-number');
     addSliderNumberSync('shuffle-dur-slider', 'shuffle-dur-number');
 
-    addSliderNumberSync('zoom-slider', 'zoom-number', handleZoomAndOffset);
+    addSliderNumberSync('zoom-slider-top', 'zoom-number-top', handleZoomAndOffset);
+    addSliderNumberSync('zoom-slider-bottom', 'zoom-number-bottom', handleZoomAndOffset);
+
     addSliderNumberSync('xoffset-slider', 'xoffset-number', handleZoomAndOffset);
     addSliderNumberSync('yoffset-slider', 'yoffset-number', handleZoomAndOffset);
 

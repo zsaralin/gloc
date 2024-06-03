@@ -35,7 +35,7 @@ async function addTopImages(images, imageData, totalImages, numArrangedImages, a
         const image = images[i];
         if (!image) return;
         const opacity =  1-((1 - opacityVal) * i / (numArrangedImages - 1));
-        const imageElement = createImageItemContainer(image, i, imageData, opacity);
+        const imageElement = createImageItemContainer(image, i, imageData, opacity, true);
         container.appendChild(imageElement);
     }
 }
@@ -57,7 +57,7 @@ async function addBottomImages(images, imageData, totalImages, startIndex, conta
 
         // Calculate opacity: starts at 100% for the first image and linearly decreases to 50% for the last image
         const opacity = 1 - ((1-opacityVal) * overallIndex / (numArrangedImages - 1)); // Adjust for total images and index
-        const imageElement = createImageItemContainer(image, i, imageData, opacity);
+        const imageElement = createImageItemContainer(image, i, imageData, opacity, false);
         currRow.appendChild(imageElement);
     }
     adjustRowHeights(container);

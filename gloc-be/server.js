@@ -9,7 +9,7 @@ require('dotenv').config();
 const localFolderPath  = '../../face_backet'
 
 const corsOptions = {
-    origin: 'https://des445dev.levelofconfidence.net',  // Specify the allowed origin including the port
+    origin: ['https://des445dev.levelofconfidence.net', 'http://localhost:63342'], // Array of allowed origins
     optionsSuccessStatus: 200        // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -170,26 +170,32 @@ app.get('/get-images', async (req, res) => {
     try {
         const directory = localFolderPath;
 
-        // Fetch images only if they haven't been cached yet
+        // Ensure images are loaded and cached
         if (!cachedImages) {
             cachedImages = await getOriginalImages(directory);
             console.log("Images loaded and cached.");
         }
 
-        const paginatedImages = cachedImages.slice((page - 1) * limit, page * limit);
+        // Check if cachedImages is not empty before slicing
+        if (cachedImages && cachedImages.length > 0) {
+            const startIndex = (page - 1) * limit;
+            const endIndex = page * limit;
+            const paginatedImages = cachedImages.slice(startIndex, endIndex);
 
-        res.json({
-            page,
-            limit,
-            total: cachedImages.length,
-            data: paginatedImages
-        });
+            res.json({
+                page,
+                limit,
+                total: cachedImages.length,
+                data: paginatedImages
+            });
+        } else {
+            res.status(404).send('No images found');
+        }
     } catch (error) {
         console.error('Error reading images:', error);
         res.status(500).send('Internal Server Error');
     }
 });
-
 app.post('/save-cropped-images', async (req, res) => {
     try {
         const croppedImages = req.body;
