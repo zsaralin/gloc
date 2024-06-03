@@ -123,7 +123,9 @@ function gatherSettings() {
         shuffleSpeed: document.getElementById('shuffle-slider').value,
         shuffleSporadically: document.getElementById('sporadicShuffle').checked,
         shuffleDur: document.getElementById('shuffle-dur-slider').value,
-        zoomLevel: document.getElementById('zoom-slider').value,
+        zoomLevelTop: document.getElementById('zoom-slider-top').value,
+        zoomLevelBottom: document.getElementById('zoom-slider-bottom').value,
+
         xoffset: document.getElementById('xoffset-slider').value,
         yoffset: document.getElementById('yoffset-slider').value,
         showSimilarity: document.getElementById('similarity').checked,
