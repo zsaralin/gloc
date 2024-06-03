@@ -9,7 +9,7 @@ require('dotenv').config();
 const localFolderPath  = '../../face_backet'
 
 const corsOptions = {
-    origin: 'https://des445dev.levelofconfidence.net/',  // Specify the allowed origin including the port
+    origin: 'https://des445dev.levelofconfidence.net',  // Specify the allowed origin including the port
     optionsSuccessStatus: 200        // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
