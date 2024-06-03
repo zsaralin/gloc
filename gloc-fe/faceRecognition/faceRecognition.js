@@ -69,7 +69,7 @@ const recognitionInterval = (function() {
         const startTime = performance.now();
 
         await performRecognitionTask();
-
+        console.log(refreshTime)
         const endTime = performance.now();
         const taskDuration = endTime - startTime;
         const delay = Math.max(0, refreshTime * 1000 - taskDuration);
@@ -95,7 +95,9 @@ const recognitionInterval = (function() {
 export function handleRefreshTime() {
     if (!timeSlider) timeSlider = document.getElementById("time-slider");
     refreshTime = timeSlider.value; // Convert to integer and update updateCount
-    clearRecognitionIntervals()
+    recognitionInterval.stop();
+    recognitionInterval.start(); // pass the refreshTime as seconds
+
 }
 
 export function clearRecognitionIntervals() {
