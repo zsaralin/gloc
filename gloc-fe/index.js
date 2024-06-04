@@ -76,7 +76,7 @@ export async function setupCamera() {
                     overlayCanv.width = cropSize;
                     overlayCanv.height = cropSize;
                     overlayCtx = overlayCanv.getContext('2d');
-                    overlayCtx.fillStyle = 'rgba(0,0,0,.8)'
+                    overlayCtx.fillStyle = 'rgba(0,0,0,0)'
                     overlayCtx.fillRect(0,0, overlayCanv.width, overlayCanv.height)
 
                     await video.play();
