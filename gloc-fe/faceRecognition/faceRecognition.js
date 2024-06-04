@@ -95,8 +95,8 @@ const recognitionInterval = (function() {
 export function handleRefreshTime() {
     if (!timeSlider) timeSlider = document.getElementById("time-slider");
     refreshTime = timeSlider.value; // Convert to integer and update updateCount
-    recognitionInterval.stop();
-    recognitionInterval.start(); // pass the refreshTime as seconds
+    // recognitionInterval.stop();
+    // recognitionInterval.start(); // pass the refreshTime as seconds
 
 }
 

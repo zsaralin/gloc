@@ -85,6 +85,7 @@ button {
     transform: scaleX(-1); /* Mirror along the x-axis */
 }
 
+
 #top-image-container {
     position: relative;
     width: 66.66%;

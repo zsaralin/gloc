@@ -90,8 +90,8 @@ export function animateProgressBar(duration) {
     const statusMessage = document.getElementById('status-message');
     const startTime = performance.now();  // Start time for the whole process
     const prompts = [
-        "Attempting to locate a face...",
         "Extracting facial landmarks...",
+        "Sending numerical description...",
         "Comparing biometric data...",
         "Searching through database for similarities...",
         "Retrieving top matches"

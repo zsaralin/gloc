@@ -163,16 +163,18 @@ function addSliderNumberSyncs() {
     function addSliderNumberSync(sliderId, numberInputId, updateFunction) {
         const slider = document.getElementById(sliderId);
         const numberInput = document.getElementById(numberInputId);
-
-        slider.addEventListener('input', () => {
-            numberInput.value = slider.value;
-            if(updateFunction) updateFunction(); // Call update function directly with new value
-        });
-
-        numberInput.addEventListener('change', () => {
-            slider.value = numberInput.value;
-            if(updateFunction) updateFunction(); // Call update function directly with new value
-        });
+        if(slider) {
+            slider.addEventListener('input', () => {
+                numberInput.value = slider.value;
+                if (updateFunction) updateFunction(); // Call update function directly with new value
+            });
+        }
+        if(numberInput) {
+            numberInput.addEventListener('change', () => {
+                slider.value = numberInput.value;
+                if (updateFunction) updateFunction(); // Call update function directly with new value
+            });
+        }
     }
 
     // Add synchronization for all sliders

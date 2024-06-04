@@ -8,13 +8,7 @@ const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescrip
 require('dotenv').config();
 const localFolderPath  = '../../face_backet'
 
-const corsOptions = {
-    origin: ['https://des445dev.levelofconfidence.net', 'http://localhost:63342'], // Array of allowed origins
-    credentials:true,            //access-control-allow-credentials:true
-    optionsSuccessStatus: 200        // Some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 
