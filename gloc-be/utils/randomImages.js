@@ -23,37 +23,60 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
     const imageBuffers = [];
 
     try {
-        const entries = await fs.readdir(imagesFolder, { withFileTypes: true });
-        const subfolders = entries.filter(entry => entry.isDirectory());
-        const shuffledSubfolders = shuffleArray(subfolders).slice(0, limit);  // Shuffle and limit early
+        // Read all directory entries
+        const entries = await fs.readdir(imagesFolder, {withFileTypes: true});
 
-        const imagePromises = shuffledSubfolders.map(async folder => {
+        // Prepare to select subfolders randomly using reservoir sampling
+        let selectedFolders = [];
+        let i = 0; // Counter for total directories inspected
+
+        for (const entry of entries) {
+            if (entry.isDirectory()) {
+                if (i < limit) {
+                    selectedFolders.push(entry);
+                } else {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    if (j < limit) {
+                        selectedFolders[j] = entry;
+                    }
+                }
+                i++;
+            }
+        }
+
+        // Process each selected folder
+        for (const folder of selectedFolders) {
             const folderName = folder.name;
             const cropImagePath = path.join(imagesFolder, folderName, `${folderName}_cmp.png`);
+            const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
+
             try {
+                // Check if the crop image exists
+                await fs.access(cropImagePath);
+
+                // Read image file
                 const imageBuffer = await fs.readFile(cropImagePath);
-                const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
+                const base64Image = imageBuffer.toString('base64');
+
+                // Read JSON data
                 const name = await getNameFromJsonFile(jsonFilePath) || folderName;
 
-                return {
+                // Push to imageBuffers with random distance
+                imageBuffers.push({
                     name: name,
-                    distance: Math.floor(Math.random()),
-                    image: imageBuffer.toString('base64')
-                };
+                    distance: Math.floor(Math.random() * 21),
+                    image: base64Image
+                });
             } catch (error) {
                 console.log(`Failed to process ${folderName}: ${error}`);
             }
-        });
-
-        const results = await Promise.all(imagePromises);
-        imageBuffers.push(...results.filter(result => result));
+        }
     } catch (error) {
-        console.error(`Error reading images: ${error.message}`);
+        console.error(`Error reading directory: ${error.message}`);
     }
 
     return imageBuffers;
 }
-
 
 module.exports = {
     readRandomImagesFromFolder
