@@ -23,43 +23,30 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
     const imageBuffers = [];
 
     try {
-        // Read all files and subdirectories from the specified directory
         const entries = await fs.readdir(imagesFolder, { withFileTypes: true });
-
-        // Filter and shuffle only directories
         const subfolders = entries.filter(entry => entry.isDirectory());
-        const shuffledSubfolders = shuffleArray(subfolders);
+        const shuffledSubfolders = shuffleArray(subfolders).slice(0, limit);  // Shuffle and limit early
 
-        let imageCount = 0; // Counter for the number of images read
-        const effectiveLimit = Math.min(shuffledSubfolders.length, limit);
-
-        // Iterate over the shuffled subfolder entries
-        for (const folder of shuffledSubfolders) {
-            if (imageCount >= effectiveLimit) break;
-
+        const imagePromises = shuffledSubfolders.map(async folder => {
             const folderName = folder.name;
             const cropImagePath = path.join(imagesFolder, folderName, `${folderName}_cmp.png`);
-            const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
-
-            const name = await getNameFromJsonFile(jsonFilePath) || folderName; // Use JSON name or folder name as fallback
-
             try {
-                // Check if the crop image exists
-                await fs.access(cropImagePath);
-
                 const imageBuffer = await fs.readFile(cropImagePath);
-                const base64Image = imageBuffer.toString('base64');
-                imageBuffers.push({
-                    name: name,
-                    distance: Math.floor(Math.random() * 21),
-                    image: base64Image
-                });
-                imageCount++;
+                const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
+                const name = await getNameFromJsonFile(jsonFilePath) || folderName;
 
+                return {
+                    name: name,
+                    distance: Math.floor(Math.random()),
+                    image: imageBuffer.toString('base64')
+                };
             } catch (error) {
-                console.log(`Crop image not found for ${folderName}: ${error}`);
+                console.log(`Failed to process ${folderName}: ${error}`);
             }
-        }
+        });
+
+        const results = await Promise.all(imagePromises);
+        imageBuffers.push(...results.filter(result => result));
     } catch (error) {
         console.error(`Error reading images: ${error.message}`);
     }
