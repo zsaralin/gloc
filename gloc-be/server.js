@@ -131,14 +131,9 @@ async function getNameFromJsonFile(filePath, defaultLabel) {
 
 app.post('/random', async (req, res) => {
     try {
-        const startTime = performance.now();  // Start timing for the whole function
-
         const dbName = getDbName();
         const imagesFolder = `${localFolderPath}/${dbName}/`; // Adjust the folder path as needed
-
         const randomImages = await readRandomImagesFromFolder(imagesFolder);
-        const end = performance.now();  // Start timing for the whole function
-        console.log('endned ' + (startTime - end))
         res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);

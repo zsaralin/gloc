@@ -28,8 +28,12 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
         const dir = await fs.opendir(imagesFolder);
         let selectedFolders = [];
         let totalCount = 0;
+        let countProcessed = 0;
+        const maxToProcess = 500; // Process at most 1000 entries for performance reasons
 
         for await (const entry of dir) {
+            if (++countProcessed > maxToProcess && selectedFolders.length >= limit) break;
+
             if (entry.isDirectory()) {
                 totalCount++;
                 // Apply reservoir sampling logic
