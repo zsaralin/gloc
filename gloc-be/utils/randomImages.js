@@ -23,24 +23,22 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
     const imageBuffers = [];
 
     try {
-        // Read all directory entries
-        const entries = await fs.readdir(imagesFolder, {withFileTypes: true});
-
-        // Prepare to select subfolders randomly using reservoir sampling
+        const dir = await fs.opendir(imagesFolder);
         let selectedFolders = [];
-        let i = 0; // Counter for total directories inspected
+        let totalCount = 0;
 
-        for (const entry of entries) {
+        for await (const entry of dir) {
             if (entry.isDirectory()) {
-                if (i < limit) {
+                totalCount++;
+                // Apply reservoir sampling logic
+                if (selectedFolders.length < limit) {
                     selectedFolders.push(entry);
                 } else {
-                    const j = Math.floor(Math.random() * (i + 1));
+                    const j = Math.floor(Math.random() * totalCount);
                     if (j < limit) {
                         selectedFolders[j] = entry;
                     }
                 }
-                i++;
             }
         }
 
