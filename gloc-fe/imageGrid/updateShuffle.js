@@ -58,9 +58,6 @@ async function updateImagesInShuffle(images, imagesDataArray, isTop) {
 }
 
 export async function updateFirst(imagesDataArray, abortController) {
-    let shuffleDur = document.getElementById('shuffle-dur-slider').value * 1000
-
-    animateProgressBar(shuffleDur)
 
     await stopShuffle()
     const loadedImages = await loadImages(imagesDataArray);

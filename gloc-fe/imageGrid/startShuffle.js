@@ -47,6 +47,9 @@ export function startShuffle() {
         shuffleStartTime = Date.now();
         shuffleIntervalId = setInterval(updateShuffleLoop, shuffleSpeed);
     }
+    let shuffleDur = document.getElementById('shuffle-dur-slider').value * 1000
+
+    animateProgressBar(shuffleDur)
 }
 export function updateShuffleLoop() {
     if (shuffleActive && randomImageArr) {
@@ -84,11 +87,10 @@ function easeInOutCubic(t) {
 }
 
 let timeToDetectFirstFace; // Declare a global variable to store the time to detect the first face
-
 export function animateProgressBar(duration) {
     const progressBar = document.getElementById('progress-bar');
     const statusMessage = document.getElementById('status-message');
-    const startTime = performance.now();  // Start time for the whole process
+    const initialProgress = 20;  // Initial progress percentage to animate to
     const prompts = [
         "Extracting facial landmarks...",
         "Sending numerical description...",
@@ -96,47 +98,66 @@ export function animateProgressBar(duration) {
         "Searching through database for similarities...",
         "Retrieving top matches"
     ];
+    const initialDuration = duration * 0.5; // Allocate 10% of the total duration for initial animation
 
-    function checkForFaceDescriptor() {
-        if (currFaceDescriptor && currFaceDescriptor.length > 0) {
-            const faceDetectedTime = performance.now(); // Capture the time when the face is detected
-            timeToDetectFirstFace = faceDetectedTime - startTime; // Calculate the time taken to detect the first face
-            startProgressAnimation();
-        } else {
-            // Check again after a delay
-            setTimeout(checkForFaceDescriptor, 100); // Check every 100 milliseconds
+    function animateInitialProgress() {
+        const startInitialTime = performance.now();
+
+        function updateInitialProgress(timestamp) {
+            const elapsedTime = timestamp - startInitialTime;
+            const normalizedTime = elapsedTime / initialDuration; // Normalize time to range 0-1
+            const easedProgress = easeInOutCubic(normalizedTime); // Apply easing function
+            progressBar.value = Math.min(initialProgress, easedProgress * initialProgress); // Ensure the value doesn't exceed initialProgress%
+
+            if (normalizedTime < 1) {
+                requestAnimationFrame(updateInitialProgress);
+            } else {
+                statusMessage.innerText = prompts[1];
+                checkForFaceDescriptor(performance.now()); // Begin checking for the face descriptor after initial animation
+            }
         }
+
+        requestAnimationFrame(updateInitialProgress);
     }
 
-    function startProgressAnimation() {
-        const startTime = performance.now();
-        let lastPromptIndex = -1;
+    function checkForFaceDescriptor(startTime) {
+        function check() {
+            if (currFaceDescriptor && currFaceDescriptor.length > 0) {
+                const faceDetectedTime = performance.now(); // Capture the time when the face is detected
+                startProgressAnimation(faceDetectedTime, Math.max(1000,duration - (faceDetectedTime - startTime)));
+            } else {
+                setTimeout(check, 100); // Check every 100 milliseconds
+            }
+        }
+        check();
+    }
+
+    function startProgressAnimation(startAnimationTime, remainingDuration) {
+        let lastPromptIndex = 1;
 
         function updateProgress(timestamp) {
-            const elapsedTime = timestamp - startTime;
-            const normalizedTime = elapsedTime / duration; // Normalize time to range 0-1
+            const elapsedTime = timestamp - startAnimationTime;
+            const normalizedTime = elapsedTime / remainingDuration; // Normalize time to range 0-1
             const easedProgress = easeInOutCubic(normalizedTime); // Apply easing function
-            progressBar.value = Math.min(100, easedProgress * 100); // Ensure the value doesn't exceed 100%
+            progressBar.value = Math.min(100, initialProgress + easedProgress * (100 - initialProgress)); // Calculate the rest of the progress
 
-            // Determine the current prompt index based on eased progress
-            const currentPromptIndex = Math.floor(easedProgress * prompts.length);
-
-            // Update the status message if we've moved to the next prompt
+            const currentPromptIndex = Math.floor((initialProgress / 100 + easedProgress * (1 - initialProgress / 100)) * prompts.length);
             if (currentPromptIndex !== lastPromptIndex && currentPromptIndex < prompts.length) {
                 statusMessage.innerText = prompts[currentPromptIndex];
                 lastPromptIndex = currentPromptIndex;
             }
 
-            // Continue the animation until the progress completes
             if (normalizedTime < 1) {
                 requestAnimationFrame(updateProgress);
             } else {
+                progressBar.value = 100; // Ensure the bar reaches 100%
                 progressBarComplete = true; // Set the progress completion flag
+
             }
         }
 
         requestAnimationFrame(updateProgress);
     }
 
-    checkForFaceDescriptor();
+    animateInitialProgress();
 }

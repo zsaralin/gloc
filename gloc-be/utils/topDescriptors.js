@@ -8,18 +8,15 @@ const { getDbName } = require('../db.js');
 const {createOrUpdateScores, getSortedLabelsByUserID} = require("../scores");
 let dbName = getDbName();
 
-loadDataIntoMemory();
+// loadDataIntoMemory();
 
 // cache the JSON file in memory
 async function loadDataIntoMemory() {
     dbName = getDbName();
     try {
-        // Read and parse the JSON file only if it's not already cached
-        if (!cachedData) {
-            const rawData = await fs.readFile(`./results/results_${dbName}.json`, 'utf8');
-            cachedData = JSON.parse(rawData);
-            console.log('Data loaded into memory');
-        }
+        const rawData = await fs.readFile(`./results/results_${dbName}.json`, 'utf8');
+        cachedData = JSON.parse(rawData);
+        console.log('Data loaded into memory');
     } catch (error) {
         console.error('Error loading data into memory:', error);
     }
@@ -27,9 +24,10 @@ async function loadDataIntoMemory() {
 
 async function findNearestDescriptors(targetDescriptor, numMatches, userId) {
     try {
-        if (!cachedData || !targetDescriptor) return
-        const rawData = await fs.readFile(`./results/results_${dbName}.json`, 'utf8');
-        cachedData = JSON.parse(rawData);
+        if (!targetDescriptor || !cachedData) return
+        // if(!cachedData) await loadDataIntoMemory()
+        // const rawData = await fs.readFile(`./results/results_${dbName}.json`, 'utf8');
+        // cachedData = JSON.parse(rawData);
 
         const minHeap = new MinHeap();
 

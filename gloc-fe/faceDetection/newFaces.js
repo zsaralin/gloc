@@ -29,6 +29,7 @@ function updateFaceDetection(mediapipeResult, imageDataUrl) {
     } else {
         currFace = imageDataUrl;  // Always update with the latest image
     }
+    document.getElementById('face-detect-text').innerHTML = "Face located"
 }
 
 function handleNewFaceDetection(mediapipeResult) {
@@ -43,6 +44,8 @@ function handleNoFaceDetected() {
     if (!shuffleActive) {
         clearRecognitionResources();
     }
+    document.getElementById('face-detect-text').innerHTML = "Locating a face..."
+
 }
 
 function clearRecognitionResources() {

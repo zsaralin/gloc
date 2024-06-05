@@ -27,7 +27,7 @@ export async function updateImageGrid(imagesDataArray, abortController) {
     try {
         let loadedImages = await loadImages(imagesDataArray);
         const firstImagesCount = isMobile ? 2 : 3;
-
+        if(!loadedImages) return
         const [topImages, bottomImages] = [loadedImages.slice(0, firstImagesCount), loadedImages.slice(firstImagesCount)];
         const totalImages = loadedImages.length; // Total number of images across both updates
 

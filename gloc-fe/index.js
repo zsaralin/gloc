@@ -21,7 +21,7 @@ import {adjustLayoutForScreenSize} from "./uiElements/screensizeLayout.js";
 let stream = null;
 export const SERVER_URL =  "http://localhost:4000";//"https://face-recognition-be.onrender.com"; //
 
-let video; let canvas; let overlayCanv; let overlayCtx;
+let video; let canvas;
 
 // Send a message to start face recognition
 export async function setupCamera() {
@@ -39,7 +39,6 @@ export async function setupCamera() {
     }
     video = document.getElementById('video');
     canvas = document.getElementById('canvas');
-    overlayCanv = document.getElementById('overlay-canvas');
 
     const playPauseButton = document.getElementById('playPauseButton');
     if (!video || !canvas || !playPauseButton) {
@@ -54,11 +53,6 @@ export async function setupCamera() {
                 const cropSize = Math.min(video.videoWidth, video.videoHeight);
                 canvas.width = cropSize;
                 canvas.height = cropSize;
-                overlayCanv.width = cropSize;
-                overlayCanv.height = cropSize;
-                overlayCtx = overlayCanv.getContext('2d');
-                overlayCtx.fillStyle = 'rgba(0,0,0,.8)'
-                overlayCtx.fillRect(0,0, overlayCanv.width, overlayCanv.height)
                 video.play().then(() => {
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);
@@ -73,12 +67,6 @@ export async function setupCamera() {
                     const cropSize = Math.min(video.videoWidth, video.videoHeight);
                     canvas.width = cropSize;
                     canvas.height = cropSize;
-                    overlayCanv.width = cropSize;
-                    overlayCanv.height = cropSize;
-                    overlayCtx = overlayCanv.getContext('2d');
-                    overlayCtx.fillStyle = 'rgba(0,0,0,0)'
-                    overlayCtx.fillRect(0,0, overlayCanv.width, overlayCanv.height)
-
                     await video.play();
                     console.log(`Video captured. Resolution: ${video.videoWidth} x ${video.videoHeight}`);
                     setupPlayPause(video, canvas);
@@ -96,6 +84,7 @@ async function main() {
     setupLandingPage();
     await setupFaceLandmarker()
     activateEnterButton()
+
 }
 
 export async function resetNewDB() {

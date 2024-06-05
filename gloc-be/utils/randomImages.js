@@ -38,7 +38,7 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
             if (imageCount >= effectiveLimit) break;
 
             const folderName = folder.name;
-            const cropImagePath = path.join(imagesFolder, folderName, `${folderName}_crop_padded.png`);
+            const cropImagePath = path.join(imagesFolder, folderName, `${folderName}_cmp.png`);
             const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
 
             const name = await getNameFromJsonFile(jsonFilePath) || folderName; // Use JSON name or folder name as fallback

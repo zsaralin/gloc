@@ -83,7 +83,10 @@ export function updateTopTextOverlay(textOverlay, i, imagesArray, progressBar) {
         content += `<div class="scaled-similarity" style="display: ${scaledSimilarityDisplay};">${scaledSimilarity}%</div>`;
     }
     textOverlay.innerHTML = content;
-    progressBar.style.height = `${parseFloat(scaledSimilarity) * 10}%`;
+    setTimeout(() => {
+        progressBar.style.height = `${parseFloat(scaledSimilarity) * 10}%`;
+
+    }, 1000);
 }
 
 export function updateBottomTextOverlay(textOverlay, i, imagesArray) {

@@ -98,14 +98,14 @@ button {
 
 
 .current-image {
-    /*position: absolute;*/
+    /*position: relative;*/
 
     opacity: 1;
     /*display: block;*/
     /*width: 100%;*/
     /*height: 100%;*/
     /*object-fit: cover;*/
-    border: 0px solid white; /* Add white border */
+    /*border: 0px solid white; !* Add white border *!*/
     /*box-sizing: border-box; !* Include border in total width and height *!*/
     /*top: 0;*/
     /*left: 0;*/
@@ -119,21 +119,21 @@ button {
     /*width: 100%;*/
     /*height: 100%;*/
     /*object-fit: cover;*/
-    border: 0px solid white; /* Add white border */
+    /*border: 0px solid white; !* Add white border *!*/
     /*box-sizing: border-box; !* Include border in total width and height *!*/
 
 }
 
 #top-image-container img {
-    margin: 0; /* Reset margin to ensure no default margin */
-    padding: 0; /* Reset padding to ensure no default padding */
-    /*position: relative;*/
-    height: 100%;
-    width: auto;
-    overflow: hidden;
+    /*margin: 0; !* Reset margin to ensure no default margin *!*/
+    /*padding: 0; !* Reset padding to ensure no default padding *!*/
+    /*!*position: relative;*!*/
+    /*height: 100%;*/
+    /*width: auto;*/
+    /*overflow: hidden;*/
 
     /*height: 100%;*/
-    /*height: auto; !* Allow the images to maintain their aspect ratio *!*/
+    /*width: auto; !* Allow the images to maintain their aspect ratio *!*/
     /*object-fit: cover;*/
 
 }
@@ -151,10 +151,10 @@ button {
 }
 
 #bottom-image-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    /*display: flex;*/
+    /*flex-wrap: wrap;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
     /*justify-content: flex-start;*/
     /*align-items: stretch;*/
 }
@@ -205,15 +205,29 @@ button {
     height: 100%;
     overflow: hidden;
     width: 100%;
-    padding:0;
+
+
     /*object-fit: cover;*/
     display: flex;        /* Using flexbox */
     align-items: center;  /* Center vertically */
     justify-content: center; /* Center horizontally */
-    margin: 0; /* Reset margin to ensure consistent spacing */
-    /*border-top: solid #C0C0C0 4px;*/
-    /*border-bottom: solid #C0C0C0 4px;*/
+    padding:0;
+    margin: 0;
+    border-top: solid #C0C0C0 1px;
+    border-bottom: solid #C0C0C0 1px;
+    border-left: solid #C0C0C0 1px;
+    border-right: solid #C0C0C0 1px;
 
+}
+
+.image-item-container img{
+    width: 100%;          /* Start by setting width to 100% */
+    height: 100%;         /* Set height to 100% */
+    object-fit: contain;
+    /*height: auto;     !* Adjust height automatically to maintain aspect ratio *!*/
+    display: block;   /* Ensures no extra space at the bottom of the image */
+    margin: 0 auto;   /* Center the image horizontally */
+    position: absolute;
 }
 
 .progress-bar-background {
@@ -223,6 +237,9 @@ button {
     width: 4px;
     height: 100%;
     background-color: #C0C0C0;
+    /*border-left: solid #C0C0C0 1px;*/
+    /*border-right: solid #C0C0C0 1px;*/
+
 }
 
 .progress-bar {
@@ -232,18 +249,8 @@ button {
     width: 4px;
     height: 0;
     background-color: black;
-    transition: height 2s ease;  /* Add this line */
+    transition: height 2s ease-in;  /* Add this line */
 }
-
-.image-item-container img{
-    width: auto;
-    height: 100%; /* Image takes up half the width of its container */
-    /*height: auto;     !* Adjust height automatically to maintain aspect ratio *!*/
-    display: block;   /* Ensures no extra space at the bottom of the image */
-    margin: 0 auto;   /* Center the image horizontally */
-    position: absolute;
-}
-
 .overlay {
     position: absolute;
     /*top:0;*/
@@ -261,7 +268,7 @@ button {
 }
 
 
-.bottom-text-overlay, .top-text-overlay {
+.bottom-text-overlay, .top-text-overlay{
     position: absolute;
     /*left: 0;*/
     /*width: 100%;*/
@@ -278,6 +285,25 @@ button {
     display: inline-block;
 
 }
+
+#face-detect-text{
+    position: absolute;
+    top:5px ;
+    left: 5px;
+    /*width: 100%;*/
+    z-index: 2; /* Ensure git's above the image */
+    box-sizing: border-box;
+    /* Adjust the padding as needed */
+    padding: 2px 3px;
+    line-height: 12px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: .6rem;
+    white-space: normal; /* Allow text to wrap */
+    overflow: visible; /* Let it overflow visually */
+    display: inline-block;
+}
+
 
 .bottom-text-overlay{
     bottom: 4px;

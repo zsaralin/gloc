@@ -61,7 +61,7 @@ function clearCanvas() {
     if (!canvasCleared) {
         canvasCleared = true;
         canvas.style.transition = `opacity ${FADE_DUR}s ease`;
-        canvas.style.opacity = 0;
+        canvas.style.opacity = '0.1'
 
         setTimeout(() => {
             ctx.clearRect(0, 0, canvasWidth, canvasWidth);
