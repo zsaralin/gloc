@@ -88,7 +88,9 @@ async function main() {
 }
 
 export async function resetNewDB() {
+    const per = performance.now()
     const randomImageArr = await getRandomImages()
+    console.log('time it took ' + (performance.now()-per))
     await createImageGrid(randomImageArr, abortController)
 }
 

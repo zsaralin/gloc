@@ -13,16 +13,9 @@ let dbName = getDbName();
 // cache the JSON file in memory
 async function loadDataIntoMemory() {
     dbName = getDbName();
-    const startTime = performance.now();  // Start timing before the file reading begins
-
     try {
         const rawData = await fs.readFile(`./results/results_${dbName}.json`, 'utf8');
-        const readTime = performance.now();  // Capture time after reading the file
-        console.log(`Time taken to read the file: ${readTime - startTime}ms`);
-
         cachedData = JSON.parse(rawData);
-        const parseTime = performance.now();  // Capture time after parsing the JSON
-        console.log(`Time taken to parse the JSON: ${parseTime - readTime}ms`);
 
     } catch (error) {
         console.error('Error loading data into memory:', error);
