@@ -19,7 +19,7 @@ async function getNameFromJsonFile(filePath) {
     }
 }
 
-async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
+async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
     const imageBuffers = [];
     const startTime = performance.now();  // Start timing for the whole function
 
