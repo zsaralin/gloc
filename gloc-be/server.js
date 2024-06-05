@@ -48,6 +48,7 @@ app.post('/match', async (req, res) => {
         const labels = [];
 
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
+        if(!nearestDescriptors) return
         const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
             const {label, normalizedDistance} = nearestDescriptor;
             const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);

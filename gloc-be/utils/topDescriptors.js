@@ -24,7 +24,7 @@ async function loadDataIntoMemory() {
 
 async function findNearestDescriptors(targetDescriptor, numMatches, userId) {
     try {
-        if (!targetDescriptor || !cachedData) return
+        if (!targetDescriptor || !cachedData) return null
         // if(!cachedData) await loadDataIntoMemory()
         // const rawData = await fs.readFile(`./results/results_${dbName}.json`, 'utf8');
         // cachedData = JSON.parse(rawData);
