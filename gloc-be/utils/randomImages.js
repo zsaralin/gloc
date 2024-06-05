@@ -21,8 +21,10 @@ async function getNameFromJsonFile(filePath) {
 
 async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
     const imageBuffers = [];
+    const startTime = performance.now();  // Start timing for the whole function
 
     try {
+        const dirStartTime = performance.now();
         const dir = await fs.opendir(imagesFolder);
         let selectedFolders = [];
         let totalCount = 0;
@@ -41,7 +43,10 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
                 }
             }
         }
+        const dirEndTime = performance.now();
+        console.log(`Directory reading and sampling time: ${dirEndTime - dirStartTime}ms`);
 
+        const processingStartTime = performance.now();
         // Process each selected folder
         for (const folder of selectedFolders) {
             const folderName = folder.name;
@@ -49,12 +54,13 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
             const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
 
             try {
+                const fileOperationStartTime = performance.now();
+
                 // Check if the crop image exists
                 await fs.access(cropImagePath);
 
                 // Read image file
                 const imageBuffer = await fs.readFile(cropImagePath);
-                const base64Image = imageBuffer.toString('base64');
 
                 // Read JSON data
                 const name = await getNameFromJsonFile(jsonFilePath) || folderName;
@@ -63,19 +69,22 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 100) {
                 imageBuffers.push({
                     name: name,
                     distance: Math.floor(Math.random() * 21),
-                    image: base64Image
+                    image: imageBuffer.toString('base64')
                 });
             } catch (error) {
                 console.log(`Failed to process ${folderName}: ${error}`);
             }
         }
+        const processingEndTime = performance.now();
+        console.log(`Processing all selected folders time: ${processingEndTime - processingStartTime}ms`);
     } catch (error) {
         console.error(`Error reading directory: ${error.message}`);
     }
 
+    const endTime = performance.now();  // End timing for the whole function
+    console.log(`Total function execution time: ${endTime - startTime}ms`);
     return imageBuffers;
 }
-
 module.exports = {
     readRandomImagesFromFolder
 };
