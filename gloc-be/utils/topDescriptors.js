@@ -20,7 +20,7 @@ async function loadDataIntoMemory() {
         const readTime = performance.now();  // Capture time after reading the file
         console.log(`Time taken to read the file: ${readTime - startTime}ms`);
 
-        const cachedData = JSON.parse(rawData);
+        cachedData = JSON.parse(rawData);
         const parseTime = performance.now();  // Capture time after parsing the JSON
         console.log(`Time taken to parse the JSON: ${parseTime - readTime}ms`);
 
