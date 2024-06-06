@@ -28,7 +28,7 @@ async function loadImageAsTensor(imageDataURL) {
     const tensor = tf.node.decodeImage(buffer, 3);
     return tensor;
 }
-const minConfidence = 0.15;
+const minConfidence = 0.5;
 const maxResults = 5;
 let optionsSSDMobileNet;
 // Function to initialize face-api.js
@@ -42,15 +42,15 @@ async function initializeFaceAPI() {
     console.log("Loading models from disk...");
     await Promise.all([
         faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath),
-        faceapi.nets.ageGenderNet.loadFromDisk(modelPath),
+        // faceapi.nets.ageGenderNet.loadFromDisk(modelPath),
         faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath),
         faceapi.nets.faceRecognitionNet.loadFromDisk(modelPath),
-        faceapi.nets.faceExpressionNet.loadFromDisk(modelPath),
+        // faceapi.nets.faceExpressionNet.loadFromDisk(modelPath),
     ]);
     console.log("Models loaded successfully.");
 
     optionsSSDMobileNet = new faceapi.SsdMobilenetv1Options({ minConfidence, maxResults });
-    console.log("SSD MobileNet options set:", optionsSSDMobileNet);
+    // console.log("SSD MobileNet options set:", optionsSSDMobileNet);
 }
 module.exports = {
     getDescriptor
