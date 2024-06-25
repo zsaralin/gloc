@@ -16,7 +16,7 @@ export async function loadImages(imageDataArray) {
             const batchImages = imageDataArray.slice(i, i + batchSize);
 
             const batchPromises = batchImages.map(async (imageData) => {
-                if (typeof imageData !== 'object' || !imageData.image || !imageData.distance || !imageData.name) {
+                if (typeof imageData !== 'object') {
                     console.error('Invalid imageData structure:', imageData);
                     return null;
                 }
