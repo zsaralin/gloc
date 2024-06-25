@@ -2,8 +2,8 @@ import {getNumPhotos, numArrangedImages} from "./imageGridHelper.js";
 import {isMobile} from "../uiElements/screensizeLayout.js";
 
 export async function loadImages(imageDataArray) {
-    if (!imageDataArray) {
-        console.error('imageDataArray is null or undefined');
+    if (!Array.isArray(imageDataArray)) {
+        console.error('imageDataArray is not an array or is undefined:', imageDataArray);
         return;
     }
 
@@ -16,6 +16,11 @@ export async function loadImages(imageDataArray) {
             const batchImages = imageDataArray.slice(i, i + batchSize);
 
             const batchPromises = batchImages.map(async (imageData) => {
+                if (typeof imageData !== 'object' || !imageData.image || !imageData.imageCmp || !imageData.label || !imageData.distance || !imageData.name) {
+                    console.error('Invalid imageData structure:', imageData);
+                    return null;
+                }
+
                 const imageElement = document.createElement('img');
                 imageElement.src = 'data:image/png;base64,' + imageData.image;
                 imageElement.srcOrig = 'data:image/png;base64,' + imageData.imageCmp;
@@ -29,7 +34,7 @@ export async function loadImages(imageDataArray) {
             });
 
             const batchResults = await Promise.all(batchPromises);
-            loadedImages.push(...batchResults);
+            loadedImages.push(...batchResults.filter(img => img !== null));
         }
 
         return loadedImages.slice(0, numPhotos);
