@@ -1,5 +1,6 @@
 import {getNumPhotos, numArrangedImages} from "./imageGridHelper.js";
 import {isMobile} from "../uiElements/screensizeLayout.js";
+import {SERVER_URL} from "../index.js";
 
 // export async function loadImages(imageDataArray) {
 //     if (!Array.isArray(imageDataArray)) {
@@ -64,8 +65,8 @@ export async function loadImages(imageDataArray) {
                 }
 
                 const imageElement = document.createElement('img');
-                imageElement.src = `http://localhost:4000${imageData.imagePath}`;  // Use the full URL with the correct port
-                imageElement.srcOrig = `http://localhost:4000${imageData.imageCmpPath}`
+                imageElement.src = `${SERVER_URL}${imageData.imagePath}`;  // Use the full URL with the correct port
+                imageElement.srcOrig = `${SERVER_URL}${imageData.imageCmpPath}`
 
                 imageElement.label = imageData.label;
                 imageElement.distance = imageData.distance;
