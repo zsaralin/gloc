@@ -64,7 +64,9 @@ export async function loadImages(imageDataArray) {
                 }
 
                 const imageElement = document.createElement('img');
-                imageElement.src = imageData.image;  // Use the image path instead of base64
+                imageElement.src = `http://localhost:4000${imageData.imagePath}`;  // Use the full URL with the correct port
+                imageElement.srcOrig = `http://localhost:4000${imageData.imageCmpPath}`
+
                 imageElement.label = imageData.label;
                 imageElement.distance = imageData.distance;
                 imageElement.name = imageData.name;

@@ -37,8 +37,12 @@ app.listen(PORT, async () => {
 // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 createScoresTable()
+const imagesFolderPath = path.resolve(__dirname, '../../face_backet');
 
 // returns an array of top n matches, for each match - label, distance, image [compressed, first image]
+app.use('/static/images', express.static(imagesFolderPath));
+
+// Your other routes and middleware
 app.post('/match', async (req, res) => {
     try {
         const { photo, numPhotos, uuid } = req.body;
@@ -59,9 +63,9 @@ app.post('/match', async (req, res) => {
 
         const imagePathPromises = nearestDescriptors.map(async nearestDescriptor => {
             const { label, normalizedDistance } = nearestDescriptor;
-            const photoCropPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
-            const photoPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
-            const txtFile = path.posix.join(localFolderPath, dbName, label, `${label}.json`);
+            const photoCropPath = path.posix.join(imagesFolderPath, dbName, label, `${label}_cmp.png`);
+            const photoPath = path.posix.join(imagesFolderPath, dbName, label, `${label}_cmp.png`);
+            const txtFile = path.posix.join(imagesFolderPath, dbName, label, `${label}.json`);
             const name = await getNameFromJsonFile(txtFile, label);
 
             const doesPhotoCropExist = await fileExists(photoCropPath);
@@ -73,15 +77,21 @@ app.post('/match', async (req, res) => {
                     label,
                     name,
                     distance: normalizedDistance * 100,
-                    image: photoCropPath,
-                    imageCmp: photoPath
+                    imagePath: `/static/images/${dbName}/${label}/${label}_cmp.png`,
+                    imageCmpPath: `/static/images/${dbName}/${label}/${label}_cmp.png`
                 };
             } else {
                 console.log(`One or both files do not exist: ${photoPath}, ${photoCropPath}`);
             }
         });
 
+        // Print pending promises for debugging
+        console.log("Pending promises:", imagePathPromises);
+
+        // Await all promises to resolve
         const responseArray = (await Promise.all(imagePathPromises)).filter(Boolean);
+
+        // Print resolved array for debugging
 
         res.json(responseArray);
     } catch (error) {
@@ -134,8 +144,8 @@ async function getNameFromJsonFile(filePath, defaultLabel) {
 app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
-        const imagesFolder = `${localFolderPath}/${dbName}/`; // Adjust the folder path as needed
-        const randomImages = await readRandomImagesFromFolder(imagesFolder);
+        const imagesFolder = path.join(imagesFolderPath, dbName); // Adjust the folder path as needed
+        const randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
         res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);

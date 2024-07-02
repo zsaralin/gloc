@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
+const {image} = require("@tensorflow/tfjs-core");
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -19,7 +20,7 @@ async function getNameFromJsonFile(filePath) {
     }
 }
 
-async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
+async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
     const imagePaths = [];
     const startTime = performance.now();  // Start timing for the whole function
 
@@ -54,8 +55,8 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
         // Process each selected folder
         for (const folder of selectedFolders) {
             const folderName = folder.name;
-            const cropImagePath = path.posix.join(imagesFolder, folderName, `${folderName}_cmp.png`);
-            const jsonFilePath = path.posix.join(imagesFolder, folderName, `${folderName}.json`);
+            const cropImagePath = path.join(imagesFolder, folderName, `${folderName}_cmp.png`);
+            const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
 
             try {
                 const fileOperationStartTime = performance.now();
@@ -66,11 +67,14 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
                 // Read JSON data
                 const name = await getNameFromJsonFile(jsonFilePath) || folderName;
 
+                // Assuming `imagesFolder` is relative to the static directory
+                const publicCropImagePath = `/static/images/${dbName}/${folderName}/${folderName}_cmp.png`;
+
                 // Push to imagePaths with random distance
                 imagePaths.push({
                     name: name,
                     distance: Math.floor(Math.random() * 21),
-                    image: cropImagePath
+                    imagePath: publicCropImagePath
                 });
             } catch (error) {
                 console.log(`Failed to process ${folderName}: ${error}`);
@@ -84,6 +88,7 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
 
     const endTime = performance.now();  // End timing for the whole function
     console.log(`Total function execution time: ${endTime - startTime}ms`);
+    // console.log(imagePaths)
     return imagePaths;
 }
 module.exports = {
