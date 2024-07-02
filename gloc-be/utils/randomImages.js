@@ -20,7 +20,7 @@ async function getNameFromJsonFile(filePath) {
 }
 
 async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
-    const imageBuffers = [];
+    const imagePaths = [];
     const startTime = performance.now();  // Start timing for the whole function
 
     try {
@@ -29,7 +29,7 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
         let selectedFolders = [];
         let totalCount = 0;
         let countProcessed = 0;
-        const maxToProcess = 500; // Process at most 1000 entries for performance reasons
+        const maxToProcess = 500; // Process at most 500 entries for performance reasons
 
         for await (const entry of dir) {
             if (++countProcessed > maxToProcess && selectedFolders.length >= limit) break;
@@ -63,17 +63,14 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
                 // Check if the crop image exists
                 await fs.access(cropImagePath);
 
-                // Read image file
-                const imageBuffer = await fs.readFile(cropImagePath);
-
                 // Read JSON data
                 const name = await getNameFromJsonFile(jsonFilePath) || folderName;
 
-                // Push to imageBuffers with random distance
-                imageBuffers.push({
+                // Push to imagePaths with random distance
+                imagePaths.push({
                     name: name,
                     distance: Math.floor(Math.random() * 21),
-                    image: imageBuffer.toString('base64')
+                    image: cropImagePath
                 });
             } catch (error) {
                 console.log(`Failed to process ${folderName}: ${error}`);
@@ -87,7 +84,7 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
 
     const endTime = performance.now();  // End timing for the whole function
     console.log(`Total function execution time: ${endTime - startTime}ms`);
-    return imageBuffers;
+    return imagePaths;
 }
 module.exports = {
     readRandomImagesFromFolder

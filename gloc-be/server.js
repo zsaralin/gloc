@@ -41,23 +41,24 @@ createScoresTable()
 // returns an array of top n matches, for each match - label, distance, image [compressed, first image]
 app.post('/match', async (req, res) => {
     try {
-        const {photo, numPhotos, uuid} = req.body;
-        if(!photo) {
+        const { photo, numPhotos, uuid } = req.body;
+        if (!photo) {
             res.json(null);
-            return
+            return;
         }
-        const descriptor = await getDescriptor(photo)
-        if(!descriptor) {
+        const descriptor = await getDescriptor(photo);
+        if (!descriptor) {
             res.json(null);
-            return
+            return;
         }
 
         const labels = [];
 
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
-        if(!nearestDescriptors) return
-        const imageBufferPromises = nearestDescriptors.map(async nearestDescriptor => {
-            const {label, normalizedDistance} = nearestDescriptor;
+        if (!nearestDescriptors) return;
+
+        const imagePathPromises = nearestDescriptors.map(async nearestDescriptor => {
+            const { label, normalizedDistance } = nearestDescriptor;
             const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
             const photoPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
             const txtFile = path.join(localFolderPath, dbName, label, `${label}.json`);
@@ -67,30 +68,25 @@ app.post('/match', async (req, res) => {
             const doesPhotoExist = await fileExists(photoPath);
 
             if (doesPhotoCropExist && doesPhotoExist) {
-                try {
-                    const imageCropBuffer = await encodeImageToBase64(photoCropPath);
-                    const imageBuffer = await encodeImageToBase64(photoPath);
-                    labels.push(name)
-                    return {
-                        label,
-                        name,
-                        distance: normalizedDistance * 100,
-                        image: imageCropBuffer,
-                        imageCmp: imageBuffer
-                    };
-                } catch (error) {
-                    console.error('Error processing images:', error);
-                }
+                labels.push(name);
+                return {
+                    label,
+                    name,
+                    distance: normalizedDistance * 100,
+                    image: photoCropPath,
+                    imageCmp: photoPath
+                };
             } else {
                 console.log(`One or both files do not exist: ${photoPath}, ${photoCropPath}`);
             }
         });
-        const responseArray = (await Promise.all(imageBufferPromises)).filter(Boolean);
+
+        const responseArray = (await Promise.all(imagePathPromises)).filter(Boolean);
 
         res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);
-        res.status(500).json({error: 'Internal Server Error'});
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
