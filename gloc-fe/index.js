@@ -92,6 +92,7 @@ export async function resetNewDB() {
     const randomImageStartTime = performance.now();
     const randomImageArr = await getRandomImages();
     const randomImageEndTime = performance.now();
+    console.log('hola hola hola im getting rnadom images')
     console.log(`Getting random images took: ${randomImageEndTime - randomImageStartTime}ms`);
 
     // Measure the time taken to create the image grid
