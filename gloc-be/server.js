@@ -59,9 +59,9 @@ app.post('/match', async (req, res) => {
 
         const imagePathPromises = nearestDescriptors.map(async nearestDescriptor => {
             const { label, normalizedDistance } = nearestDescriptor;
-            const photoCropPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
-            const photoPath = path.join(localFolderPath, dbName, label, `${label}_cmp.png`);
-            const txtFile = path.join(localFolderPath, dbName, label, `${label}.json`);
+            const photoCropPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
+            const photoPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
+            const txtFile = path.posix.join(localFolderPath, dbName, label, `${label}.json`);
             const name = await getNameFromJsonFile(txtFile, label);
 
             const doesPhotoCropExist = await fileExists(photoCropPath);
@@ -89,7 +89,6 @@ app.post('/match', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 async function encodeImageToBase64(filePath) {
     try {
         const imageBuffer = await fs.readFile(filePath);

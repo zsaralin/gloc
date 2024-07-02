@@ -54,8 +54,8 @@ async function readRandomImagesFromFolder(imagesFolder, limit = 42) {
         // Process each selected folder
         for (const folder of selectedFolders) {
             const folderName = folder.name;
-            const cropImagePath = path.join(imagesFolder, folderName, `${folderName}_cmp.png`);
-            const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
+            const cropImagePath = path.posix.join(imagesFolder, folderName, `${folderName}_cmp.png`);
+            const jsonFilePath = path.posix.join(imagesFolder, folderName, `${folderName}.json`);
 
             try {
                 const fileOperationStartTime = performance.now();
