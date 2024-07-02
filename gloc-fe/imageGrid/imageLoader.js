@@ -45,6 +45,7 @@ import {SERVER_URL} from "../index.js";
 // }
 
 export async function loadImages(imageDataArray) {
+    console.log('hi?')
     if (!Array.isArray(imageDataArray)) {
         console.error('imageDataArray is not an array or is undefined:', imageDataArray);
         return;
