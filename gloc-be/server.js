@@ -85,9 +85,6 @@ app.post('/match', async (req, res) => {
             }
         });
 
-        // Print pending promises for debugging
-        console.log("Pending promises:", imagePathPromises);
-
         // Await all promises to resolve
         const responseArray = (await Promise.all(imagePathPromises)).filter(Boolean);
 
