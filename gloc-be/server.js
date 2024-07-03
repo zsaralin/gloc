@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 4000;
 const cors = require('cors')
 const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescriptors');
 require('dotenv').config();
-const localFolderPath  = '../../face_backet'
+
 
 app.use(cors());
 app.use(function(req, res, next) {
@@ -172,7 +172,7 @@ let cachedImages = null;
 app.get('/get-images', async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     try {
-        const directory = localFolderPath;
+        const directory = imagesFolderPath;
 
         // Ensure images are loaded and cached
         if (!cachedImages) {
