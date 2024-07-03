@@ -38,26 +38,26 @@ app.listen(PORT, async () => {
 
 let localFolderPath;
 createScoresTable()
-// try {
-//     // Resolve the path to the images folder
-//     localFolderPath  = '../../face_backet'
-//     console.log(`Resolved images folder path: ${localFolderPath}`);
-//
-//     // Check if the directory exists
-//     fs.access(localFolderPath, fs.constants.F_OK, (err) => {
-//         if (err) {
-//             console.error(`Directory not found: ${localFolderPath}`);
-//         } else {
-//             console.log(`Directory exists: ${localFolderPath}`);
-//
-//             // Serve static files from the images folder
-//             app.use('/static/images', express.static(localFolderPath));
-//             console.log(`Static file serving set up for: ${localFolderPath}`);
-//         }
-//     });
-// } catch (error) {
-//     console.error('Error setting up static file serving:', error);
-// }
+try {
+    // Resolve the path to the images folder
+    localFolderPath  = '../../face_backet'
+    console.log(`Resolved images folder path: ${localFolderPath}`);
+
+    // Check if the directory exists
+    fs.access(localFolderPath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error(`Directory not found: ${localFolderPath}`);
+        } else {
+            console.log(`Directory exists: ${localFolderPath}`);
+
+            // Serve static files from the images folder
+            app.use('/static/images', express.static(localFolderPath));
+            console.log(`Static file serving set up for: ${localFolderPath}`);
+        }
+    });
+} catch (error) {
+    console.error('Error setting up static file serving:', error);
+}
 // Your other routes and middleware
 app.post('/match', async (req, res) => {
     try {
