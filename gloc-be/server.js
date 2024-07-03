@@ -37,7 +37,7 @@ app.listen(PORT, async () => {
 // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 createScoresTable()
-const imagesFolderPath = path.resolve(__dirname, '../../face_backet');
+const imagesFolderPath = '../../face_backet';
 
 // returns an array of top n matches, for each match - label, distance, image [compressed, first image]
 app.use('/static/images', express.static(imagesFolderPath));
