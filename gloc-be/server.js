@@ -36,22 +36,23 @@ app.listen(PORT, async () => {
 // app.use(bodyParser.json({ limit: '50mb' }));
 // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+let localFolderPath;
 createScoresTable()
 try {
     // Resolve the path to the images folder
-    const imagesFolderPath = '../../face_backet';
-    console.log(`Resolved images folder path: ${imagesFolderPath}`);
+    localFolderPath  = '../../face_backet'
+    console.log(`Resolved images folder path: ${localFolderPath}`);
 
     // Check if the directory exists
-    fs.access(imagesFolderPath, fs.constants.F_OK, (err) => {
+    fs.access(localFolderPath, fs.constants.F_OK, (err) => {
         if (err) {
-            console.error(`Directory not found: ${imagesFolderPath}`);
+            console.error(`Directory not found: ${localFolderPath}`);
         } else {
-            console.log(`Directory exists: ${imagesFolderPath}`);
+            console.log(`Directory exists: ${localFolderPath}`);
 
             // Serve static files from the images folder
-            app.use('/static/images', express.static(imagesFolderPath));
-            console.log(`Static file serving set up for: ${imagesFolderPath}`);
+            app.use('/static/images', express.static(localFolderPath));
+            console.log(`Static file serving set up for: ${localFolderPath}`);
         }
     });
 } catch (error) {
@@ -78,9 +79,9 @@ app.post('/match', async (req, res) => {
 
         const imagePathPromises = nearestDescriptors.map(async nearestDescriptor => {
             const { label, normalizedDistance } = nearestDescriptor;
-            const photoCropPath = path.posix.join(imagesFolderPath, dbName, label, `${label}_cmp.png`);
-            const photoPath = path.posix.join(imagesFolderPath, dbName, label, `${label}_cmp.png`);
-            const txtFile = path.posix.join(imagesFolderPath, dbName, label, `${label}.json`);
+            const photoCropPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
+            const photoPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
+            const txtFile = path.posix.join(localFolderPath, dbName, label, `${label}.json`);
             const name = await getNameFromJsonFile(txtFile, label);
 
             const doesPhotoCropExist = await fileExists(photoCropPath);
