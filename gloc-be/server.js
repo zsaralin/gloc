@@ -37,11 +37,26 @@ app.listen(PORT, async () => {
 // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 createScoresTable()
-const imagesFolderPath = '../../face_backet';
+try {
+    // Resolve the path to the images folder
+    const imagesFolderPath = path.resolve(__dirname, '../../face_backet');
+    console.log(`Resolved images folder path: ${imagesFolderPath}`);
 
-// returns an array of top n matches, for each match - label, distance, image [compressed, first image]
-app.use('/static/images', express.static(imagesFolderPath));
+    // Check if the directory exists
+    fs.access(imagesFolderPath, fs.constants.F_OK, (err) => {
+        if (err) {
+            console.error(`Directory not found: ${imagesFolderPath}`);
+        } else {
+            console.log(`Directory exists: ${imagesFolderPath}`);
 
+            // Serve static files from the images folder
+            app.use('/static/images', express.static(imagesFolderPath));
+            console.log(`Static file serving set up for: ${imagesFolderPath}`);
+        }
+    });
+} catch (error) {
+    console.error('Error setting up static file serving:', error);
+}
 // Your other routes and middleware
 app.post('/match', async (req, res) => {
     try {
