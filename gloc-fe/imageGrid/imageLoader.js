@@ -67,7 +67,7 @@ export async function loadImages(imageDataArray) {
                 const imageElement = document.createElement('img');
                 imageElement.src = `${SERVER_URL}/${imageData.imagePath}`;  // Use the full URL with the correct port
                 console.log(`${SERVER_URL}${imageData.imagePath}`)
-                imageElement.srcOrig = `${SERVER_URL}/${imageData.imageCmpPath}`
+                // imageElement.srcOrig = `${SERVER_URL}/${imageData.imageCmpPath}`
 
                 imageElement.label = imageData.label;
                 imageElement.distance = imageData.distance;
