@@ -1,7 +1,7 @@
 import {getNumPhotos, numArrangedImages} from "./imageGridHelper.js";
 import {isMobile} from "../uiElements/screensizeLayout.js";
+import {SERVER_URL} from "../index.js";
 
-const SERVER_URL = 'https://be.levelofconfidence.net'
 // export async function loadImages(imageDataArray) {
 //     if (!Array.isArray(imageDataArray)) {
 //         console.error('imageDataArray is not an array or is undefined:', imageDataArray);
@@ -65,9 +65,9 @@ export async function loadImages(imageDataArray) {
                 }
 
                 const imageElement = document.createElement('img');
-                imageElement.src = `${SERVER_URL}${imageData.imagePath}`;  // Use the full URL with the correct port
+                imageElement.src = `${SERVER_URL}/${imageData.imagePath}`;  // Use the full URL with the correct port
                 console.log(`${SERVER_URL}${imageData.imagePath}`)
-                imageElement.srcOrig = `${SERVER_URL}${imageData.imageCmpPath}`
+                imageElement.srcOrig = `${SERVER_URL}/${imageData.imageCmpPath}`
 
                 imageElement.label = imageData.label;
                 imageElement.distance = imageData.distance;
