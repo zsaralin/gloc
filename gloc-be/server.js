@@ -156,10 +156,34 @@ async function getNameFromJsonFile(filePath, defaultLabel) {
 
 app.post('/random', async (req, res) => {
     try {
-        const dbName = getDbName();
-        const imagesFolder = path.join(localFolderPath, dbName); // Adjust the folder path as needed
-        console.log(imagesFolder)
-        const randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
+        console.log('POST /random route hit');
+        let dbName;
+        try {
+            dbName = getDbName();
+            console.log('Database Name:', dbName);
+        } catch (err) {
+            console.error('Error getting database name:', err);
+            throw err;
+        }
+
+        let imagesFolder;
+        try {
+            imagesFolder = path.join(localFolderPath, dbName);
+            console.log('Images Folder Path:', imagesFolder);
+        } catch (err) {
+            console.error('Error resolving images folder path:', err);
+            throw err;
+        }
+
+        let randomImages;
+        try {
+            randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
+            console.log('Random Images:', randomImages);
+        } catch (err) {
+            console.error('Error reading random images from folder:', err);
+            throw err;
+        }
+
         res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);
