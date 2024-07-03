@@ -89,14 +89,14 @@ async function main() {
 
 export async function resetNewDB() {
     // Measure the time taken to get random images
-    // const randomImageStartTime = performance.now();
-    // const randomImageArr = await getRandomImages();
-    // const randomImageEndTime = performance.now();
-    // console.log(`Getting random images took: ${randomImageEndTime - randomImageStartTime}ms`);
+    const randomImageStartTime = performance.now();
+    const randomImageArr = await getRandomImages();
+    const randomImageEndTime = performance.now();
+    console.log(`Getting random images took: ${randomImageEndTime - randomImageStartTime}ms`);
 
     // Measure the time taken to create the image grid
     const createGridStartTime = performance.now();
-    // await createImageGrid(randomImageArr, abortController);
+    await createImageGrid(randomImageArr, abortController);
     const createGridEndTime = performance.now();
     console.log(`Creating image grid took: ${createGridEndTime - createGridStartTime}ms`);
 }
