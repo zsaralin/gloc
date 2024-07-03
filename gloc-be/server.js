@@ -177,14 +177,14 @@ app.post('/random', async (req, res) => {
 
         let randomImages;
         try {
-            // randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
-            // console.log('Random Images:', randomImages);
+            randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
+            console.log('Random Images:', randomImages);
         } catch (err) {
             console.error('Error reading random images from folder:', err);
             throw err;
         }
 
-        // res.json(randomImages);
+        res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);
         res.status(500).json({ error: 'Internal Server Error' });
