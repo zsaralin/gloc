@@ -39,7 +39,7 @@ app.listen(PORT, async () => {
 createScoresTable()
 try {
     // Resolve the path to the images folder
-    const imagesFolderPath = path.resolve(__dirname, '../../face_backet');
+    const imagesFolderPath = '../../face_backet';
     console.log(`Resolved images folder path: ${imagesFolderPath}`);
 
     // Check if the directory exists
