@@ -59,30 +59,21 @@ export async function loadImages(imageDataArray) {
             const batchImages = imageDataArray.slice(i, i + batchSize);
 
             const batchPromises = batchImages.map(async (imageData) => {
-                if (typeof imageData !== 'object' || !imageData.image || !imageData.imageCmpPath) {
-                    console.error('Invalid imageData structure or missing image data:', imageData);
+                if (typeof imageData !== 'object') {
+                    console.error('Invalid imageData structure:', imageData);
                     return null;
                 }
 
                 const imageElement = document.createElement('img');
-                const fullImagePath = `${SERVER_URL}${imageData.imagePath}`;
-                const fullImageCmpPath = `${SERVER_URL}${imageData.imageCmpPath}`;
+                imageElement.src = `${SERVER_URL}${imageData.imagePath}`;  // Use the full URL with the correct port
+                imageElement.srcOrig = `${SERVER_URL}${imageData.imageCmpPath}`
 
-                // Debug logging
-                console.log('Image Data:', imageData);
-                console.log('Full Image Path:', fullImagePath);
-                console.log('Full Image Cmp Path:', fullImageCmpPath);
-
-                imageElement.src = fullImagePath;
-                imageElement.srcOrig = fullImageCmpPath;
                 imageElement.label = imageData.label;
                 imageElement.distance = imageData.distance;
                 imageElement.name = imageData.name;
-
                 await new Promise((resolve) => {
                     imageElement.onload = resolve;
                 });
-
                 return imageElement;
             });
 

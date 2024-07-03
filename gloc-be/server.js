@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 4000;
 const cors = require('cors')
 const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescriptors');
 require('dotenv').config();
-
+const localFolderPath  = '../../face_backet'
 
 app.use(cors());
 app.use(function(req, res, next) {
@@ -36,28 +36,11 @@ app.listen(PORT, async () => {
 // app.use(bodyParser.json({ limit: '50mb' }));
 // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
-let localFolderPath;
 createScoresTable()
-try {
-    // Resolve the path to the images folder
-    localFolderPath  = '../../face_backet'
-    console.log(`Resolved images folder path: ${localFolderPath}`);
 
-    // Check if the directory exists
-    fs.access(localFolderPath, fs.constants.F_OK, (err) => {
-        if (err) {
-            console.error(`Directory not found: ${localFolderPath}`);
-        } else {
-            console.log(`Directory exists: ${localFolderPath}`);
+// returns an array of top n matches, for each match - label, distance, image [compressed, first image]
+app.use('/static/images', express.static(localFolderPath));
 
-            // Serve static files from the images folder
-            app.use('/static/images', express.static(localFolderPath));
-            console.log(`Static file serving set up for: ${localFolderPath}`);
-        }
-    });
-} catch (error) {
-    console.error('Error setting up static file serving:', error);
-}
 // Your other routes and middleware
 app.post('/match', async (req, res) => {
     try {
@@ -156,34 +139,9 @@ async function getNameFromJsonFile(filePath, defaultLabel) {
 
 app.post('/random', async (req, res) => {
     try {
-        console.log('POST /random route hit');
-        let dbName;
-        try {
-            dbName = getDbName();
-            console.log('Database Name:', dbName);
-        } catch (err) {
-            console.error('Error getting database name:', err);
-            throw err;
-        }
-
-        let imagesFolder;
-        try {
-            imagesFolder = path.join(localFolderPath, dbName);
-            console.log('Images Folder Path:', imagesFolder);
-        } catch (err) {
-            console.error('Error resolving images folder path:', err);
-            throw err;
-        }
-
-        let randomImages;
-        try {
-            randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
-            console.log('Random Images:', randomImages);
-        } catch (err) {
-            console.error('Error reading random images from folder:', err);
-            throw err;
-        }
-
+        const dbName = getDbName();
+        const imagesFolder = path.join(localFolderPath, dbName); // Adjust the folder path as needed
+        const randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
         res.json(randomImages);
     } catch (error) {
         console.error('Error processing detection:', error);
@@ -213,7 +171,7 @@ let cachedImages = null;
 app.get('/get-images', async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     try {
-        const directory = imagesFolderPath;
+        const directory = localFolderPath;
 
         // Ensure images are loaded and cached
         if (!cachedImages) {

@@ -6,7 +6,6 @@ import {isMobile} from "../uiElements/screensizeLayout.js";
 let loadedImages;
 export async function createImageGrid(imagesDataArray, abortController) {
     try {
-        console.log('are u in ? im creating ' )
         const allImages = await loadImages(imagesDataArray);
         const firstImagesCount = isMobile ? 2 : 3;
         const topImages = allImages.slice(0, firstImagesCount);

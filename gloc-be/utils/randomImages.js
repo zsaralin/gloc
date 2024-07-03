@@ -21,13 +21,14 @@ async function getNameFromJsonFile(filePath) {
 }
 async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
     const imagePaths = [];
-    const startTime = performance.now(); // Start timing for the whole function
+    const startTime = performance.now();  // Start timing for the whole function
 
     try {
         const dirStartTime = performance.now();
+        console.log(`Opening directory: ${imagesFolder}`);
+
         const dir = await fs.opendir(imagesFolder);
         let selectedFolders = [];
-        let totalCount = 0;
         let countProcessed = 0;
         const maxToProcess = 500; // Process at most 500 entries for performance reasons
 
@@ -35,12 +36,11 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
             if (++countProcessed > maxToProcess && selectedFolders.length >= limit) break;
 
             if (entry.isDirectory()) {
-                totalCount++;
                 // Apply reservoir sampling logic
                 if (selectedFolders.length < limit) {
                     selectedFolders.push(entry);
                 } else {
-                    const j = Math.floor(Math.random() * totalCount);
+                    const j = Math.floor(Math.random() * (countProcessed + 1));
                     if (j < limit) {
                         selectedFolders[j] = entry;
                     }
@@ -58,12 +58,12 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
             const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
 
             try {
-                const fileOperationStartTime = performance.now();
-
                 // Check if the crop image exists
+                console.log(`Checking existence of: ${cropImagePath}`);
                 await fs.access(cropImagePath);
 
                 // Read JSON data
+                console.log(`Reading JSON file: ${jsonFilePath}`);
                 const name = await getNameFromJsonFile(jsonFilePath) || folderName;
 
                 // Assuming `imagesFolder` is relative to the static directory
@@ -75,9 +75,6 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
                     distance: Math.floor(Math.random() * 21),
                     imagePath: publicCropImagePath
                 });
-
-                const fileOperationEndTime = performance.now();
-                console.log(`Processing ${folderName} took: ${fileOperationEndTime - fileOperationStartTime}ms`);
             } catch (error) {
                 console.log(`Failed to process ${folderName}: ${error}`);
             }
@@ -88,7 +85,7 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
         console.error(`Error reading directory: ${error.message}`);
     }
 
-    const endTime = performance.now(); // End timing for the whole function
+    const endTime = performance.now();  // End timing for the whole function
     console.log(`Total function execution time: ${endTime - startTime}ms`);
     return imagePaths;
 }
