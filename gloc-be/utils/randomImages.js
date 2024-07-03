@@ -19,10 +19,9 @@ async function getNameFromJsonFile(filePath) {
         return null; // If there's an error reading or parsing, return null
     }
 }
-
 async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
     const imagePaths = [];
-    const startTime = performance.now();  // Start timing for the whole function
+    const startTime = performance.now(); // Start timing for the whole function
 
     try {
         const dirStartTime = performance.now();
@@ -76,6 +75,9 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
                     distance: Math.floor(Math.random() * 21),
                     imagePath: publicCropImagePath
                 });
+
+                const fileOperationEndTime = performance.now();
+                console.log(`Processing ${folderName} took: ${fileOperationEndTime - fileOperationStartTime}ms`);
             } catch (error) {
                 console.log(`Failed to process ${folderName}: ${error}`);
             }
@@ -86,9 +88,8 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
         console.error(`Error reading directory: ${error.message}`);
     }
 
-    const endTime = performance.now();  // End timing for the whole function
+    const endTime = performance.now(); // End timing for the whole function
     console.log(`Total function execution time: ${endTime - startTime}ms`);
-    // console.log(imagePaths)
     return imagePaths;
 }
 module.exports = {
