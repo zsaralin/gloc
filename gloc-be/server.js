@@ -157,7 +157,8 @@ async function getNameFromJsonFile(filePath, defaultLabel) {
 app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
-        const imagesFolder = path.join(imagesFolderPath, dbName); // Adjust the folder path as needed
+        const imagesFolder = path.join(localFolderPath, dbName); // Adjust the folder path as needed
+        console.log(imagesFolder)
         const randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
         res.json(randomImages);
     } catch (error) {
