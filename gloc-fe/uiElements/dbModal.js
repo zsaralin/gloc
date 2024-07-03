@@ -22,7 +22,7 @@ async function setDb(selectedDbName) {
             loadingText.innerHTML = "Loading database" + ".".repeat(dotCount);
         }, 200);
 
-        // await resetNewDB();
+        await resetNewDB();
         clearInterval(intervalId);
         enterMainPage();
     } catch (error) {
