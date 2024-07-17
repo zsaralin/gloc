@@ -9,12 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow/tfjs-node": "1.7.x",
+    "@tensorflow/tfjs": "1.7.x",
     "@tensorflow/tfjs-core": "1.7.4",
-    "@tensorflow/tfjs": "1.7.x"  ,
+    "@tensorflow/tfjs-node": "1.7.x",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "face-api.js": "^0.22.2",
+    "graceful-fs": "^4.2.11",
     "jimp": "^0.22.12",
     "pg": "^8.11.5"
   },

@@ -1,3 +1,5 @@
+import { SERVER_URL } from "../index.js";
+
 export async function addImageClickListener42(imageItemContainer, imageData) {
     const clickListener = async function () {
         // pause video when modal is open
@@ -9,7 +11,7 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
         // close modal on click outside of content
         const modal = document.createElement('div');
         modal.className = 'bio-modal-overlay';
-        modal.addEventListener('click', function () {
+        modal.addEventListener('click', function (event) {
             if (event.target === modal) { // Check if the clicked element is the modal itself and not a child
                 modal.remove();
                 if (playPauseButton) {
@@ -27,22 +29,46 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
         const imageContainer = document.createElement('div');
         imageContainer.className = 'bio-image-container';
 
-        const label = imageData.name;
+        const label = imageData.jsonData.name;
 
-        const imageElement = document.createElement('img');
-        imageElement.src = imageData.srcOrig;
-        imageElement.alt = label;
-        imageContainer.appendChild(imageElement);
+        // Create and append img elements for each imagePath
+        imageData.imagePaths.forEach(imagePath => {
+            const imageElement = document.createElement('img');
+            imageElement.src = `${SERVER_URL}${imagePath}`; // Use the full URL
+            imageElement.alt = label;
+            imageElement.style.marginBottom = '10px'; // Add some spacing between images
+            imageContainer.appendChild(imageElement);
+        });
 
-        // show modal when image is loaded
-        imageElement.onload = function() {
-            modal.style.visibility = 'visible';
-            document.body.appendChild(modal);
-        };
+        // Show modal when images are loaded
+        let imagesLoaded = 0;
+        imageContainer.querySelectorAll('img').forEach(img => {
+            img.onload = function() {
+                imagesLoaded++;
+                if (imagesLoaded === imageData.imagePaths.length) {
+                    modal.style.visibility = 'visible';
+                    document.body.appendChild(modal);
+                }
+            };
+        });
+
+        // Function to format key names to have spaces and capitalization
+        function formatKeyName(key) {
+            return key.replace(/([A-Z])/g, ' $1')
+                .replace(/^./, str => str.toUpperCase());
+        }
+
+        // Generate content for textContainer based on JSON data
+        let contentHtml = `<p>${label}</p>`;
+        for (const [key, value] of Object.entries(imageData.jsonData)) {
+            if (key !== 'numRecords' && key !== 'name') {
+                contentHtml += `<p>${formatKeyName(key)}: ${value}</p>`;
+            }
+        }
 
         const textContainer = document.createElement('div');
         textContainer.className = 'bio-text-container';
-        textContainer.innerHTML = `<p>${label}</p> ${dummyText}`;
+        textContainer.innerHTML = contentHtml;
 
         innerWrapper.appendChild(imageContainer);
         innerWrapper.appendChild(textContainer);
@@ -84,11 +110,3 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
     imageItemContainer._clickListener42 = clickListener;
     imageItemContainer.addEventListener('click', clickListener);
 }
-
-const dummyText =
-    `<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit justo et neque tincidunt, eu mattis sapien suscipit.
-       Quisque varius, augue ac sodales auctor, tellus dolor ullamcorper neque, at viverra nisl massa vel ligula. Sed lacinia tristique lacus, sit amet feugiat odio volutpat nec.</p>
-    <p>Vivamus nec purus a mi viverra volutpat. Sed gravida, risus a dictum dignissim, leo felis sagittis libero, nec malesuada velit ex a arcu. Nulla facilisi.</p>
-    <p>Cras fringilla urna ut lorem tincidunt, quis varius libero convallis. Nulla facilisi. Etiam consectetur varius erat eget euismod. Phasellus venenatis vel velit id fermentum.</p>
-    <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce aliquet, risus vel elementum hendrerit, ipsum augue dictum neque, at volutpat turpis
-       velit id odio. Sed facilisis nec arcu vel iaculis. In eleifend quam vitae justo faucibus sed tristique elit rhoncus. Sed suscipit orci eget efficitur vehicula. Vivamus ac velit quis libero aliquam laoreet.</p>`;

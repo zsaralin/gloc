@@ -19,7 +19,7 @@ async function getNameFromJsonFile(filePath) {
         return null; // If there's an error reading or parsing, return null
     }
 }
-async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
+async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 100) {
     const imagePaths = [];
     const startTime = performance.now();  // Start timing for the whole function
 
@@ -54,27 +54,41 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
         // Process each selected folder
         for (const folder of selectedFolders) {
             const folderName = folder.name;
-            const cropImagePath = path.join(imagesFolder, folderName, `${folderName}_cmp.png`);
+            const imagesFolderPath = path.join(imagesFolder, folderName, 'images');
             const jsonFilePath = path.join(imagesFolder, folderName, `${folderName}.json`);
 
             try {
-                // Check if the crop image exists
-                console.log(`Checking existence of: ${cropImagePath}`);
-                await fs.access(cropImagePath);
+                // Read the images folder and get the first file
+                const imagesDir = await fs.opendir(imagesFolderPath);
+                let firstFile = null;
+                for await (const imageFile of imagesDir) {
+                    firstFile = imageFile.name;
+                    break;
+                }
 
-                // Read JSON data
-                console.log(`Reading JSON file: ${jsonFilePath}`);
-                const name = await getNameFromJsonFile(jsonFilePath) || folderName;
+                if (firstFile) {
+                    const cropImagePath = path.join(imagesFolderPath, firstFile);
 
-                // Assuming `imagesFolder` is relative to the static directory
-                const publicCropImagePath = `/static/images/${dbName}/${folderName}/${folderName}_cmp.png`;
+                    // Check if the crop image exists
+                    console.log(`Checking existence of: ${cropImagePath}`);
+                    await fs.access(cropImagePath);
 
-                // Push to imagePaths with random distance
-                imagePaths.push({
-                    name: name,
-                    distance: Math.floor(Math.random() * 21),
-                    imagePath: publicCropImagePath
-                });
+                    // Read JSON data
+                    console.log(`Reading JSON file: ${jsonFilePath}`);
+                    const name = await getNameFromJsonFile(jsonFilePath) || folderName;
+
+                    // Assuming `imagesFolder` is relative to the static directory
+                    const publicCropImagePath = `/static/images/${dbName}/${folderName}/images/${firstFile}`;
+
+                    // Push to imagePaths with random distance
+                    imagePaths.push({
+                        name: name,
+                        distance: Math.floor(Math.random() * 21),
+                        imagePath: [publicCropImagePath]
+                    });
+                } else {
+                    console.log(`No files found in folder: ${imagesFolderPath}`);
+                }
             } catch (error) {
                 console.log(`Failed to process ${folderName}: ${error}`);
             }
@@ -88,6 +102,7 @@ async function readRandomImagesFromFolder(imagesFolder, dbName, limit = 42) {
     const endTime = performance.now();  // End timing for the whole function
     console.log(`Total function execution time: ${endTime - startTime}ms`);
     return imagePaths;
+
 }
 module.exports = {
     readRandomImagesFromFolder

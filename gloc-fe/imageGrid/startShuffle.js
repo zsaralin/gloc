@@ -40,21 +40,22 @@ export async function stopShuffle() {
     });
 }
 let shuffleEndTime;
-export function startShuffle() {
+export async function startShuffle() {
     const shuffleSpeed = document.getElementById('shuffle-slider').value
+    const loadedImages = await loadImages(randomImageArr);
     if (!shuffleIntervalId) {
         shuffleActive = true;
         shuffleStartTime = Date.now();
-        shuffleIntervalId = setInterval(updateShuffleLoop, shuffleSpeed);
+        shuffleIntervalId = setInterval(() => updateShuffleLoop(loadedImages), shuffleSpeed); // Pass the loaded images to the loop
     }
     let shuffleDur = document.getElementById('shuffle-dur-slider').value * 1000
 
     animateProgressBar(shuffleDur)
 }
-export function updateShuffleLoop() {
-    if (shuffleActive && randomImageArr) {
+export function updateShuffleLoop(loadedImages) {
+    if (shuffleActive && loadedImages) {
         setTimeout(() => {
-            updateShuffle(randomImageArr);
+            updateShuffle(loadedImages, randomImageArr);
         }, 0); // Zero milliseconds means it will be executed in the next event loop iteration    }
     }
 }

@@ -104,20 +104,17 @@ async function updateCrossfade(currentImage, nextImage, topTextOverlay, bottomTe
             bottomTextOverlay.style.transition = `opacity ${fadeTime / 2 / 2}s linear`;
             bottomTextOverlay.style.opacity = 0;
             nextImage.src = imageSrc;
-            // currentImage.style.transform = transformSettings
-            // nextImage.style.transformOrigin = `50% 50%`;
-            // nextImage.style.transform = transformSettings
 
             currentImage.style.opacity = 0;
             nextImage.style.opacity = opacity;
         }
         topTextOverlay.style.transition = `opacity ${fadeTime / 2 / 2}s linear`;
-        fadeOverlay.style.transition = `opacity ${fadeTime/2}s linear`;
+        fadeOverlay.style.transition = `opacity ${fadeTime / 2}s linear`;
 
         topTextOverlay.style.opacity = 0;
         fadeOverlay.style.opacity = 0;
 
-
+        // Wait for the first fade to complete
         setTimeout(() => {
             topTextOverlay.innerHTML = newTopTextOverlay.innerHTML;
             topTextOverlay.style.opacity = 1;
@@ -127,23 +124,23 @@ async function updateCrossfade(currentImage, nextImage, topTextOverlay, bottomTe
             }
             resolve();
         }, fadeTime / 2 * 1000);
+    }).then(() => {
+        return new Promise((resolve) => {
+            if (currentImage.src !== imageSrc) {
+                setTimeout(() => {
+                    currentImage.src = nextImage.src;
+                    currentImage.style.transition = 'opacity 0s';
+                    nextImage.style.transition = 'opacity 0s';
 
-            return new Promise((resolve) => {
-                if (currentImage.src !== imageSrc) {
+                    currentImage.style.opacity = opacity;
+                    nextImage.style.opacity = 0;
 
-                    setTimeout(() => {
-                        currentImage.src = nextImage.src;
-                        currentImage.style.transition = 'opacity 0s';
-                        nextImage.style.transition = 'opacity 0s';
-
-                        currentImage.style.opacity = opacity;
-                        nextImage.style.opacity = 0;
-
-                        resolve();
-                    }, fadeTime / 2 * 1000);
-                }
-            });
-
+                    resolve();
+                }, fadeTime / 2 * 1000);
+            } else {
+                resolve();
+            }
+        });
     });
 }
 

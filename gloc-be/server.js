@@ -1,15 +1,16 @@
 const express = require('express');
-const fs = require('fs').promises
+const fs = require('fs').promises;
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 4000;
-const cors = require('cors')
-const {findNearestDescriptors, loadDataIntoMemory} = require('./utils/topDescriptors');
+const cors = require('cors');
+const { findNearestDescriptors, loadDataIntoMemory } = require('./utils/topDescriptors');
 require('dotenv').config();
-const localFolderPath  = '../../face_backet'
+
+const localFolderPath = path.resolve(__dirname, '../../face_backet');  // Adjust the folder path as needed
 
 app.use(cors());
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -18,30 +19,25 @@ app.use(function(req, res, next) {
 });
 app.use(express.json());
 
-
-
-const {readRandomImagesFromFolder} = require("./utils/randomImages");
-const { saveCroppedImages, getOriginalImages} = require("./utils/cropFacesBE");
-
-const { getDbName } = require('./db.js');
-const {setDbName} = require("./db.js");
-const {getDescriptor} = require("./utils/getDescriptor");
-const {createNewScores, initializeSessionScores, testDB, createScoresTable, deleteUserEntry} = require("./scores");
+const { readRandomImagesFromFolder } = require("./utils/randomImages");
+const { saveCroppedImages, getOriginalImages } = require("./utils/cropFacesBE");
+const { getDbName, setDbName } = require('./db.js');
+const { getDescriptor } = require("./utils/getDescriptor");
+const { createNewScores, initializeSessionScores, testDB, createScoresTable, deleteUserEntry } = require("./scores");
 
 let dbName = getDbName();
 
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
-})
-// app.use(bodyParser.json({ limit: '50mb' }));
-// app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+});
 
-createScoresTable()
-
-// returns an array of top n matches, for each match - label, distance, image [compressed, first image]
+// Create Scores Table
+createScoresTable();
+// Serve static files for all images
 app.use('/static/images', express.static(localFolderPath));
 
-// Your other routes and middleware
+// Other routes and middleware
+
 app.post('/match', async (req, res) => {
     try {
         const { photo, numPhotos, uuid } = req.body;
@@ -56,55 +52,68 @@ app.post('/match', async (req, res) => {
         }
 
         const labels = [];
-
         const nearestDescriptors = await findNearestDescriptors(descriptor, numPhotos, uuid);
         if (!nearestDescriptors) return;
 
         const imagePathPromises = nearestDescriptors.map(async nearestDescriptor => {
             const { label, normalizedDistance } = nearestDescriptor;
-            const photoCropPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
-            const photoPath = path.posix.join(localFolderPath, dbName, label, `${label}_cmp.png`);
-            const txtFile = path.posix.join(localFolderPath, dbName, label, `${label}.json`);
-            const name = await getNameFromJsonFile(txtFile, label);
+            const imagesFolderPath = path.join(localFolderPath, dbName, label, 'images');
+            const jsonFilePath = path.join(localFolderPath, dbName, label, 'info.json');
+            const name = await getNameFromJsonFile(jsonFilePath, label);
 
-            const doesPhotoCropExist = await fileExists(photoCropPath);
-            const doesPhotoExist = await fileExists(photoPath);
+            // Get all files in the images folder
+            let imageFiles = [];
+            try {
+                const files = await fs.readdir(imagesFolderPath);
+                imageFiles = files.filter(file => /\.(png|jpe?g|gif)$/.test(file));
+            } catch (error) {
+                console.error(`Error reading images folder: ${imagesFolderPath}`, error);
+                return null;
+            }
 
-            if (doesPhotoCropExist && doesPhotoExist) {
+            if (imageFiles.length > 0) {
+                // Construct the full path to each image
+                const imagePaths = imageFiles.map(file => `/static/images/${dbName}/${label}/images/${encodeURIComponent(file)}`);
+
+                // Read the JSON file
+                let jsonData = null;
+                try {
+                    const jsonContent = await fs.readFile(jsonFilePath, 'utf8');
+                    jsonData = JSON.parse(jsonContent);
+                } catch (error) {
+                    console.error(`Error reading JSON file: ${jsonFilePath}`, error);
+                }
+
                 labels.push(name);
                 return {
                     label,
                     name,
                     distance: normalizedDistance * 100,
-                    imagePath: `/static/images/${dbName}/${label}/${label}_cmp.png`,
-                    imageCmpPath: `/static/images/${dbName}/${label}/${label}_cmp.png`
+                    imagePath: imagePaths, // Array of image paths
+                    jsonData // JSON file content
                 };
             } else {
-                console.log(`One or both files do not exist: ${photoPath}, ${photoCropPath}`);
+                console.log(`No image files found in folder: ${imagesFolderPath}`);
             }
         });
 
-        // Await all promises to resolve
         const responseArray = (await Promise.all(imagePathPromises)).filter(Boolean);
-
-        // Print resolved array for debugging
-
         res.json(responseArray);
     } catch (error) {
         console.error('Error processing detection:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 async function encodeImageToBase64(filePath) {
     try {
         const imageBuffer = await fs.readFile(filePath);
         return imageBuffer.toString('base64');
     } catch (error) {
         console.error(`Error reading file ${filePath}:`, error);
-        return null;  // Return null if there's an error reading the file
+        return null;
     }
 }
-
 
 async function fileExists(filePath) {
     try {
@@ -117,30 +126,27 @@ async function fileExists(filePath) {
         throw error;
     }
 }
+
 async function getNameFromJsonFile(filePath, defaultLabel) {
-    // Check if the file exists
     const exists = await fileExists(filePath);
     if (exists) {
         try {
-            // Read the JSON file
             const fileData = await fs.readFile(filePath, 'utf8');
-            // Parse the JSON data
             const jsonData = JSON.parse(fileData);
-            // Return the 'name' property or default label if not present
             return jsonData.name || defaultLabel;
         } catch (error) {
             console.error('Error reading or parsing JSON:', error);
-            return defaultLabel; // Return default label in case of error
+            return defaultLabel;
         }
     } else {
-        return defaultLabel; // Return default label if file doesn't exist
+        return defaultLabel;
     }
 }
 
 app.post('/random', async (req, res) => {
     try {
         const dbName = getDbName();
-        const imagesFolder = path.join(localFolderPath, dbName); // Adjust the folder path as needed
+        const imagesFolder = path.join(localFolderPath, dbName);
         const randomImages = await readRandomImagesFromFolder(imagesFolder, dbName);
         res.json(randomImages);
     } catch (error) {
@@ -148,21 +154,21 @@ app.post('/random', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-// Endpoint to set the database name
+
 app.post('/set-db-name', async (req, res) => {
-    const {newName} = req.body;
+    const { newName } = req.body;
     if (newName) {
-        setDbName(newName)
+        setDbName(newName);
         dbName = getDbName();
-        await loadDataIntoMemory()
-        res.json({message: 'Database name updated successfully.', dbName});
+        await loadDataIntoMemory();
+        res.json({ message: 'Database name updated successfully.', dbName });
     } else {
-        res.status(400).json({message: 'New name is required.'});
+        res.status(400).json({ message: 'New name is required.' });
     }
 });
 
 app.get('/get-db-name', async (req, res) => {
-    const currentName = getDbName(); // Assuming getDbName simply returns the current DB name
+    const currentName = getDbName();
     res.json({ dbName: currentName });
 });
 
@@ -173,13 +179,11 @@ app.get('/get-images', async (req, res) => {
     try {
         const directory = localFolderPath;
 
-        // Ensure images are loaded and cached
         if (!cachedImages) {
             cachedImages = await getOriginalImages(directory);
             console.log("Images loaded and cached.");
         }
 
-        // Check if cachedImages is not empty before slicing
         if (cachedImages && cachedImages.length > 0) {
             const startIndex = (page - 1) * limit;
             const endIndex = page * limit;
@@ -199,6 +203,7 @@ app.get('/get-images', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 app.post('/save-cropped-images', async (req, res) => {
     try {
         const croppedImages = req.body;
@@ -223,9 +228,9 @@ app.post('/delete-scores', async (req, res) => {
         return res.status(400).send('userID is required');
     }
     try {
-        res.status(204).send(); // No content to send back
+        res.status(204).send();
     } catch (error) {
-        res.status(500).send('Error deleting user entry'); // Server error response
+        res.status(500).send('Error deleting user entry');
     }
 });
 
@@ -243,10 +248,3 @@ app.get('/get-settings', (req, res) => {
     res.sendFile(path.join(__dirname, 'settings.json'));
 });
 
-// testDB()
-// deleteCropCompressedFiles(localFolderPath)
-// grabRandomImages()
-// cropFaces()
-// processFaces()
-// createFolders()
-// processFacesMP()

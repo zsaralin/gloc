@@ -101,9 +101,9 @@ export async function resetNewDB() {
     console.log(`Creating image grid took: ${createGridEndTime - createGridStartTime}ms`);
 }
 
-export function enterMainPage(){
-    startShuffle()
-    startFaceDetection(video,canvas)
+export async function enterMainPage() {
+    await startShuffle()
+    startFaceDetection(video, canvas)
     // startFaceRecognition();
     fadeoutOverlay()
 

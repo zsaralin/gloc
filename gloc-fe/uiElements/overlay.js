@@ -49,6 +49,12 @@ function getOverlayContent() {
 function getDatabaseOptions() {
     return `
         <label class="radio-input">
+            <input type="radio" name="database" value="arg"/>
+            <span class="custom-radio"></span>
+            Argentina (8860)
+            <p>The "Desaparecidos" in Argentina refer to the thousands of individuals who were forcibly disappeared during the military dictatorship from 1976 to 1983. These victims symbolize the brutal repression of the "Dirty War" and the ongoing quest for justice and truth by their families and human rights organizations.</p>
+        </label>
+        <label class="radio-input">
             <input type="radio" name="database" value="42"/>
             <span class="custom-radio"></span>
             Ayotzinapa (43)

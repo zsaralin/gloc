@@ -11,7 +11,7 @@
   "refreshTime": "12",
   "boundingBox": true,
   "faceLandmarks": true,
-  "fadeDuration": "3",
+  "fadeDuration": "5",
   "minEyeDistance": "100",
   "minOpacity": "0.5"
 }

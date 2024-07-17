@@ -17,10 +17,7 @@ let loadedImages;
 export function clearLoadedRandomImages(){
     loadedImages = null;
 }
-export async function updateShuffle(imagesDataArray, abortController) {
-    if(!loadedImages) {
-        loadedImages= await loadImages(imagesDataArray);
-    }
+export async function updateShuffle(loadedImages, imagesDataArray, abortController) {
     updateImagesInShuffle(loadedImages, imagesDataArray)
 }
 
@@ -58,9 +55,9 @@ async function updateImagesInShuffle(images, imagesDataArray, isTop) {
 }
 
 export async function updateFirst(imagesDataArray, abortController) {
+    const loadedImages = await loadImages(imagesDataArray);
 
     await stopShuffle()
-    const loadedImages = await loadImages(imagesDataArray);
     // const [topImages, bottomImages] = [loadedImages.slice(0, 2), loadedImages.slice(2)];
     // const [topImageData, bottomImageData] = [imagesDataArray.slice(0, 2), imagesDataArray.slice(2)];
 
