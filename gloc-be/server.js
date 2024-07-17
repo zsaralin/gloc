@@ -1,3 +1,5 @@
+// v1.0.0
+
 const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
@@ -6,7 +8,6 @@ const PORT = process.env.PORT || 4000;
 const cors = require('cors');
 const { findNearestDescriptors, loadDataIntoMemory } = require('./utils/topDescriptors');
 require('dotenv').config();
-
 const localFolderPath = path.resolve(__dirname, '../../face_backet');  // Adjust the folder path as needed
 
 app.use(cors());
