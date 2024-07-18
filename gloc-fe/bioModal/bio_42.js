@@ -32,7 +32,7 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
         const label = imageData.jsonData.name;
 
         // Create and append img elements for each imagePath
-        imageData.imagePaths.forEach(imagePath => {
+        imageData.imagePath.forEach(imagePath => {
             const imageElement = document.createElement('img');
             imageElement.src = `${SERVER_URL}${imagePath}`; // Use the full URL
             imageElement.alt = label;
@@ -45,7 +45,7 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
         imageContainer.querySelectorAll('img').forEach(img => {
             img.onload = function() {
                 imagesLoaded++;
-                if (imagesLoaded === imageData.imagePaths.length) {
+                if (imagesLoaded === imageData.imagePath.length) {
                     modal.style.visibility = 'visible';
                     document.body.appendChild(modal);
                 }
