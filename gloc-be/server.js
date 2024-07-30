@@ -62,39 +62,40 @@ app.post('/match', async (req, res) => {
             const jsonFilePath = path.join(localFolderPath, dbName, label, 'info.json');
             const name = await getNameFromJsonFile(jsonFilePath, label);
 
-            // Get all files in the images folder
-            let imageFiles = [];
+            // Read the JSON file to get the number of records
+            let jsonData = null;
             try {
-                const files = await fs.readdir(imagesFolderPath);
-                imageFiles = files.filter(file => /\.(png|jpe?g|gif)$/.test(file));
+                const jsonContent = await fs.readFile(jsonFilePath, 'utf8');
+                jsonData = JSON.parse(jsonContent);
             } catch (error) {
-                console.error(`Error reading images folder: ${imagesFolderPath}`, error);
+                console.error(`Error reading JSON file: ${jsonFilePath}`, error);
                 return null;
             }
 
-            if (imageFiles.length > 0) {
-                // Construct the full path to each image
-                const imagePaths = imageFiles.map(file => `/static/images/${dbName}/${label}/images/${encodeURIComponent(file)}`);
-
-                // Read the JSON file
-                let jsonData = null;
+            const numRecords = jsonData.numeroDeRegistros || 0;
+            const imageFiles = [];
+            for (let i = 0; i < numRecords; i++) {
+                const imagePath = path.join(imagesFolderPath, `${i}.jpg`);
                 try {
-                    const jsonContent = await fs.readFile(jsonFilePath, 'utf8');
-                    jsonData = JSON.parse(jsonContent);
+                    await fs.access(imagePath);
+                    imageFiles.push(`/static/images/${dbName}/${label}/images/${encodeURIComponent(`${i}.jpg`)}`);
                 } catch (error) {
-                    console.error(`Error reading JSON file: ${jsonFilePath}`, error);
+                    console.log(`Image file ${imagePath} does not exist.`);
                 }
+            }
 
+            if (imageFiles.length > 0) {
                 labels.push(name);
                 return {
                     label,
                     name,
                     distance: normalizedDistance * 100,
-                    imagePath: imagePaths, // Array of image paths
+                    imagePath: imageFiles, // Array of image paths
                     jsonData // JSON file content
                 };
             } else {
                 console.log(`No image files found in folder: ${imagesFolderPath}`);
+                return null;
             }
         });
 

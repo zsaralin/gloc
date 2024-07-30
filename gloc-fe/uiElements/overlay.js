@@ -1,5 +1,5 @@
-import {setupCamera} from "../index.js";
-import {initializeDBModal} from "./dbModal.js";
+import { setupCamera, enterMainPage } from "../index.js";
+import {initializeDBModal, setDb} from "./dbModal.js";
 
 export function setupLandingPage() {
     const overlay = document.getElementById('overlay');
@@ -9,16 +9,35 @@ export function setupLandingPage() {
 
     const camAccessBtn = document.querySelector('.enter-button');
     if (camAccessBtn) {
-        camAccessBtn.addEventListener('click', async () => {
+        camAccessBtn.addEventListener('click', async function handleCameraAccess() {
             camAccessBtn.disabled = true;
             camAccessBtn.innerHTML = 'Accessing Camera<span class="ellipsis"></span>';
             await setupCamera();
             camAccessBtn.disabled = false;
-            camAccessBtn.style.display = 'none';
-            initializeDBModal();
+            camAccessBtn.innerHTML = 'Start';
+
+            // Remove the initial event listener
+            camAccessBtn.removeEventListener('click', handleCameraAccess);
+
+            camAccessBtn.addEventListener('click', async () => {
+                // Start the animation
+                camAccessBtn.disabled = true;
+                camAccessBtn.innerHTML = '';
+
+                camAccessBtn.classList.add('loading');
+                // Await the setDb function
+                await setDb('arg');
+
+                // Stop the animation
+                stopAnimation();
+
+                // Proceed to the main page
+                enterMainPage();
+            });
         });
     }
 }
+
 
 function getOverlayContent() {
     return `
@@ -33,14 +52,6 @@ function getOverlayContent() {
                 <li>No data is retained.</li>
             </ul>
             <button class="enter-button loading" disabled ></button>
-            <div id="chooseDbModal">
-                <div class="modal-content">
-                    <h2>Select a Database</h2>
-                    <form id="dbForm">
-                        ${getDatabaseOptions()}
-                    </form>
-                </div>
-            </div>
             <div id="loadingText" style="margin-top: 10px;"></div>
         </div>
     `;
@@ -70,7 +81,7 @@ function getDatabaseOptions() {
 }
 
 export function activateEnterButton() {
-    const button = document.getElementsByClassName('enter-button')[0]
+    const button = document.getElementsByClassName('enter-button')[0];
     button.classList.remove('loading');
     button.disabled = false; // Enable the button
     button.innerText = "Access My Camera"; // Update button text if needed
@@ -83,8 +94,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-export function fadeoutOverlay(){
-    const overlay = document.getElementById('overlay')
+export function fadeoutOverlay() {
+    const overlay = document.getElementById('overlay');
     overlay.style.opacity = '0';
     setTimeout(() => {
         overlay.style.display = 'none';
@@ -93,4 +104,3 @@ export function fadeoutOverlay(){
 
 const lorep =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pulvinar libero nec nisi vehicula, nec ultricies libero dapibus. Sed ut eros eget ante volutpat pharetra non sit amet turpis. Nullam nec urna velit. Mauris commodo fringilla ultrices. Vivamus fringilla nec sapien ac scelerisque. "
-

@@ -1,8 +1,8 @@
 import {enterMainPage, resetNewDB, SERVER_URL} from "../index.js";
 
-export let db = '42';
+export let db = 'arg';
 
-async function setDb(selectedDbName) {
+export async function setDb(selectedDbName) {
     console.log(`Database name changed to: ${selectedDbName}`);
     db = selectedDbName;  // Update the global database variable directly
     try {
@@ -13,17 +13,17 @@ async function setDb(selectedDbName) {
             },
             body: JSON.stringify({ newName: selectedDbName }),
         });
-        document.getElementById("chooseDbModal").style.display = "none";
+        // document.getElementById("chooseDbModal").style.display = "none";
         const loadingText = document.getElementById("loadingText");
         let dotCount = 0;
-        loadingText.innerHTML = "Loading database";
-        const intervalId = setInterval(() => {
-            dotCount = (dotCount + 1) % 4; // Cycles dot count from 0 to 3
-            loadingText.innerHTML = "Loading database" + ".".repeat(dotCount);
-        }, 200);
+        // loadingText.innerHTML = "Loading database";
+        // const intervalId = setInterval(() => {
+        //     dotCount = (dotCount + 1) % 4; // Cycles dot count from 0 to 3
+        //     loadingText.innerHTML = "Loading database" + ".".repeat(dotCount);
+        // }, 200);
 
         await resetNewDB();
-        clearInterval(intervalId);
+        // clearInterval(intervalId);
         enterMainPage();
     } catch (error) {
         console.error('Error updating database name:', error);

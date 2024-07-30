@@ -29,7 +29,7 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
         const imageContainer = document.createElement('div');
         imageContainer.className = 'bio-image-container';
 
-        const label = imageData.jsonData.name;
+        const label = imageData.jsonData.nombre;
 
         // Create and append img elements for each imagePath
         imageData.imagePath.forEach(imagePath => {

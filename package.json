@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "rsync": "^0.6.1"
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "rsync": "^0.6.1",
+    "translate-google": "^1.5.0"
   }
 }

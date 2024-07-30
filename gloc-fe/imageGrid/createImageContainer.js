@@ -100,11 +100,12 @@ export function updateBottomTextOverlay(textOverlay, i, imagesArray) {
 
     const isFirstImage = imagesArray.length <= (isMobile ? 2 : 3) && i === 0;
     if(image.jsonData) {
-        if (isFirstImage && image.jsonData.name) {
-            content += `<div class="name"> ${image.jsonData.name}</div>`;
+        console.log(image.jsonData)
+        if (isFirstImage && image.jsonData.nombre) {
+            content += `<div class="name"> ${image.jsonData.nombre}</div>`;
             content += '[No. Records: 1]'
         } else {
-            content += `<div class="name"> ${image.jsonData.name} [1]</div>`;
+            content += `<div class="name"> ${image.jsonData.nombre} [1]</div>`;
         }
     }
     textOverlay.innerHTML = content;

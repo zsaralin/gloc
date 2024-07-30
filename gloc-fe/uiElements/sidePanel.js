@@ -53,12 +53,12 @@ function setupSidePanelButton() {
     const closePanelHandler = () => toggleSidePanel(sidePanel, closePanelButton, false);
     closePanelButton.addEventListener("click", closePanelHandler);
 
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'g' || event.key === 'G') {
-            const isOpen = !sidePanel.classList.contains("open");
-            toggleSidePanel(sidePanel, closePanelButton, isOpen);
-        }
-    });
+    // document.addEventListener('keydown', function (event) {
+    //     if (event.key === 'g' || event.key === 'G') {
+    //         const isOpen = !sidePanel.classList.contains("open");
+    //         toggleSidePanel(sidePanel, closePanelButton, isOpen);
+    //     }
+    // });
 }
 
 
