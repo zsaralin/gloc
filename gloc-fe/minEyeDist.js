@@ -14,6 +14,7 @@ export function isEyeDistanceAboveThreshold(person) {
     // Calculate the Euclidean distance between the left and right eyes
     const distance = Math.sqrt(Math.pow(rightEye.x - leftEye.x, 2) + Math.pow(rightEye.y - leftEye.y, 2));
     // Check if the distance is greater than the threshold (50)
+    return true;
     return (distance * 1000)> eyeSlider.value;
 }
 
