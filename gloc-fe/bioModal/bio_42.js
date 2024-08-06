@@ -59,10 +59,10 @@ export async function addImageClickListener42(imageItemContainer, imageData) {
         }
 
         // Generate content for textContainer based on JSON data
-        let contentHtml = `<p>${label}</p>`;
+        let contentHtml = `<div>${label}</div>`;
         for (const [key, value] of Object.entries(imageData.jsonData)) {
-            if (key !== 'numRecords' && key !== 'name') {
-                contentHtml += `<p>${formatKeyName(key)}: ${value}</p>`;
+            if (key !== 'numRecords' && key !== 'name' && key !== 'nombre') {
+                contentHtml += `<div>${formatKeyName(key)}: ${value}</div>`;
             }
         }
 
