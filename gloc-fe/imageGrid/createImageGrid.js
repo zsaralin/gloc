@@ -7,7 +7,7 @@ let loadedImages;
 export async function createImageGrid(imagesDataArray, abortController) {
     try {
         const allImages = await loadImages(imagesDataArray);
-        const firstImagesCount = isMobile ? 2 : 3;
+        const firstImagesCount = isMobile ? 2 : 5;
         const topImages = allImages.slice(0, firstImagesCount);
         const bottomImages = allImages.slice(firstImagesCount);
 

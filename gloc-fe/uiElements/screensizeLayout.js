@@ -7,7 +7,7 @@ export function adjustLayoutForScreenSize() {
     isMobile = windowWidth < MAX_WIDTH;
 
     const main = document.getElementById('main');
-    main.style.maxWidth = '800px';
+    // main.style.maxWidth = '800px';
 
     const top = document.getElementById('top');
     const videoContainer = document.getElementById('video-container');

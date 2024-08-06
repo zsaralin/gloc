@@ -20,8 +20,8 @@ export function setNumPhotos(i){
 
 export function arrangeBottomGrid(container) {
     if(!isMobile){
-        numRows = 2;
-        numCols = 6;
+        numRows = 3;
+        numCols = 8;
         numArrangedImages = numRows * numCols;
         return {numArrangedImages, numRows, numCols};
     } else {
