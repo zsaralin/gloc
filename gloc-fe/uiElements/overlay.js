@@ -13,15 +13,15 @@ export function setupLandingPage() {
             camAccessBtn.disabled = true;
             camAccessBtn.innerHTML = 'Accessing Camera<span class="ellipsis"></span>';
             await setupCamera();
-            camAccessBtn.disabled = false;
-            camAccessBtn.innerHTML = 'Start';
-
-            // Remove the initial event listener
-            camAccessBtn.removeEventListener('click', handleCameraAccess);
-
-            camAccessBtn.addEventListener('click', async () => {
-                // Start the animation
-                camAccessBtn.disabled = true;
+            // camAccessBtn.disabled = false;
+            // camAccessBtn.innerHTML = 'Start';
+            //
+            // // Remove the initial event listener
+            // camAccessBtn.removeEventListener('click', handleCameraAccess);
+            //
+            // camAccessBtn.addEventListener('click', async () => {
+            //     // Start the animation
+            //     camAccessBtn.disabled = true;
                 camAccessBtn.innerHTML = '';
 
                 camAccessBtn.classList.add('loading');
@@ -33,7 +33,7 @@ export function setupLandingPage() {
 
                 // Proceed to the main page
                 enterMainPage();
-            });
+            // });
         });
     }
 }
