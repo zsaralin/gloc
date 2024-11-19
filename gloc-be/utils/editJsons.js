@@ -1,37 +1,29 @@
-const fs = require('fs').promises;
-const path = require('path');
+const fs = require('fs');
 
-const baseDir = path.resolve(__dirname, '../../../face_backet/arg');
-
-async function updateJsonWithNumRecords() {
-    try {
-        const subfolders = await fs.readdir(baseDir, { withFileTypes: true });
-
-        for (const subfolder of subfolders) {
-            if (subfolder.isDirectory()) {
-                const subfolderPath = path.join(baseDir, subfolder.name);
-                const imagesFolderPath = path.join(subfolderPath, 'images');
-                const jsonFilePath = path.join(subfolderPath, `${subfolder.name}.json`);
-
-                try {
-                    const imageFiles = await fs.readdir(imagesFolderPath);
-                    const numRecords = imageFiles.length;
-
-                    const jsonData = await fs.readFile(jsonFilePath, 'utf8');
-                    const jsonObj = JSON.parse(jsonData);
-
-                    jsonObj.numRecords = numRecords;
-
-                    await fs.writeFile(jsonFilePath, JSON.stringify(jsonObj, null, 2));
-                    console.log(`Updated ${jsonFilePath} with numRecords: ${numRecords}`);
-                } catch (error) {
-                    console.error(`Error processing ${subfolder.name}:`, error);
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Error reading base directory:', error);
+// Read the input JSON file
+fs.readFile('../results/results_arg.json', 'utf8', (err, data) => {
+    if (err) {
+        console.error('Error reading the file:', err);
+        return;
     }
-}
 
-updateJsonWithNumRecords();
+    // Parse the JSON data
+    const jsonData = JSON.parse(data);
+
+    // Loop through all keys in the JSON data and ensure descriptors are in array of arrays
+    Object.keys(jsonData).forEach(key => {
+        const descriptors = jsonData[key].descriptors;
+
+        // Wrap the descriptors array in another array if it's not already
+        jsonData[key].descriptors = [descriptors];
+    });
+
+    // Write the modified JSON to a new file
+    fs.writeFile('output.json', JSON.stringify(jsonData, null, 2), (err) => {
+        if (err) {
+            console.error('Error writing the file:', err);
+        } else {
+            console.log('New JSON file with updated descriptors saved as output.json');
+        }
+    });
+});

@@ -20,22 +20,28 @@ function getSubdirectories(dir) {
     return subdirectories;
 }
 
-// Function to convert images to JPG
-async function convertImagesToJpg(dir) {
+// Function to check image height and print names of images with height < 10 pixels
+async function checkImageHeights(dir) {
     const imagesDir = path.join(dir, 'images');
     if (fs.existsSync(imagesDir) && fs.statSync(imagesDir).isDirectory()) {
         const files = fs.readdirSync(imagesDir);
 
+        let found = false;
+
         for (const file of files) {
             const ext = path.extname(file).toLowerCase();
-            if (ext !== '.jpg' && (ext === '.png' || ext === '.jpeg' || ext === '.bmp' || ext === '.tiff')) {
+            if (['.png', '.jpeg', '.jpg', '.bmp', '.tiff'].includes(ext)) {
                 const imagePath = path.join(imagesDir, file);
-                const jpgPath = path.join(imagesDir, path.basename(file, ext) + '.jpg');
                 try {
-                    await sharp(imagePath).toFormat('jpg').toFile(jpgPath);
-                    console.log(`Converted ${imagePath} to ${jpgPath}`);
+                    const metadata = await sharp(imagePath).metadata();
+                    if (metadata.height < 10) {
+                        if (!found) {
+                            console.log(`Subdirectory: ${dir}`);
+                            found = true;
+                        }
+                    }
                 } catch (error) {
-                    console.error(`Error converting ${imagePath}:`, error);
+                    console.error(`Error checking height of ${imagePath}:`, error);
                 }
             }
         }
@@ -48,6 +54,6 @@ const subdirectories = getSubdirectories(baseDir);
 // Process each subdirectory
 (async function() {
     for (const subdirectory of subdirectories) {
-        await convertImagesToJpg(subdirectory);
+        await checkImageHeights(subdirectory);
     }
 })();

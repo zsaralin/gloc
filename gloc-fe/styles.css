@@ -476,8 +476,8 @@ button {
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    /* 0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); } */
 }
 
 
@@ -490,10 +490,10 @@ button {
     border: none;
     padding: 10px 20px;
     touch-action: manipulation;
-    border-radius: 5px;
+    /* border-radius: 5px; */
     cursor: pointer; /* Default cursor when enabled */
-    background-color: #555555; /* Lighter grey as the default background color */
-    color: #ffffff; /* Default text color */
+    background-color: #ffffff; /* Lighter grey as the default background color */
+    color:black; /* Default text color */
     transition: background-color 0.3s, transform 0.2s; /* Smooth transition for feedback */
 }
 

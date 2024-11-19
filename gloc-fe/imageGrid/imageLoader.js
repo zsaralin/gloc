@@ -38,8 +38,8 @@ export async function loadImages(imageDataArray, numArrangedImages, isMobile) {
                 const srcUrl = `${SERVER_URL}${encodedImagePath}`;
                 const srcOrigUrl = `${SERVER_URL}${encodedImagePath}`;
 
-                const srcExists = await urlExists(srcUrl);
-                const srcOrigExists = await urlExists(srcOrigUrl);
+                const srcExists = true//await urlExists(srcUrl);
+                const srcOrigExists = true//await urlExists(srcOrigUrl);
 
                 if (srcExists && srcOrigExists) {
                     const imageElement = document.createElement('img');

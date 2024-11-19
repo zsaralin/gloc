@@ -30,7 +30,7 @@ export async function updateImageGrid(imagesDataArray, abortController) {
         if(!loadedImages) return
         const [topImages, bottomImages] = [loadedImages.slice(0, firstImagesCount), loadedImages.slice(firstImagesCount)];
         const totalImages = loadedImages.length; // Total number of images across both updates
-
+        console.log(totalImages)
         await Promise.all([
             updateImages(topImages, imagesDataArray.slice(0, firstImagesCount), totalImages, 0, abortController), // Start index for top images is 0
             updateImages(bottomImages, imagesDataArray.slice(firstImagesCount), totalImages, topImages.length, abortController) // Start index for bottom images
